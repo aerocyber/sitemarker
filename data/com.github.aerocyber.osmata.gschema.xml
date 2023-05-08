@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist gettext-domain="osmata">
+	<schema id="com.github.aerocyber.osmata" path="/com/github/aerocyber/osmata/">
+	</schema>
+</schemalist>

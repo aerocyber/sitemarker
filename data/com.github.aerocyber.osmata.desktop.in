@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=osmata
+Exec=osmata
+Icon=com.github.aerocyber.osmata
+Terminal=false
+Type=Application
+Categories=GTK;
+StartupNotify=true
