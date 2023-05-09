@@ -45,6 +45,18 @@
                 <property name="action-name">app.view-omio</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Import Records</property>
+                <property name="action-name">app.import</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Export Records</property>
+                <property name="action-name">app.export</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>

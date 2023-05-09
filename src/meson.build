@@ -30,6 +30,8 @@ osmata_sources = [
   '__init__.py',
   'main.py',
   'window.py',
+  'widgets.py',
+  'core/osmata.py'
 ]
 
 install_data(osmata_sources, install_dir: moduledir)

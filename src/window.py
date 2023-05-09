@@ -24,7 +24,6 @@
 
 from gi.repository import Adw
 from gi.repository import Gtk
-from gi.repository import Gio
 
 
 @Gtk.Template(resource_path='/com/github/aerocyber/osmata/window.ui')
@@ -35,8 +34,9 @@ class OsmataWindow(Adw.ApplicationWindow):
     view_records = Gtk.Template.Child()
     del_record = Gtk.Template.Child()
     view_omio_file_records = Gtk.Template.Child()
+    import_omio_file_records = Gtk.Template.Child()
+    export_omio_file_records = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-
 

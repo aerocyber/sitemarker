@@ -30,6 +30,7 @@ gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Gio, Adw
 from .window import OsmataWindow
+from . import widgets
 
 
 class OsmataApplication(Adw.Application):
@@ -38,6 +39,9 @@ class OsmataApplication(Adw.Application):
     def __init__(self):
         super().__init__(application_id='com.github.aerocyber.osmata',
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
+
+        self.widgets = widgets.WidgetsConnector()
+
         self.create_action('quit', lambda *_: self.quit(), ['<primary>q'])
         self.create_action('about', self.on_about_action)
         self.create_action('preferences', self.on_preferences_action)
@@ -45,6 +49,8 @@ class OsmataApplication(Adw.Application):
         self.create_action('del', self.on_del_action, ['<ctrl>d'])
         self.create_action('view', self.on_view_action, ['<ctrl>v'])
         self.create_action('view-omio', self.on_view_omio_action, ['<ctrl>o'])
+        self.create_action('import', self.on_import_action, ['<ctrl>i'])
+        self.create_action('export', self.on_export_action, ['<ctrl>e'])
 
     def do_activate(self):
         """Called when the application is activated.
@@ -85,11 +91,13 @@ class OsmataApplication(Adw.Application):
 
     def on_preferences_action(self, widget, _):
         """Callback for the app.preferences action."""
+        # TODO: Update code to set preferences.
         print('app.preferences action activated')
 
     def on_add_action(self, widget, _):
         # TODO: Update the code to add new record.
         print("Add action triggered.")
+        self.widgets.add_record_dialog()
 
     def on_view_action(self, widget, _):
         # TODO: Update the code to view all records.
@@ -114,6 +122,15 @@ class OsmataApplication(Adw.Application):
         ]
         # Append your name here, translators!
         # Format: "Name url"
+
+    def on_import_action(self, widget, _):
+        # TODO: Update code to import records.
+        print("Import records action triggered.")
+
+    def on_export_action(self, widget, _):
+        # TODO: Update code to import records.
+        print("Export records action triggered.")
+
 
     def create_action(self, name, callback, shortcuts=None):
         """Add an application action.
