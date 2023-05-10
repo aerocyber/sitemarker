@@ -24,37 +24,37 @@
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">Add Record</property>
-                <property name="action-name">app.add</property>
+                <property name="action-name">win.add</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">View Records</property>
-                <property name="action-name">app.view</property>
+                <property name="action-name">win.view</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">Delete Record</property>
-                <property name="action-name">app.del</property>
+                <property name="action-name">win.del</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">View omio File</property>
-                <property name="action-name">app.view-omio</property>
+                <property name="action-name">win.view-omio</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">Import Records</property>
-                <property name="action-name">app.import</property>
+                <property name="action-name">win.import</property>
               </object>
             </child>
             <child>
               <object class="GtkShortcutsShortcut">
                 <property name="title" translatable="yes" context="shortcut window">Export Records</property>
-                <property name="action-name">app.export</property>
+                <property name="action-name">win.export</property>
               </object>
             </child>
           </object>

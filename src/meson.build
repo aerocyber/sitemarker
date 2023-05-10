@@ -30,7 +30,6 @@ osmata_sources = [
   '__init__.py',
   'main.py',
   'window.py',
-  'widgets.py',
   'core/osmata.py'
 ]
 
