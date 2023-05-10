@@ -3,8 +3,9 @@ version: 1.0.0
 summary: Open source bookmark manager.
 description: |
   Make sharing bookmarks easier using Osmata, the bookmark manager.
-confinement: devmode
-base: core18
+confinement: strict
+
+base: core22
 parts:
   osmata:
     plugin: dump
