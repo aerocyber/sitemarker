@@ -53,9 +53,9 @@ class OsmataWindow(Adw.ApplicationWindow):
 
         # The Window is the central part of this section.
         # It is supposed to contain all the other widgets.
-        add_dialog = Adw.Window()
-        add_dialog.set_transient_for(self) # For making it a modal above the main Application Window
-        add_dialog.set_default_size(550, 400) # Default size
+        self.add_dialog = Adw.Window()
+        self.add_dialog.set_transient_for(self) # For making it a modal above the main Application Window
+        self.add_dialog.set_default_size(550, 400) # Default size
 
         # The box that has it all. All child widgets are made under this box.
         # This box is made the child of the Window
@@ -68,7 +68,7 @@ class OsmataWindow(Adw.ApplicationWindow):
         add_header = Adw.HeaderBar() # Our header bar
         add_dialog_box.append(add_header) # HeaderBar into the container
 
-        add_dialog.set_content(add_dialog_box) # The content of the Window is the container box.
+        self.add_dialog.set_content(add_dialog_box) # The content of the Window is the container box.
 
         # The add_box is where the layout is actually gonna go.
         # This is again, appended to the add_dialog_box
@@ -87,18 +87,18 @@ class OsmataWindow(Adw.ApplicationWindow):
         add_box_name.set_margin_top(20)
         add_box_name.set_margin_bottom(20)
         add_box_name.set_orientation(Gtk.Orientation.HORIZONTAL)
-        add_box_name.set_spacing(110)
+        add_box_name.set_spacing(10)
 
         add_label_name = Gtk.Label()
-        add_label_name.set_text("Name of the record")
+        add_label_name.set_text("Name")
         add_box_name.append(add_label_name)
 
-        add_entry_name = Gtk.Entry()
-        add_entry_name.set_alignment(0.01)
-        add_entry_name.set_input_hints(Gtk.InputHints.SPELLCHECK)
-        add_entry_name.set_placeholder_text("Enter the Name to be mapped")
-        add_entry_name.set_max_width_chars(100)
-        add_box_name.append(add_entry_name)
+        self.add_entry_name = Gtk.Entry()
+        self.add_entry_name.set_alignment(0.01)
+        self.add_entry_name.set_input_hints(Gtk.InputHints.SPELLCHECK)
+        self.add_entry_name.set_placeholder_text("Enter the Name")
+        self.add_entry_name.set_max_width_chars(100)
+        add_box_name.append(self.add_entry_name)
 
         add_box.append(add_box_name)
 
@@ -109,16 +109,16 @@ class OsmataWindow(Adw.ApplicationWindow):
         add_box_url.set_orientation(Gtk.Orientation.HORIZONTAL)
 
         add_label_url = Gtk.Label()
-        add_label_url.set_text("URL to be associated in the record")
+        add_label_url.set_text("URL")
         add_box_url.append(add_label_url)
         add_box_url.set_spacing(20)
 
-        add_entry_url = Gtk.Entry()
-        add_entry_url.set_alignment(0.01)
-        add_entry_url.set_max_width_chars(100)
-        add_entry_url.set_placeholder_text("Enter the URL to be mapped")
-        add_entry_url.set_input_hints(Gtk.InputHints.LOWERCASE)
-        add_box_url.append(add_entry_url)
+        self.add_entry_url = Gtk.Entry()
+        self.add_entry_url.set_alignment(0.01)
+        self.add_entry_url.set_max_width_chars(100)
+        self.add_entry_url.set_placeholder_text("Enter the URL")
+        self.add_entry_url.set_input_hints(Gtk.InputHints.LOWERCASE)
+        add_box_url.append(self.add_entry_url)
 
         add_box.append(add_box_url)
 
@@ -127,8 +127,7 @@ class OsmataWindow(Adw.ApplicationWindow):
         add_box_categories.set_orientation(Gtk.Orientation.VERTICAL)
 
         add_label_category = Gtk.Label()
-        _label_category = "Categories to be associated in the record. Separate them with comma(s)."
-        add_label_category.set_text(_label_category)
+        add_label_category.set_text("Tags. Separate them with comma(s).")
         add_box_categories.append(add_label_category)
         add_box_categories.set_spacing(10)
 
@@ -143,15 +142,40 @@ class OsmataWindow(Adw.ApplicationWindow):
         add_category_scrolled_window.set_margin_start(10)
         add_category_scrolled_window.set_margin_end(10)
 
-        add_category_content_area = Gtk.TextView()
-        add_category_content_area.set_monospace(True)
+        self.add_category_content_area = Gtk.TextView()
+        self.add_category_content_area.set_monospace(True)
 
         # All the category related addition
-        add_category_scrolled_window.set_child(add_category_content_area)
+        add_category_scrolled_window.set_child(self.add_category_content_area)
         add_box_categories.append(add_category_scrolled_window)
         add_box.append(add_box_categories)
 
-        add_dialog.show()
+        # Buttons!
+
+        # The Button container
+        add_box_button = Gtk.Box()
+        add_box_button.set_margin_top(20)
+        add_box_button.set_margin_bottom(20)
+        add_box_button.set_margin_start(200)
+        add_box_button.set_margin_end(200)
+        add_box_button.set_orientation(Gtk.Orientation.HORIZONTAL)
+        add_box_button.set_spacing(10)
+        add_dialog_box.append(add_box_button)
+
+        # The Add button
+        add_button_okay = Gtk.Button()
+        add_button_okay.set_label("Add Record")
+        add_box_button.append(add_button_okay)
+        add_button_okay.connect('clicked', self.add_record)
+
+        # The Cancel button
+        add_button_cancel = Gtk.Button()
+        add_button_cancel.set_label("Cancel")
+        add_box_button.append(add_button_cancel)
+        add_button_cancel.connect('clicked', lambda add_button_cancel: add_dialog.destroy())
+
+        # Show it!
+        self.add_dialog.show()
 
     def on_view_action(self, widget, _):
         # TODO: Update the code to view all records.
@@ -197,3 +221,15 @@ class OsmataWindow(Adw.ApplicationWindow):
         action = Gio.SimpleAction.new(name, None)
         action.connect("activate", callback)
         self.add_action(action)
+
+    def add_record(self, add_button_okay):
+        # TODO: Complete the action
+        print("Encountered OKAY pass for adding record.")
+        name = self.add_entry_name.get_text()
+        url = self.add_entry_url.get_text()
+        categories_buffer = self.add_category_content_area.get_buffer()
+        start_iter = categories_buffer.get_start_iter()
+        end_iter = categories_buffer.get_end_iter()
+        categories = categories_buffer.get_text(start_iter, end_iter, False).split(',')
+        print(f"Name: {name}\nURL:  {url}\nCategories: {categories}")
+        self.add_dialog.destroy()
