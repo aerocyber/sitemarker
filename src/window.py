@@ -51,45 +51,73 @@ class OsmataWindow(Adw.ApplicationWindow):
         # TODO: Update the code to add new record.
         print("Add action triggered.")
 
+        # The Window is the central part of this section.
+        # It is supposed to contain all the other widgets.
         add_dialog = Adw.Window()
-        add_dialog.set_transient_for(self)
-        add_dialog.set_default_size(550, 400)
+        add_dialog.set_transient_for(self) # For making it a modal above the main Application Window
+        add_dialog.set_default_size(550, 400) # Default size
 
+        # The box that has it all. All child widgets are made under this box.
+        # This box is made the child of the Window
         add_dialog_box = Gtk.Box()
-        add_dialog.set_content(add_dialog_box)
+        # We don't want a cursed ui now, do we?
+        # Gtk.Orientation.VERTICAL places each items vertically and the
+        # set_orientation is used to set this behaviour to the Window.
+        add_dialog_box.set_orientation(Gtk.Orientation.VERTICAL)
 
+        add_header = Adw.HeaderBar() # Our header bar
+        add_dialog_box.append(add_header) # HeaderBar into the container
+
+        add_dialog.set_content(add_dialog_box) # The content of the Window is the container box.
+
+        # The add_box is where the layout is actually gonna go.
+        # This is again, appended to the add_dialog_box
         add_box = Gtk.Box()
-        add_box.set_orientation(Gtk.Orientation.VERTICAL)
+        add_box.set_orientation(Gtk.Orientation.VERTICAL) # Vertical alignment... again.
         add_box.set_margin_start(20)
         add_box.set_margin_end(20)
         add_box.set_margin_top(20)
         add_box.set_margin_bottom(20)
+        add_dialog_box.append(add_box) # Add the box to the main box.
 
         # The layout of the add_box
 
         # Name
         add_box_name = Gtk.Box()
+        add_box_name.set_margin_top(20)
+        add_box_name.set_margin_bottom(20)
         add_box_name.set_orientation(Gtk.Orientation.HORIZONTAL)
-        add_box_name.set_spacing(10)
+        add_box_name.set_spacing(110)
 
         add_label_name = Gtk.Label()
         add_label_name.set_text("Name of the record")
         add_box_name.append(add_label_name)
 
         add_entry_name = Gtk.Entry()
+        add_entry_name.set_alignment(0.01)
+        add_entry_name.set_input_hints(Gtk.InputHints.SPELLCHECK)
+        add_entry_name.set_placeholder_text("Enter the Name to be mapped")
+        add_entry_name.set_max_width_chars(100)
         add_box_name.append(add_entry_name)
 
         add_box.append(add_box_name)
 
         # URL
         add_box_url = Gtk.Box()
+        add_box_url.set_margin_top(20)
+        add_box_url.set_margin_bottom(20)
         add_box_url.set_orientation(Gtk.Orientation.HORIZONTAL)
 
         add_label_url = Gtk.Label()
         add_label_url.set_text("URL to be associated in the record")
         add_box_url.append(add_label_url)
+        add_box_url.set_spacing(20)
 
         add_entry_url = Gtk.Entry()
+        add_entry_url.set_alignment(0.01)
+        add_entry_url.set_max_width_chars(100)
+        add_entry_url.set_placeholder_text("Enter the URL to be mapped")
+        add_entry_url.set_input_hints(Gtk.InputHints.LOWERCASE)
         add_box_url.append(add_entry_url)
 
         add_box.append(add_box_url)
