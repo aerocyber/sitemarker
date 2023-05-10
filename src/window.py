@@ -124,8 +124,17 @@ class OsmataWindow(Adw.ApplicationWindow):
 
         # Categories
         add_box_categories = Gtk.Box()
-        add_box_categories.set_orientation(Gtk.Orientation.HORIZONTAL)
+        add_box_categories.set_orientation(Gtk.Orientation.VERTICAL)
 
+        add_label_category = Gtk.Label()
+        _label_category = "Categories to be associated in the record. Separate them with comma(s)."
+        add_label_category.set_text(_label_category)
+        add_box_categories.append(add_label_category)
+        add_box_categories.set_spacing(10)
+
+        # Before going to the content area, a scrolling area is defined to contain it.
+        # So that users can scroll, if there are a lot of categories, even when
+        # it isn't going to happen. But hey! It's humans!
         add_category_scrolled_window = Gtk.ScrolledWindow.new()
         add_category_scrolled_window.set_max_content_height(300)
         add_category_scrolled_window.set_max_content_height(200)
@@ -134,7 +143,13 @@ class OsmataWindow(Adw.ApplicationWindow):
         add_category_scrolled_window.set_margin_start(10)
         add_category_scrolled_window.set_margin_end(10)
 
-        add_box.append(add_category_scrolled_window)
+        add_category_content_area = Gtk.TextView()
+        add_category_content_area.set_monospace(True)
+
+        # All the category related addition
+        add_category_scrolled_window.set_child(add_category_content_area)
+        add_box_categories.append(add_category_scrolled_window)
+        add_box.append(add_box_categories)
 
         add_dialog.show()
 
