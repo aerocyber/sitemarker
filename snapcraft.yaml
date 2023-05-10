@@ -1,0 +1,15 @@
+name: osmata
+version: 1.0.0
+summary: Open source bookmark manager.
+description: |
+  Make sharing bookmarks easier using Osmata, the bookmark manager.
+confinement: devmode
+base: core18
+parts:
+  osmata:
+    plugin: dump
+    source: https://github.com/aerocyber/osmata/osmata-build-linux.tar.gz
+
+apps:
+  osmata:
+    command: osmata
