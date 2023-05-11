@@ -1,0 +1,26 @@
+Source: osmata
+Section: utils
+Priority: optional
+Maintainer: Aero <aerocyberdev@proton.me>
+Build-Depends: debhelper-compat(=10),
+	desktop-file-utils,
+	gettext,
+	meson (>= 0.50),
+	pkg-config,
+	libglib2.0-dev,
+	libadwaita-1-dev,
+	appstream
+Standards-Version: 4.5.0
+Rules-Requires-Root: no
+Homepage: https://github.com/aerocyber/osmata
+Vcs-Browser: https://github.com/aerocyber/osmata
+Vcs-Git: https://github.com/aerocyber/osmata.git
+
+Package: osmata
+Architecture: all
+Depends: ${misc:Depends},
+	gir1.2-adw-1,
+	gir1.2-gst-plugins-bad-1.0,
+	python3
+Description: An open source bookmark manager
+ Managing and sharing bookmarks has been made simpler.
