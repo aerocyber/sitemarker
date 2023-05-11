@@ -309,7 +309,6 @@ class OsmataWindow(Adw.ApplicationWindow):
 
     def add_record(self, add_button_okay):
         # Add the record to db
-        print("Encountered OKAY pass for adding record.")
         name = self.add_entry_name.get_text()
         url = self.add_entry_url.get_text()
         categories_buffer = self.add_category_content_area.get_buffer()
@@ -451,9 +450,24 @@ class OsmataWindow(Adw.ApplicationWindow):
 
         view_box = Gtk.Box()
         view_box.append(Adw.HeaderBar())
-        view_col = Gtk.ColumnView()
-        view_box.append(view_col)
         view_dialog.set_content(view_box)
+
+        view_cols = Gtk.ColumnView.new(
+            title="Records"
+        )
+        view_box.append(view_cols)
+
+        view_records_list_box = Gtk.ListBox.new()
+
+        for key in db.keys():
+            column = Gtk.Box()
+            column.set_orientation(Gtk.Orientation.HORIZONATAL)
+            column.set_margin_start(10)
+            column.set_margin_end(10)
+            column.set_margin_top(20)
+            column.set_margin_bottom(20)
+
+            data_box = Gtk.Box() # TODO
 
     def on_open_response(self, dialog, response):
         if response == Gtk.ResponseType.ACCEPT:
