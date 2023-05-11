@@ -65,6 +65,8 @@ class Osmata:
         """
 
         data = json.loads(dat)
+        if data == {}:
+            return True # An empty db is just as valid as a perfectly filled DB.
         _keys = data.keys()
         _urls = []
         _is_cat_list = True
