@@ -242,6 +242,43 @@ class SitemarkerWindow(Adw.ApplicationWindow):
     def on_del_action(self, widget, _):
         # TODO: Update code to delete a record.
         print("Delete action triggered.")
+        keys = self.db_api.db.keys()
+        print(keys)
+        del_win = Adw.Window(transient_for=self)
+        del_win.set_default_size(550, 400)
+        del_win.set_title("Delete a record")
+
+        del_box = Gtk.Box()
+        del_box.set_orientation(Gtk.Orientation.VERTICAL) # Vertical alignment... again.
+        del_box.set_margin_start(20)
+        del_box.set_margin_end(20)
+        del_box.set_margin_top(20)
+        del_box.set_margin_bottom(30)
+        del_win.set_content(del_box)
+        del_box.append(Adw.HeaderBar())
+
+        del_content_box = Gtk.Box()
+        del_box.append(del_content_box)
+
+        del_records_list_model = Gio.ListStore()
+
+        for key in keys:
+            col = Gtk.Box()
+            col.set_margin_start(10)
+            col.set_margin_end(10)
+            col.set_margin_top(20)
+            col.set_margin_bottom(20)
+            col.set_spacing(50)
+            col.append(Gtk.Label(label=key))
+            del_records_list_model.append(col)
+
+        # del_records_dropdown.set_model(del_records_list_model)
+        del_records_dropdown = Gtk.DropDown()
+        del_records_dropdown.set_model(del_records_list_model)
+        # del_records_dropdown.set_list_factory(del_records_list_model)
+        del_box.append(del_records_dropdown)
+
+        del_win.show()
 
     def on_import_action(self, widget, _):
         # TODO: Update code to import records.
