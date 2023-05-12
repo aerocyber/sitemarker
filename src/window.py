@@ -510,13 +510,14 @@ class SitemarkerWindow(Adw.ApplicationWindow):
     def copy2clipboard(self, text: str):
         _clipboard = self.get_clipboard()
         _clipboard.set(text)
+
     def on_view_omio_action(self, widget, _):
-        # TODO: Update code to view omio file.
+        # View omio file.
         print("View omio file content action triggered.")
         self.view_db_as_file()
 
     def view_db_as_file(self):
-        #TODO: File opening
+        # File opening
         print("File opening for reading.")
         file_open_view_dialog = Gtk.FileDialog.new()
         file_open_view_dialog.set_accept_label("Open")
