@@ -30,6 +30,7 @@ from gi.repository import Gdk
 from . import ospyata as osmata
 from urllib.parse import unquote
 from .ospyata import OspyataException
+import datetime
 import pathlib
 import sys
 import json
@@ -245,10 +246,8 @@ class SitemarkerWindow(Adw.ApplicationWindow):
     def on_import_action(self, widget, _):
         # TODO: Update code to import records.
         print("Import records action triggered.")
+        self.import_omio_fn()
 
-    def on_export_action(self, widget, _):
-        # TODO: Update code to import records.
-        print("Export records action triggered.")
 
     def create_action(self, name, callback):
         """Add an application action.
@@ -493,7 +492,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
             copy_ = Gtk.Button()
             copy_.set_label("Copy to Clipboard")
-            copy_.connect("clicked", lambda copy_: webbrowser.open_new_tab(url))
+            copy_.connect("clicked", lambda copy_: self.copy2clipboard(url))
             control_box.append(copy_)
 
             column.append(data_box)
@@ -644,7 +643,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
                     copy_ = Gtk.Button()
                     copy_.set_label("Copy to Clipboard")
-                    copy_.connect("clicked", lambda copy_: webbrowser.open_new_tab(url))
+                    copy_.connect("clicked", lambda copy_: self.copy2clipboard(url))
                     control_box.append(copy_)
 
                     column.append(data_box)
@@ -657,3 +656,197 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         # file_open_view_dialog.open(view_dialog, None, open_response)
         file_open_view_dialog.open(self, None, open_response)
 
+    def on_export_action(self, widget, _):
+        # TODO: Update code to import records.
+        print("Export records action triggered.")
+        internal_db = self.db_api.dumpOmio()
+        def export_db_as_file():
+            file_save_export_dialog = Gtk.FileDialog.new()
+            file_save_export_dialog.set_accept_label("Save as")
+            file_filter = Gtk.FileFilter()
+            file_filter.set_name("Osmata Importable Object File (OMIO File)")
+            file_filter.add_pattern("*.omio")
+            file_filters = Gio.ListStore.new(Gtk.FileFilter)
+            file_filters.append(file_filter)
+            file_save_export_dialog.set_filters(file_filters)
+            default_name = "SiteMarker-export-" + datetime.date.today().strftime("%Y-%m-%d") + '-' +\
+                           datetime.datetime.now().strftime("%H-%M-%S") + '.omio'
+            file_save_export_dialog.set_initial_name(default_name)
+            file_save_export_dialog.set_modal(self)
+            file_save_export_dialog.set_title("Choose a file to export to")
+            def save_response(file_save_export_dialog, result):
+                ##### Credits of handle_filenames and clean_filenames: Curtail project
+                ##### https://github.com/Huluti/Curtail/blob/ab0e268bbb4c30900daf30ff255db243baa82465/src/window.py
+                def handle_filenames(filenames):
+                    def clean_filename(_filename):
+                        if _filename.startswith('file://'):  # drag&drop
+                            _filename = _filename[7:]  # remove 'file://'
+                            _filename = unquote(_filename)  # remove %20
+                            _filename = _filename.strip('\r\n\x00')  # remove spaces
+                        return _filename
+                    filenames = [str(x) for x in filenames]
+                    _final_filenames = []
+                    # Clean filenames
+                    for __filename in filenames:
+                        __filename = clean_filename(__filename)
+
+                        path = pathlib.Path(filename)
+                        if path.is_dir():
+                            for new_filename in path.rglob("*"):
+                                new_filename = clean_filename(str(new_filename))
+                                _final_filenames.append(new_filename)
+                        else:
+                            _final_filenames.append(__filename)
+
+                    return _final_filenames
+
+                try:
+                    file = file_save_export_dialog.save_finish(result)
+                except GLib.Error as err:
+                    print("Could not open files: ", err.message)
+                else:
+                    filename = file.get_uri()
+                    final_filenames = handle_filenames([filename])
+                    f = open(final_filenames[0], 'w')
+                    f.write(internal_db)
+                    f.close()
+            file_save_export_dialog.save(self, None, save_response)
+        export_db_as_file()
+    def import_omio_fn(self):
+        # TODO: File opening
+        print("File opening for reading.")
+        file_open_view_dialog = Gtk.FileDialog.new()
+        file_open_view_dialog.set_accept_label("Open")
+
+        file_filter = Gtk.FileFilter()
+        file_filter.set_name("Osmata Importable Object File (OMIO File)")
+        file_filter.add_pattern("*.omio")
+        file_filters = Gio.ListStore.new(Gtk.FileFilter)
+        file_filters.append(file_filter)
+        file_open_view_dialog.set_filters(file_filters)
+
+        file_open_view_dialog.set_modal(self)
+        file_open_view_dialog.set_title("Choose a file to view")
+
+
+        def open_response(file_open_view_dialog, result):
+
+            ##### Credits of handle_filenames and clean_filenames: Curtail project
+            ##### https://github.com/Huluti/Curtail/blob/ab0e268bbb4c30900daf30ff255db243baa82465/src/window.py
+
+            def handle_filenames(filenames):
+                def clean_filename(_filename):
+                    if _filename.startswith('file://'):  # drag&drop
+                        _filename = _filename[7:]  # remove 'file://'
+                        _filename = unquote(_filename)  # remove %20
+                        _filename = _filename.strip('\r\n\x00')  # remove spaces
+                    return _filename
+                filenames = [str(x) for x in filenames]
+                _final_filenames = []
+                # Clean filenames
+                for __filename in filenames:
+                    __filename = clean_filename(__filename)
+
+                    path = pathlib.Path(filename)
+                    if path.is_dir():
+                        for new_filename in path.rglob("*"):
+                            new_filename = clean_filename(str(new_filename))
+                            _final_filenames.append(new_filename)
+                    else:
+                        _final_filenames.append(__filename)
+
+                return _final_filenames
+
+            try:
+                file = file_open_view_dialog.open_finish(result)
+            except GLib.Error as err:
+                print("Could not open files: ", err.message)
+            else:
+                filename = file.get_uri()
+                final_filenames = handle_filenames([filename])
+                db = {}
+                try:
+                    db = osmata.Osmata().loadOmio(final_filenames[0])
+                except Exception:
+                    printerr("Invalid file")
+                    self.err_window(err_title="Error", err_msg="Invalid File")
+                    return
+
+
+                view_dialog = Adw.Window()
+                view_dialog.set_transient_for(self)
+                view_dialog.set_default_size(550, 400)
+                view_dialog.set_title("Importing from " + final_filenames[0])
+
+                view_box = Gtk.Box()
+                view_box.set_orientation(Gtk.Orientation.VERTICAL)
+                view_box.append(Adw.HeaderBar())
+                view_dialog.set_content(view_box)
+                view_box.append(
+                    Gtk.Label(
+                        label="The following records have either their keys or URLs in the internal DB and are not imported.",
+                        margin_start = 10,
+                        margin_end = 10,
+                        margin_top = 20,
+                        margin_bottom = 20,
+                    )
+                )
+
+                view_records_list_box = Gtk.ListBox.new()
+
+                for key in db.keys():
+                    url = db[key]["URL"]
+                    tags = db[key]["Categories"]
+                    f = False # Is it found in db?
+
+                    for int_key in self.db_api.db:
+                        int_url = self.db_api.db[int_key]["URL"]
+                        column = Gtk.Box()
+                        column.set_orientation(Gtk.Orientation.HORIZONTAL)
+                        column.set_margin_start(10)
+                        column.set_margin_end(10)
+                        column.set_margin_top(20)
+                        column.set_margin_bottom(20)
+                        column.set_spacing(50)
+
+                        data_box = Gtk.Box()
+                        data_box.set_margin_start(10)
+                        data_box.set_margin_end(10)
+                        data_box.set_margin_top(10)
+                        data_box.set_margin_bottom(10)
+                        data_box.set_spacing(10)
+                        data_box.set_orientation(Gtk.Orientation.VERTICAL)
+                        data_box.set_spacing(10)
+
+                        column.append(data_box)
+
+                        if (int_key == key) or (int_url == url): #TODO: Complete this code
+                            _name_item = Gtk.Label()
+                            _name_item.set_label(key)
+
+                            f = True
+
+                            _url_item = Gtk.Label()
+                            _url_item.set_label(url)
+
+                            _categories_item = Gtk.Label()
+                            _cats = "Applied tags: "
+                            for i in tags:
+                                _cats += i
+                                if len(tags) != tags.index(i) + 1:
+                                    _cats += ", "
+                                _categories_item.set_label(_cats)
+                            if (_name_item not in column) or (_url_item not in column):
+                                column.append(_name_item)
+                                column.append(_url_item)
+                                column.append(_categories_item)
+                                view_records_list_box.append(column)
+                    if not f:
+                        self.db_api.push(key, url, tags)
+                        self.save_records()
+
+                view_box.append(view_records_list_box)
+                view_dialog.show()
+
+        # file_open_view_dialog.open(view_dialog, None, open_response)
+        file_open_view_dialog.open(self, None, open_response)
