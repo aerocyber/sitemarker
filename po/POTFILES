@@ -1,6 +1,6 @@
-data/com.github.aerocyber.osmata.desktop.in
-data/com.github.aerocyber.osmata.appdata.xml.in
-data/com.github.aerocyber.osmata.gschema.xml
+data/com.github.aerocyber.sitemarker.desktop.in
+data/com.github.aerocyber.sitemarker.appdata.xml.in
+data/com.github.aerocyber.sitemarker.gschema.xml
 src/main.py
 src/window.py
 src/window.ui

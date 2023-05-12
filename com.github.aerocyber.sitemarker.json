@@ -1,9 +1,9 @@
 {
-    "app-id" : "com.github.aerocyber.osmata",
+    "app-id" : "com.github.aerocyber.sitemarker",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "44",
     "sdk" : "org.gnome.Sdk",
-    "command" : "osmata",
+    "command" : "sitemarker",
     "finish-args" : [
         "--share=network",
         "--share=ipc",
@@ -24,7 +24,7 @@
     ],
     "modules" : [
         {
-            "name" : "osmata",
+            "name" : "sitemarker",
             "builddir" : true,
             "buildsystem" : "meson",
             "sources" : [

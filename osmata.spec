@@ -1,10 +1,10 @@
-Name:           osmata
+Name:           sitemarker
 Version:        1.0.0
 Release:        %autorelease
 Summary:        An open source bookmark manager.
 License:        MIT
-URL:            https://github.com/aerocyber/osmata
-Source:         https://github.com/aerocyber/osmaata/releases/latest/download/osmata-source.tar.gz
+URL:            https://github.com/aerocyber/sitemarker
+Source:         https://github.com/aerocyber/sitemarker/releases/latest/download/sitemarker-source.tar.gz
 
 Requires:       glib2
 Requires:       gtk4
@@ -44,13 +44,13 @@ A bookmark manager that helps sharing bookmarks easier.
 
 %files -f %{name}.lang
 %license COPYING
-%{_bindir}/osmata
-%{_datadir}/osmata/
-%{_datadir}/applications/com.github.aerocyber.osmata.desktop
-%{_datadir}/glib-2.0/schemas/com.github.aerocyber.osmata.gschema.xml
-%{_datadir}/icons/hicolor/scalable/apps/com.github.aerocyber.osmata.svg
-%{_datadir}/icons/hicolor/symbolic/apps/com.github.aerocyber.osmata-symbolic.svg
-%{_datadir}/metainfo/com.github.aerocyber.osmata.metainfo.xml
+%{_bindir}/sitemarker
+%{_datadir}/sitemarker/
+%{_datadir}/applications/com.github.aerocyber.sitemarker.desktop
+%{_datadir}/glib-2.0/schemas/com.github.aerocyber.sitemarker.gschema.xml
+%{_datadir}/icons/hicolor/scalable/apps/com.github.aerocyber.sitemarker.svg
+%{_datadir}/icons/hicolor/symbolic/apps/com.github.aerocyber.sitemarker-symbolic.svg
+%{_datadir}/metainfo/com.github.aerocyber.sitemarker.metainfo.xml
 
 %changelog
 %autochangelog

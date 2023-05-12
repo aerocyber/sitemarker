@@ -1,4 +1,4 @@
-name: osmata
+name: sitemarker
 version: 1.0.0
 summary: Open source bookmark manager.
 description: |
@@ -13,4 +13,4 @@ parts:
 
 apps:
   osmata:
-    command: osmata
+    command: sitemarker

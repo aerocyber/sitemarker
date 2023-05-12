@@ -29,14 +29,14 @@ gi.require_version('Gtk', '4.0')
 gi.require_version('Adw', '1')
 
 from gi.repository import Gtk, Gio, Adw
-from .window import OsmataWindow
+from .window import SitemarkerWindow
 
 
-class OsmataApplication(Adw.Application):
+class SitemarkerApplication(Adw.Application):
     """The main application singleton class."""
 
     def __init__(self):
-        super().__init__(application_id='com.github.aerocyber.osmata',
+        super().__init__(application_id='com.github.aerocyber.sitemarker',
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
 
         self.create_action('quit', lambda *_: self.quit(), ['<primary>q'])
@@ -57,21 +57,21 @@ class OsmataApplication(Adw.Application):
         """
         win = self.props.active_window
         if not win:
-            win = OsmataWindow(application=self)
+            win = SitemarkerWindow(application=self)
         win.present()
 
     def on_about_action(self, widget, _):
         """Callback for the app.about action."""
         about = Adw.AboutWindow(transient_for=self.props.active_window,
-                                application_name='Osmata',
-                                application_icon='com.github.aerocyber.osmata',
+                                application_name='sitemarker',
+                                application_icon='com.github.aerocyber.sitemarker',
                                 developer_name='Aero',
                                 version='1.0.0',
                                 developers=['Aero https://github.com/aerocyber'],
                                 copyright='© 2023 Aero',
                                 license_type=Gtk.License.MIT_X11,
                                 comments="An open source bookmark manager.")
-        about.set_website("https://github.com/aerocyber/osmata")
+        about.set_website("https://github.com/aerocyber/sitemarker")
 
         # Contributors require credits, especially code contributors.
         contributors = self.get_contributors()
@@ -81,7 +81,7 @@ class OsmataApplication(Adw.Application):
         translators = self.get_translators()
         about.add_credit_section("Translators", translators)
 
-        about.set_application_icon("com.github.aerocyber.osmata")
+        about.set_application_icon("com.github.aerocyber.sitemarker")
 
         # Present it!
         about.present()
@@ -112,5 +112,5 @@ class OsmataApplication(Adw.Application):
 
 def main(version):
     """The application's entry point."""
-    app = OsmataApplication()
+    app = SitemarkerApplication()
     return app.run(sys.argv)

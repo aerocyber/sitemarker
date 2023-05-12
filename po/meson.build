@@ -1,1 +1,1 @@
-i18n.gettext('osmata', preset: 'glib')
+i18n.gettext('sitemarker', preset: 'glib')

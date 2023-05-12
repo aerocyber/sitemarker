@@ -1,7 +1,7 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
-Upstream-Name: osmata
+Upstream-Name: sitemarker
 Upstream-Contact: Aero <aerocyberdev@proton.me>
-Source: https://github.com/aerocyber/osmata
+Source: https://github.com/aerocyber/sitemarker
 
 Files: *
 Copyright: 2020 Aero <aerocyberdev@proton.me>

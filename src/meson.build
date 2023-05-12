@@ -1,9 +1,9 @@
 pkgdatadir = join_paths(get_option('prefix'), get_option('datadir'), meson.project_name())
-moduledir = join_paths(pkgdatadir, 'osmata')
+moduledir = join_paths(pkgdatadir, 'sitemarker')
 gnome = import('gnome')
 
-gnome.compile_resources('osmata',
-  'osmata.gresource.xml',
+gnome.compile_resources('sitemarker',
+  'sitemarker.gresource.xml',
   gresource_bundle: true,
   install: true,
   install_dir: pkgdatadir,
@@ -18,19 +18,19 @@ conf.set('localedir', join_paths(get_option('prefix'), get_option('localedir')))
 conf.set('pkgdatadir', pkgdatadir)
 
 configure_file(
-  input: 'osmata.in',
-  output: 'osmata',
+  input: 'sitemarker.in',
+  output: 'sitemarker',
   configuration: conf,
   install: true,
   install_dir: get_option('bindir'),
   install_mode: 'r-xr--r--'
 )
 
-osmata_sources = [
+sitemarker_sources = [
   '__init__.py',
   'main.py',
   'window.py',
   'ospyata.py'
 ]
 
-install_data(osmata_sources, install_dir: moduledir)
+install_data(sitemarker_sources, install_dir: moduledir)

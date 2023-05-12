@@ -1,7 +1,7 @@
 [Desktop Entry]
-Name=osmata
-Exec=osmata
-Icon=com.github.aerocyber.osmata
+Name=SiteMarker
+Exec=sitemarker
+Icon=com.github.aerocyber.sitemarker
 Terminal=false
 Type=Application
 Categories=GTK;

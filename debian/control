@@ -1,4 +1,4 @@
-Source: osmata
+Source: sitemarker
 Section: utils
 Priority: optional
 Maintainer: Aero <aerocyberdev@proton.me>
@@ -12,11 +12,11 @@ Build-Depends: debhelper-compat(=10),
 	appstream
 Standards-Version: 4.5.0
 Rules-Requires-Root: no
-Homepage: https://github.com/aerocyber/osmata
-Vcs-Browser: https://github.com/aerocyber/osmata
-Vcs-Git: https://github.com/aerocyber/osmata.git
+Homepage: https://github.com/aerocyber/sitemarker
+Vcs-Browser: https://github.com/aerocyber/sitemarker
+Vcs-Git: https://github.com/aerocyber/sitemarker.git
 
-Package: osmata
+Package: sitemarker
 Architecture: all
 Depends: ${misc:Depends},
 	gir1.2-adw-1,

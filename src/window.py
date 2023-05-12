@@ -36,9 +36,9 @@ def printerr(*args):
     print(*args, file=sys.stderr)
 
 
-@Gtk.Template(resource_path='/com/github/aerocyber/osmata/window.ui')
-class OsmataWindow(Adw.ApplicationWindow):
-    __gtype_name__ = 'OsmataWindow'
+@Gtk.Template(resource_path='/com/github/aerocyber/sitemarker/window.ui')
+class SitemarkerWindow(Adw.ApplicationWindow):
+    __gtype_name__ = 'SitemarkerWindow'
 
     add_record = Gtk.Template.Child()
     view_records = Gtk.Template.Child()
@@ -60,10 +60,10 @@ class OsmataWindow(Adw.ApplicationWindow):
         self.db_api = osmata.Osmata()
 
         # Check if DB exist in application's default (data) location
-        # The dot in front of osmata is because we want to create a hidden directory
+        # The dot in front of sitemarker is because we want to create a hidden directory
         # in *nix systems. It doesn't have any effect on Windows, but, the *nix
-        # system has a default layout for $HOME. We don't want osmata to break that.
-        data_dir = pathlib.PurePath.joinpath(pathlib.Path.home(), '.osmata')
+        # system has a default layout for $HOME. We don't want sitemarker to break that.
+        data_dir = pathlib.PurePath.joinpath(pathlib.Path.home(), '.sitemarker')
         # The internal.omio file is just as valid as the original file.
         # This is by design because, if for some reason the application does not work
         # all of a sudden, we do not want the data to be unrecoverable.
@@ -84,7 +84,7 @@ class OsmataWindow(Adw.ApplicationWindow):
         internal_db = _internal_db
         # Adding data to the internal db is easy
         if internal_db != {}:
-            # We don't want to load an empty db as Osmata's initialization takes care of that.
+            # We don't want to load an empty db as sitemarker's initialization takes care of that.
             for key in internal_db.keys():
                 try:
                     _name = key
@@ -246,7 +246,7 @@ class OsmataWindow(Adw.ApplicationWindow):
         )
         self.open_dialog.set_title("Select omio File")
         self.open_dialog.set_modal(True)
-        self.open_dialog.set_initial_name("Osmata-file.omio")
+        self.open_dialog.set_initial_name("Sitemarker-file.omio")
 
         file_filter = Gtk.FileFilter()
         file_filter.set_name("Osmata Importable Object File (OMIO File)")
