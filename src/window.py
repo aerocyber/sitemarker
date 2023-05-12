@@ -25,8 +25,10 @@
 from gi.repository import Adw
 from gi.repository import Gtk
 from gi.repository import Gio
+from gi.repository import GLib
 from gi.repository import Gdk
 from . import ospyata as osmata
+from urllib.parse import unquote
 from .ospyata import OspyataException
 import pathlib
 import sys
@@ -240,28 +242,6 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         # TODO: Update code to delete a record.
         print("Delete action triggered.")
 
-    def on_view_omio_action(self, widget, _):
-        # TODO: Update code to view omio file.
-        print("View omio file content action triggered.")
-        # FIXME: No action below:
-        self.open_dialog = Gtk.FileDialog(
-        )
-        self.open_dialog.set_title("Select omio File")
-        self.open_dialog.set_modal(True)
-        self.open_dialog.set_initial_name("SiteMarker-file.omio")
-
-        file_filter = Gtk.FileFilter()
-        file_filter.set_name("Osmata Importable Object File (OMIO File)")
-        file_filter.add_pattern("*.omio")
-        file_filters = Gio.ListStore.new(Gtk.FileFilter)
-        file_filters.append(file_filter)
-
-        self.open_dialog.set_filters(file_filters)
-        self.open_dialog.set_default_filter(file_filter)
-
-        self.open_dialog.set_accept_label("Open")
-        self.open_dialog.open(self, callback=self.on_open_response)
-
     def on_import_action(self, widget, _):
         # TODO: Update code to import records.
         print("Import records action triggered.")
@@ -413,18 +393,33 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
     def err_window(self, err_title="Error", err_msg="Sorry, internal error"):
         error_dialog = Adw.Window()
+        error_dialog.set_default_size(
+            height=int(768 / 3),
+            width=int(1366 / 5)
+        )
+        error_dialog.set_transient_for(self)
         error_dialog.set_title(err_title)
         layout = Gtk.Box()
+        layout.set_orientation(Gtk.Orientation.VERTICAL)
         layout.append(Adw.HeaderBar())
+        # layout.set_margin_top(20)
+        layout.set_margin_bottom(20)
+        # layout.set_margin_start(10)
+        # layout.set_margin_end(10)
         layout.append(
-            Gtk.Label(label=err_msg),
-            margin_top=10,
+            Gtk.Label(label=err_msg,
+            margin_top=int(1366 / 20),
             margin_start=10,
             margin_end=10,
-            margin_bottom=10
+            margin_bottom=20
+            )
         )
         close_btn = Gtk.Button(label="Okay")
-        close_btn.connect('clicked', lambda: error_dialog.close())
+        close_btn.set_margin_top(10)
+        close_btn.set_margin_bottom(10)
+        close_btn.set_margin_start(10)
+        close_btn.set_margin_end(10)
+        close_btn.connect('clicked', lambda close_btn: error_dialog.close())
         layout.append(close_btn)
         error_dialog.set_content(layout)
         error_dialog.show()
@@ -508,42 +503,6 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         view_box.append(view_records_list_box)
         view_dialog.show()
 
-    def on_open_response(self, dialog, response):
-        if response == Gtk.ResponseType.ACCEPT:
-            file = self.open_file(dialog.get_file())
-        self._native = None
-
-    def open_file(self, file):
-        file.load_contents_async(None, self.open_file_complete)
-
-    def open_file_complete(self, file, result):
-        contents = file.load_contents_finish(result)
-        if not contents[0]:
-            path = file.peek_path()
-            printerr(f"Unable to open {path}: {contents[1]}")
-
-        try:
-            text = contents[1].decode('utf-8')
-        except UnicodeError as err:
-            path = file.peek_path()
-            printerr(f"Unable to load the contents of {path}: the file is not encoded with UTF-8")
-            self.err_window(
-                err_title="Error",
-                err_msg=f"Unable to load the contents of {path}: the file is not encoded with UTF-8"
-            )
-            return
-
-        try:
-            db = json.loads(text)
-        except Exception:
-            self.err_window(err_title="Error", err_msg="Invalid omio file.")
-
-        if not self.db_api.validate_omio(db):
-            self.err_window(err_title="Error", err_msg="Invalid omio file.")
-            return
-
-        self.view_element(self, db=db)
-
     def get_clipboard(self):
         clipboard = Gdk.Display().get_default().get_clipboard()
         return clipboard
@@ -551,4 +510,149 @@ class SitemarkerWindow(Adw.ApplicationWindow):
     def copy2clipboard(self, text: str):
         _clipboard = self.get_clipboard()
         _clipboard.set(text)
+    def on_view_omio_action(self, widget, _):
+        # TODO: Update code to view omio file.
+        print("View omio file content action triggered.")
+        self.view_db_as_file()
+
+    def view_db_as_file(self):
+        #TODO: File opening
+        print("File opening for reading.")
+        file_open_view_dialog = Gtk.FileDialog.new()
+        file_open_view_dialog.set_accept_label("Open")
+
+        file_filter = Gtk.FileFilter()
+        file_filter.set_name("Osmata Importable Object File (OMIO File)")
+        file_filter.add_pattern("*.omio")
+        file_filters = Gio.ListStore.new(Gtk.FileFilter)
+        file_filters.append(file_filter)
+        file_open_view_dialog.set_filters(file_filters)
+
+        file_open_view_dialog.set_modal(self)
+        file_open_view_dialog.set_title("Choose a file to view")
+
+
+        def open_response(file_open_view_dialog, result):
+
+            ##### Credits of handle_filenames and clean_filenames: Curtail project
+            ##### https://github.com/Huluti/Curtail/blob/ab0e268bbb4c30900daf30ff255db243baa82465/src/window.py
+
+            def handle_filenames(filenames):
+                def clean_filename(_filename):
+                    if _filename.startswith('file://'):  # drag&drop
+                        _filename = _filename[7:]  # remove 'file://'
+                        _filename = unquote(_filename)  # remove %20
+                        _filename = _filename.strip('\r\n\x00')  # remove spaces
+                    return _filename
+                filenames = [str(x) for x in filenames]
+                _final_filenames = []
+                # Clean filenames
+                for __filename in filenames:
+                    __filename = clean_filename(__filename)
+
+                    path = pathlib.Path(filename)
+                    if path.is_dir():
+                        for new_filename in path.rglob("*"):
+                            new_filename = clean_filename(str(new_filename))
+                            _final_filenames.append(new_filename)
+                    else:
+                        _final_filenames.append(__filename)
+
+                return _final_filenames
+
+            try:
+                file = file_open_view_dialog.open_finish(result)
+            except GLib.Error as err:
+                print("Could not open files: ", err.message)
+            else:
+                filename = file.get_uri()
+                final_filenames = handle_filenames([filename])
+                db = {}
+                try:
+                    db = osmata.Osmata().loadOmio(final_filenames[0])
+                except Exception:
+                    printerr("Invalid file")
+                    self.err_window(err_title="Error", err_msg="Invalid File")
+                    return
+
+
+                view_dialog = Adw.Window()
+                view_dialog.set_transient_for(self)
+                view_dialog.set_default_size(550, 400)
+                view_dialog.set_title("Records in " + final_filenames[0])
+
+                view_box = Gtk.Box()
+                view_box.set_orientation(Gtk.Orientation.VERTICAL)
+                view_box.append(Adw.HeaderBar())
+                view_dialog.set_content(view_box)
+
+                view_records_list_box = Gtk.ListBox.new()
+
+                for key in db.keys():
+                    url = db[key]["URL"]
+                    tags = db[key]["Categories"]
+
+
+                    column = Gtk.Box()
+                    column.set_orientation(Gtk.Orientation.HORIZONTAL)
+                    column.set_margin_start(10)
+                    column.set_margin_end(10)
+                    column.set_margin_top(20)
+                    column.set_margin_bottom(20)
+                    column.set_spacing(50)
+
+                    data_box = Gtk.Box()
+                    data_box.set_margin_start(10)
+                    data_box.set_margin_end(10)
+                    data_box.set_margin_top(10)
+                    data_box.set_margin_bottom(10)
+                    data_box.set_spacing(10)
+                    data_box.set_orientation(Gtk.Orientation.VERTICAL)
+                    data_box.set_spacing(10)
+
+                    _name_item = Gtk.Label()
+                    _name_item.set_label(key)
+
+                    _url_item = Gtk.Label()
+                    _url_item.set_label(url)
+
+                    _categories_item = Gtk.Label()
+                    _cats = "Applied tags: "
+                    for i in tags:
+                        _cats += i
+                        if len(tags) != tags.index(i) + 1:
+                            _cats += ", "
+                    _categories_item.set_label(_cats)
+
+                    data_box.append(_name_item)
+                    data_box.append(_url_item)
+                    data_box.append(_categories_item)
+
+                    control_box = Gtk.Box()
+                    control_box.set_margin_start(10)
+                    control_box.set_margin_end(10)
+                    control_box.set_margin_top(10)
+                    control_box.set_margin_bottom(10)
+                    control_box.set_orientation(Gtk.Orientation.VERTICAL)
+                    control_box.set_spacing(10)
+
+                    open_in_browser = Gtk.Button()
+                    open_in_browser.set_label("Open in Browser")
+                    open_in_browser.connect("clicked", lambda open_in_browser: webbrowser.open_new_tab(url))
+                    control_box.append(open_in_browser)
+
+                    copy_ = Gtk.Button()
+                    copy_.set_label("Copy to Clipboard")
+                    copy_.connect("clicked", lambda copy_: webbrowser.open_new_tab(url))
+                    control_box.append(copy_)
+
+                    column.append(data_box)
+                    column.append(control_box)
+                    view_records_list_box.append(column)
+
+                view_box.append(view_records_list_box)
+                view_dialog.show()
+
+        # file_open_view_dialog.open(view_dialog, None, open_response)
+        file_open_view_dialog.open(self, None, open_response)
 
