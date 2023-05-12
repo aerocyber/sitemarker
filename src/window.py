@@ -116,6 +116,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         add_dialog_box.set_orientation(Gtk.Orientation.VERTICAL)
 
         add_header = Adw.HeaderBar() # Our header bar
+        self.add_dialog.set_title("Add a record")
         add_dialog_box.append(add_header) # HeaderBar into the container
 
         self.add_dialog.set_content(add_dialog_box) # The content of the Window is the container box.
@@ -230,7 +231,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
     def on_view_action(self, widget, _):
         # TODO: Update the code to view all records.
         print("View action triggered.")
-        db = self.db_api.db
+        db = json.loads(self.db_api.dumpOmio())
         self.view_element(self, db=db)
 
     def on_del_action(self, widget, _):
@@ -241,12 +242,11 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         # TODO: Update code to view omio file.
         print("View omio file content action triggered.")
         self.open_dialog = Gtk.FileDialog(
-        transient_for=self,
         action=Gtk.FileChooserAction.OPEN
         )
         self.open_dialog.set_title("Select omio File")
         self.open_dialog.set_modal(True)
-        self.open_dialog.set_initial_name("Sitemarker-file.omio")
+        self.open_dialog.set_initial_name("SiteMarker-file.omio")
 
         file_filter = Gtk.FileFilter()
         file_filter.set_name("Osmata Importable Object File (OMIO File)")
@@ -260,19 +260,6 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         self.open_dialog.set_accept_label("Open")
         self.open_dialog.connect("response", self.on_open_response)
         self.open_dialog.show()
-
-
-    def get_contributors(self):
-        return [
-        ]
-        # Append your names here, contributors!
-        # Format: "Name url""
-
-    def get_translators(self):
-        return [
-        ]
-        # Append your name here, translators!
-        # Format: "Name url"
 
     def on_import_action(self, widget, _):
         # TODO: Update code to import records.

@@ -63,7 +63,7 @@ class SitemarkerApplication(Adw.Application):
     def on_about_action(self, widget, _):
         """Callback for the app.about action."""
         about = Adw.AboutWindow(transient_for=self.props.active_window,
-                                application_name='sitemarker',
+                                application_name='SiteMarker',
                                 application_icon='com.github.aerocyber.sitemarker',
                                 developer_name='Aero',
                                 version='1.0.0',
@@ -107,6 +107,18 @@ class SitemarkerApplication(Adw.Application):
         self.add_action(action)
         if shortcuts:
             self.set_accels_for_action(f"app.{name}", shortcuts)
+
+    def get_contributors(self):
+        return [
+        ]
+        # Append your names here, contributors!
+        # Format: "Name url""
+
+    def get_translators(self):
+        return [
+        ]
+        # Append your name here, translators!
+        # Format: "Name url")
 
 
 
