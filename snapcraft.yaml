@@ -9,7 +9,7 @@ base: core22
 parts:
   osmata:
     plugin: dump
-    source: https://github.com/aerocyber/osmata/osmata-build-linux.tar.gz
+    source: https://github.com/aerocyber/sitemarker/sitemarker-build-linux.tar.gz
 
 apps:
   osmata:

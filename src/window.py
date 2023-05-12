@@ -240,49 +240,63 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         self.view_element(self, db=db)
 
     def on_del_action(self, widget, _):
-        # TODO: Update code to delete a record.
-        print("Delete action triggered.")
+        # Delete a record.
         keys = self.db_api.db.keys()
-        print(keys)
-        del_win = Adw.Window(transient_for=self)
-        del_win.set_default_size(550, 400)
-        del_win.set_title("Delete a record")
+        self.del_win = Adw.Window(transient_for=self)
+        self.del_win.set_default_size(400,300)
+        self.del_win.set_title("Delete a record")
 
         del_box = Gtk.Box()
         del_box.set_orientation(Gtk.Orientation.VERTICAL) # Vertical alignment... again.
-        del_box.set_margin_start(20)
-        del_box.set_margin_end(20)
-        del_box.set_margin_top(20)
-        del_box.set_margin_bottom(30)
-        del_win.set_content(del_box)
+        self.del_win.set_content(del_box)
         del_box.append(Adw.HeaderBar())
 
         del_content_box = Gtk.Box()
+        del_content_box.set_margin_start(40)
+        del_content_box.set_margin_end(40)
+        del_content_box.set_margin_top(50)
+        del_content_box.set_margin_bottom(50)
+        del_content_box.set_orientation(Gtk.Orientation.VERTICAL)
+        del_content_box.set_spacing(50)
         del_box.append(del_content_box)
 
-        del_records_list_model = Gio.ListStore()
+        # Saved by: https://rafaelmardojai.pages.gitlab.gnome.org/pygobject-guide/gtk4/controls/dropdown.html
+        self.selected_to_del = ''
+        del_dropdown = Gtk.DropDown()
+        del_dropdown.connect('notify::selected-item', self.on_to_del_selected)
+        del_content_box.append(del_dropdown)
+
+        self.del_list = Gtk.StringList()
+        del_dropdown.props.model = self.del_list
 
         for key in keys:
-            col = Gtk.Box()
-            col.set_margin_start(10)
-            col.set_margin_end(10)
-            col.set_margin_top(20)
-            col.set_margin_bottom(20)
-            col.set_spacing(50)
-            col.append(Gtk.Label(label=key))
-            del_records_list_model.append(col)
+            self.del_list.append(key)
 
-        # del_records_dropdown.set_model(del_records_list_model)
-        del_records_dropdown = Gtk.DropDown()
-        del_records_dropdown.set_model(del_records_list_model)
-        # del_records_dropdown.set_list_factory(del_records_list_model)
-        del_box.append(del_records_dropdown)
+        del_btn = Gtk.Button()
+        del_btn.set_label("Delete selected")
+        del_btn.connect('clicked', self.del_selected)
+        del_content_box.append(del_btn)
 
-        del_win.show()
+        self.del_win.show()
+
+    def del_selected(self, widget):
+        self.db_api.pop(str(self.selected_to_del))
+        self.del_win.destroy()
+        keys = self.db_api.db.keys()
+        for key in keys:
+            self.del_list.append(key)
+        self.save_records()
+        _tmp_win = Adw.Window()
+        self.err_window(err_title="Deleted successfully", err_msg=f"{self.selected_to_del} has been successfully deleted and the records saved locally.")
+
+    def on_to_del_selected(self, dropdown, _):
+        # Selected Gtk.StringObject
+        selected = dropdown.props.selected_item
+        if selected is not None:
+            self.selected_to_del = selected.props.string
 
     def on_import_action(self, widget, _):
-        # TODO: Update code to import records.
-        print("Import records action triggered.")
+        # Import records.
         self.import_omio_fn()
 
 
@@ -694,7 +708,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         file_open_view_dialog.open(self, None, open_response)
 
     def on_export_action(self, widget, _):
-        # TODO: Update code to import records.
+        # Import records.
         print("Export records action triggered.")
         internal_db = self.db_api.dumpOmio()
         def export_db_as_file():
@@ -750,8 +764,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
             file_save_export_dialog.save(self, None, save_response)
         export_db_as_file()
     def import_omio_fn(self):
-        # TODO: File opening
-        print("File opening for reading.")
+        # File opening
         file_open_view_dialog = Gtk.FileDialog.new()
         file_open_view_dialog.set_accept_label("Open")
 
@@ -857,7 +870,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
                         column.append(data_box)
 
-                        if (int_key == key) or (int_url == url): #TODO: Complete this code
+                        if (int_key == key) or (int_url == url):
                             _name_item = Gtk.Label()
                             _name_item.set_label(key)
 
