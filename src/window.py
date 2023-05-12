@@ -25,11 +25,13 @@
 from gi.repository import Adw
 from gi.repository import Gtk
 from gi.repository import Gio
+from gi.repository import Gdk
 from . import ospyata as osmata
 from .ospyata import OspyataException
 import pathlib
 import sys
 import json
+import webbrowser
 
 
 def printerr(*args):
@@ -229,7 +231,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         self.add_dialog.show()
 
     def on_view_action(self, widget, _):
-        # TODO: Update the code to view all records.
+        # Update the code to view all records.
         print("View action triggered.")
         db = json.loads(self.db_api.dumpOmio())
         self.view_element(self, db=db)
@@ -241,8 +243,8 @@ class SitemarkerWindow(Adw.ApplicationWindow):
     def on_view_omio_action(self, widget, _):
         # TODO: Update code to view omio file.
         print("View omio file content action triggered.")
+        # FIXME: No action below:
         self.open_dialog = Gtk.FileDialog(
-        action=Gtk.FileChooserAction.OPEN
         )
         self.open_dialog.set_title("Select omio File")
         self.open_dialog.set_modal(True)
@@ -258,8 +260,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         self.open_dialog.set_default_filter(file_filter)
 
         self.open_dialog.set_accept_label("Open")
-        self.open_dialog.connect("response", self.on_open_response)
-        self.open_dialog.show()
+        self.open_dialog.open(self, callback=self.on_open_response)
 
     def on_import_action(self, widget, _):
         # TODO: Update code to import records.
@@ -428,37 +429,88 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         error_dialog.set_content(layout)
         error_dialog.show()
 
-    def view_element(self, db, win_title="View Records"):
-        # TODO: View all records from db.
+    def view_element(self, widget, db, win_title="View Records"):
+        # View all records from db.
         view_dialog = Adw.Window()
         view_dialog.set_transient_for(self)
         view_dialog.set_default_size(550, 400)
         view_dialog.set_title(win_title)
 
         view_box = Gtk.Box()
+        view_box.set_orientation(Gtk.Orientation.VERTICAL)
         view_box.append(Adw.HeaderBar())
         view_dialog.set_content(view_box)
-
-        view_cols = Gtk.ColumnView.new(
-            title="Records"
-        )
-        view_box.append(view_cols)
 
         view_records_list_box = Gtk.ListBox.new()
 
         for key in db.keys():
+            url = db[key]["URL"]
+            tags = db[key]["Categories"]
+
+
             column = Gtk.Box()
-            column.set_orientation(Gtk.Orientation.HORIZONATAL)
+            column.set_orientation(Gtk.Orientation.HORIZONTAL)
             column.set_margin_start(10)
             column.set_margin_end(10)
             column.set_margin_top(20)
             column.set_margin_bottom(20)
+            column.set_spacing(50)
 
-            data_box = Gtk.Box() # TODO
+            data_box = Gtk.Box()
+            data_box.set_margin_start(10)
+            data_box.set_margin_end(10)
+            data_box.set_margin_top(10)
+            data_box.set_margin_bottom(10)
+            data_box.set_spacing(10)
+            data_box.set_orientation(Gtk.Orientation.VERTICAL)
+            data_box.set_spacing(10)
+
+            _name_item = Gtk.Label()
+            _name_item.set_label(key)
+
+            _url_item = Gtk.Label()
+            _url_item.set_label(url)
+
+            _categories_item = Gtk.Label()
+            _cats = "Applied tags: "
+            for i in tags:
+                _cats += i
+                if len(tags) != tags.index(i) + 1:
+                    _cats += ", "
+            _categories_item.set_label(_cats)
+
+            data_box.append(_name_item)
+            data_box.append(_url_item)
+            data_box.append(_categories_item)
+
+            control_box = Gtk.Box()
+            control_box.set_margin_start(10)
+            control_box.set_margin_end(10)
+            control_box.set_margin_top(10)
+            control_box.set_margin_bottom(10)
+            control_box.set_orientation(Gtk.Orientation.VERTICAL)
+            control_box.set_spacing(10)
+
+            open_in_browser = Gtk.Button()
+            open_in_browser.set_label("Open in Browser")
+            open_in_browser.connect("clicked", lambda open_in_browser: webbrowser.open_new_tab(url))
+            control_box.append(open_in_browser)
+
+            copy_ = Gtk.Button()
+            copy_.set_label("Copy to Clipboard")
+            copy_.connect("clicked", lambda copy_: webbrowser.open_new_tab(url))
+            control_box.append(copy_)
+
+            column.append(data_box)
+            column.append(control_box)
+            view_records_list_box.append(column)
+
+        view_box.append(view_records_list_box)
+        view_dialog.show()
 
     def on_open_response(self, dialog, response):
         if response == Gtk.ResponseType.ACCEPT:
-            self.open_file(dialog.get_file())
+            file = self.open_file(dialog.get_file())
         self._native = None
 
     def open_file(self, file):
@@ -488,5 +540,15 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
         if not self.db_api.validate_omio(db):
             self.err_window(err_title="Error", err_msg="Invalid omio file.")
+            return
 
-        self.view_element()
+        self.view_element(self, db=db)
+
+    def get_clipboard(self):
+        clipboard = Gdk.Display().get_default().get_clipboard()
+        return clipboard
+
+    def copy2clipboard(self, text: str):
+        _clipboard = self.get_clipboard()
+        _clipboard.set(text)
+
