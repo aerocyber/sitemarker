@@ -9,7 +9,8 @@
         "--share=ipc",
         "--socket=fallback-x11",
         "--device=dri",
-        "--socket=wayland"
+        "--socket=wayland",
+        "--filesystem=~/.sitemarker:create"
     ],
     "cleanup" : [
         "/include",
@@ -30,7 +31,8 @@
             "sources" : [
                 {
                     "type" : "git",
-                    "url" : "file:///home/aero/Projects"
+                    "url" : "file:///home/aero/Projects/sitemarker",
+                    "branch": "main"
                 }
             ]
         }
