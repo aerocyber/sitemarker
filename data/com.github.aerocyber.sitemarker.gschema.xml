@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <schemalist gettext-domain="sitemarker">
 	<schema id="com.github.aerocyber.sitemarker" path="/com/github/aerocyber/sitemarker/">
+	  <key name="dark-mode" type="b">
+      <default>false</default>
+    </key>
 	</schema>
 </schemalist>

@@ -192,9 +192,9 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         # it isn't going to happen. But hey! It's humans!
         add_category_scrolled_window = Gtk.ScrolledWindow.new()
         add_category_scrolled_window.set_max_content_height(300)
-        add_category_scrolled_window.set_max_content_height(200)
+        add_category_scrolled_window.set_max_content_width(200)
         add_category_scrolled_window.set_min_content_height(200)
-        add_category_scrolled_window.set_min_content_height(100)
+        add_category_scrolled_window.set_min_content_width(100)
         add_category_scrolled_window.set_margin_start(10)
         add_category_scrolled_window.set_margin_end(10)
 

@@ -31,7 +31,7 @@
             "sources" : [
                 {
                     "type" : "git",
-                    "url" : "file:///home/aero/Projects/sitemarker",
+                    "url" : "https://github.com/aerocyber/sitemarker.git",
                     "branch": "main"
                 }
             ]
