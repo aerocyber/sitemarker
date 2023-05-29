@@ -46,11 +46,11 @@ A bookmark manager that helps sharing bookmarks easier.
 %license COPYING
 %{_bindir}/sitemarker
 %{_datadir}/sitemarker/
-%{_datadir}/applications/com.github.aerocyber.sitemarker.desktop
-%{_datadir}/glib-2.0/schemas/com.github.aerocyber.sitemarker.gschema.xml
-%{_datadir}/icons/hicolor/scalable/apps/com.github.aerocyber.sitemarker.svg
-%{_datadir}/icons/hicolor/symbolic/apps/com.github.aerocyber.sitemarker-symbolic.svg
-%{_datadir}/metainfo/com.github.aerocyber.sitemarker.metainfo.xml
+%{_datadir}/applications/io.github.aerocyber.sitemarker.desktop
+%{_datadir}/glib-2.0/schemas/io.github.aerocyber.sitemarker.gschema.xml
+%{_datadir}/icons/hicolor/scalable/apps/io.github.aerocyber.sitemarker.svg
+%{_datadir}/icons/hicolor/symbolic/apps/io.github.aerocyber.sitemarker-symbolic.svg
+%{_datadir}/metainfo/io.github.aerocyber.sitemarker.metainfo.xml
 
 %changelog
 %autochangelog

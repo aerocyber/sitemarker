@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <component type="desktop">
   <!--Created with jdAppStreamEdit 6.0-->
-  <id>com.github.aerocyber.sitemarker.desktop</id>
+  <id>io.github.aerocyber.sitemarker.desktop</id>
   <name>SiteMarker</name>
   <summary>An open source bookmark manager.</summary>
   <developer_name>Aero</developer_name>

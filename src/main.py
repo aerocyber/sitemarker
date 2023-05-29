@@ -36,10 +36,10 @@ class SitemarkerApplication(Adw.Application):
     """The main application singleton class."""
 
     def __init__(self):
-        super().__init__(application_id='com.github.aerocyber.sitemarker',
+        super().__init__(application_id='io.github.aerocyber.sitemarker',
                          flags=Gio.ApplicationFlags.DEFAULT_FLAGS)
 
-        self.settings = Gio.Settings(schema_id="com.github.aerocyber.sitemarker")
+        self.settings = Gio.Settings(schema_id="io.github.aerocyber.sitemarker")
 
         self.create_action('quit', lambda *_: self.quit(), ['<primary>q'])
         self.create_action('about', self.on_about_action)
@@ -79,7 +79,7 @@ class SitemarkerApplication(Adw.Application):
         """Callback for the app.about action."""
         about = Adw.AboutWindow(transient_for=self.props.active_window,
                                 application_name='SiteMarker',
-                                application_icon='com.github.aerocyber.sitemarker',
+                                application_icon='io.github.aerocyber.sitemarker',
                                 developer_name='Aero',
                                 version='1.0.0',
                                 developers=['Aero https://github.com/aerocyber'],
@@ -96,7 +96,7 @@ class SitemarkerApplication(Adw.Application):
         translators = self.get_translators()
         about.add_credit_section("Translators", translators)
 
-        about.set_application_icon("com.github.aerocyber.sitemarker")
+        about.set_application_icon("io.github.aerocyber.sitemarker")
 
         # Present it!
         about.present()

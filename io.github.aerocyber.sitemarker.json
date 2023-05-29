@@ -1,5 +1,5 @@
 {
-    "app-id" : "com.github.aerocyber.sitemarker",
+    "app-id" : "io.github.aerocyber.sitemarker",
     "runtime" : "org.gnome.Platform",
     "runtime-version" : "44",
     "sdk" : "org.gnome.Sdk",

@@ -1,4 +1,4 @@
-application_id = 'com.github.aerocyber.sitemarker'
+application_id = 'io.github.aerocyber.sitemarker'
 
 scalable_dir = join_paths('hicolor', 'scalable', 'apps')
 install_data(
