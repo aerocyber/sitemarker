@@ -10,6 +10,7 @@
         "--socket=fallback-x11",
         "--device=dri",
         "--socket=wayland",
+	"--filesystem=home",
         "--filesystem=~/.sitemarker:create"
     ],
     "cleanup" : [
@@ -31,7 +32,7 @@
             "sources" : [
                 {
                     "type" : "git",
-                    "url" : "https://github.com/aerocyber/sitemarker.git",
+                    "url" : ".",
                     "branch": "main"
                 }
             ]

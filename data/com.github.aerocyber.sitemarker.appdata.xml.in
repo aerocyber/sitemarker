@@ -1,9 +1,35 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <component type="desktop">
-	<id>com.github.aerocyber.sitemarker.desktop</id>
-	<metadata_license>CC0-1.0</metadata_license>
-	<project_license>MIT</project_license>
-	<description>
-	  <p>An open source bookmark manager.</p>
-	</description>
+  <!--Created with jdAppStreamEdit 6.0-->
+  <id>com.github.aerocyber.sitemarker.desktop</id>
+  <name>SiteMarker</name>
+  <summary>An open source bookmark manager.</summary>
+  <developer_name>Aero</developer_name>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <description>
+    <p>An open source bookmark manager.</p>
+  </description>
+  <url type="homepage">https://github.com/aerocyber/sitemarker</url>
+  <url type="bugtracker">https://github.com/aerocyber/sitemarker/issues</url>
+  <url type="donation">https://www.buymeacoffee.com/aerocyber</url>
+  <url type="vcs-browser">https://github.com/aerocyber/sitemarker</url>
+  <categories>
+    <category>Utility</category>
+  </categories>
+  <content_rating type="oars-1.1"/>
+  <keywords>
+    <keyword>bookmarks</keyword>
+    <keyword>bookmark</keyword>
+    <keyword>bookmark manager</keyword>
+    <keyword>bookmark managers</keyword>
+    <keyword>bookmark viewer</keyword>
+    <keyword>bookmark viewers</keyword>
+    <keyword>viewer</keyword>
+    <keyword>viewers</keyword>
+    <keyword>open source</keyword>
+    <keyword>mit</keyword>
+    <keyword>MIT</keyword>
+    <keyword>free</keyword>
+  </keywords>
 </component>
