@@ -1,8 +1,8 @@
+# Created with jdDesktopEntryEdit 1.1
 [Desktop Entry]
-Name=SiteMarker
-Exec=sitemarker
-Icon=com.github.aerocyber.sitemarker
-Terminal=false
 Type=Application
-Categories=GTK;
+Name=SiteMarker
+Icon=com.github.aerocyber.sitemarker
+Exec=sitemarker
+Categories=GTK;Utility;
 StartupNotify=true

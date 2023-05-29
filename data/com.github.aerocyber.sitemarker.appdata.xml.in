@@ -10,6 +10,24 @@
   <description>
     <p>An open source bookmark manager.</p>
   </description>
+  <screenshots>
+    <screenshot>
+      <caption>View Records Light theme</caption>
+      <image type="source">https://raw.githubusercontent.com/aerocyber/sitemarker/main/screenshots/app-view-light.png</image>
+    </screenshot>
+    <screenshot type="default">
+      <caption>App Home Dark</caption>
+      <image type="source">https://raw.githubusercontent.com/aerocyber/sitemarker/main/screenshots/app-home-dark.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>App home light</caption>
+      <image type="source">https://raw.githubusercontent.com/aerocyber/sitemarker/main/screenshots/app-home-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>View Records Dark</caption>
+      <image type="source">https://raw.githubusercontent.com/aerocyber/sitemarker/main/screenshots/app-view-dark.png</image>
+    </screenshot>
+  </screenshots>
   <url type="homepage">https://github.com/aerocyber/sitemarker</url>
   <url type="bugtracker">https://github.com/aerocyber/sitemarker/issues</url>
   <url type="donation">https://www.buymeacoffee.com/aerocyber</url>
