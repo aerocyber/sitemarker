@@ -41,7 +41,7 @@ def printerr(*args):
     print(*args, file=sys.stderr)
 
 
-@Gtk.Template(resource_path='/com/github/aerocyber/sitemarker/window.ui')
+@Gtk.Template(resource_path='/io/github/aerocyber/sitemarker/window.ui')
 class SitemarkerWindow(Adw.ApplicationWindow):
     __gtype_name__ = 'SitemarkerWindow'
 
