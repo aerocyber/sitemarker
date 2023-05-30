@@ -50,4 +50,11 @@
     <keyword>MIT</keyword>
     <keyword>free</keyword>
   </keywords>
+  <releases>
+    <release version="1.0.0" date="2023-05-30">
+      <description>
+        <p>Initial release of SiteMarker.</p>
+      </description>
+    </release>
+  </releases>
 </component>
