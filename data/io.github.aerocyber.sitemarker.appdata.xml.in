@@ -51,10 +51,11 @@
     <keyword>free</keyword>
   </keywords>
   <releases>
-    <release version="1.0.0" date="2023-05-30">
+    <release version="1.0.1" date="2023-05-31">
       <description>
-        <p>Initial release of SiteMarker.</p>
+        <p>Release that respects $XDG_DATA_HOME.</p>
       </description>
     </release>
+    <release version="1.0.0" date="2023-05-30" />
   </releases>
 </component>
