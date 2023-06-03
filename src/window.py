@@ -72,7 +72,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         if not os.getenv("XDG_DATA_HOME"):
             data_dir = pathlib.PurePath.joinpath(pathlib.Path.home(), '.local', 'share', 'sitemarker')
         else:
-            data_dir = pathlib.Path(os.getenv("XDG_DATA_HOME"))
+            data_dir = pathlib.PurePath.joinpath(pathlib.Path(os.getenv("XDG_DATA_HOME")), 'sitemarker')
 
 
         # The internal.omio file is just as valid as the original file.
