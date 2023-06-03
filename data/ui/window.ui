@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
+  <template class="SitemarkerWindow" parent="AdwApplicationWindow">
+    <property name="default-width">600</property>
+    <property name="default-height">500</property>
+    <property name="title">SiteMarker</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkHeaderBar" id="header_bar">
+            <child type="end">
+              <object class="GtkMenuButton">
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="menu-model">primary_menu</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkBox" id="body_container">
+            <property name="margin-top">20</property>
+            <property name="margin-bottom">20</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkButton" id="add_record">
+              <property name="margin-top">25</property>
+              <property name="margin-bottom">10</property>
+              <property name="margin-start">25</property>
+              <property name="margin-end">25</property>
+              <property name="label" translatable="yes">Add record</property>
+              <property name="action-name">win.add</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkButton" id="view_records">
+              <property name="margin-top">10</property>
+              <property name="margin-bottom">10</property>
+              <property name="margin-start">25</property>
+              <property name="margin-end">25</property>
+              <property name="label" translatable="yes">View records in database</property>
+              <property name="action-name">win.view</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkButton" id="del_record">
+              <property name="margin-top">10</property>
+              <property name="margin-bottom">10</property>
+              <property name="margin-start">25</property>
+              <property name="margin-end">25</property>
+              <property name="label" translatable="yes">Delete record</property>
+              <property name="action-name">win.del</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkButton" id="view_omio_file_records">
+              <property name="margin-top">10</property>
+              <property name="margin-bottom">10</property>
+              <property name="margin-start">25</property>
+              <property name="margin-end">25</property>
+              <property name="label" translatable="yes">View omio file records</property>
+              <property name="action-name">win.view-omio</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkButton" id="import_omio_file_records">
+              <property name="margin-top">10</property>
+              <property name="margin-bottom">10</property>
+              <property name="margin-start">25</property>
+              <property name="margin-end">25</property>
+              <property name="label" translatable="yes">Import records</property>
+              <property name="action-name">win.import</property>
+            </object>
+          </child>
+          <child>
+            <object class="GtkButton" id="export_omio_file_records">
+              <property name="margin-top">10</property>
+              <property name="margin-bottom">10</property>
+              <property name="margin-start">25</property>
+              <property name="margin-end">25</property>
+              <property name="label" translatable="yes">Export records</property>
+              <property name="action-name">win.export</property>
+            </object>
+          </child>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+  <menu id="primary_menu">
+    <section>
+      <item>
+        <attribute name="label" translatable="yes">_Dark Mode</attribute>
+        <attribute name="action">app.dark-mode</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_Keyboard Shortcuts</attribute>
+        <attribute name="action">win.show-help-overlay</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">_About SiteMarker</attribute>
+        <attribute name="action">app.about</attribute>
+      </item>
+    </section>
+  </menu>
+</interface>
+
