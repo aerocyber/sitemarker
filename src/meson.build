@@ -23,7 +23,9 @@ sitemarker_sources = [
   'main.py',
   'window.py',
   'ospyata.py',
-  'definitions.py'
+  'definitions.py',
+  'add.py',
+  'error_window.py'
 ]
 
 install_data(sitemarker_sources, install_dir: moduledir)
