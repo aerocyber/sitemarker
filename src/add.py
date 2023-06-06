@@ -6,7 +6,7 @@ import json
 import sys
 from .definitions import Definitions
 
-from .add_error_no_name import AddErrorNoNameWindow
+
 from .error_window import ErrorWindow
 
 
@@ -122,7 +122,7 @@ class AddWindow(Adw.Window):
             if not (name == '' or url == ''):
                 self.db_api.push(name, url, categories)
                 self.save_records()
-                self.add_dialog.destroy()
+                self.destroy()
     def save_records(self):
         # Save the records.
 

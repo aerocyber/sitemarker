@@ -39,7 +39,9 @@ import os
 from .definitions import Definitions
 
 from .add import AddWindow
+from .delete import DeleteWindow
 from .error_window import ErrorWindow
+
 
 def printerr(*args):
     print(*args, file=sys.stderr)
@@ -114,6 +116,33 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         add_win = AddWindow()
         add_win.show()
 
+
+        definitions = Definitions()
+        data_dir = definitions.data_dir()
+
+        internal_db_fp = open(str(self.data_path), 'r')
+        _internal_db = json.load(internal_db_fp)
+        internal_db_fp.close()
+        _validator_omio = self.db_api.validate_omio(json.dumps(_internal_db))
+        if not _validator_omio:
+            err_window = ErrorWindow(transient_for=self, message="The internal database is corrupt.")
+            err_window.show()
+        internal_db = _internal_db
+        # Adding data to the internal db is easy
+        if internal_db != {}:
+            # We don't want to load an empty db as sitemarker's initialization takes care of that.
+            for key in internal_db.keys():
+                try:
+                    _name = key
+                    _url = internal_db[key]["URL"]
+                    _categories = internal_db[key]["Categories"]
+                    self.db_api.push(_name, _url, _categories)
+                except OspyataException:
+                    # This library... loves throwing errors... We must handle it.
+                    # Instead of suppressing it, we will print it to stderr.
+                    # For now.
+                    printerr(OspyataException)))
+
     def on_view_action(self, widget, _):
         # Update the code to view all records.
         print("View action triggered.")
@@ -122,63 +151,66 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
     def on_del_action(self, widget, _):
         # Delete a record.
-        keys = self.db_api.db.keys()
-        self.del_win = Adw.Window(transient_for=self)
-        self.del_win.set_default_size(400,300)
-        self.del_win.set_title("Delete a record")
+        del_win = DeleteWindow(transient_for=self)
+        del_win.show()
 
-        del_box = Gtk.Box()
-        del_box.set_orientation(Gtk.Orientation.VERTICAL) # Vertical alignment... again.
-        self.del_win.set_content(del_box)
-        del_box.append(Adw.HeaderBar())
 
-        del_content_box = Gtk.Box()
-        del_content_box.set_margin_start(40)
-        del_content_box.set_margin_end(40)
-        del_content_box.set_margin_top(50)
-        del_content_box.set_margin_bottom(50)
-        del_content_box.set_orientation(Gtk.Orientation.VERTICAL)
-        del_content_box.set_spacing(50)
-        del_box.append(del_content_box)
+        definitions = Definitions()
+        data_dir = definitions.data_dir()
 
-        # Saved by: https://rafaelmardojai.pages.gitlab.gnome.org/pygobject-guide/gtk4/controls/dropdown.html
-        self.selected_to_del = ''
-        del_dropdown = Gtk.DropDown()
-        del_dropdown.connect('notify::selected-item', self.on_to_del_selected)
-        del_content_box.append(del_dropdown)
-
-        self.del_list = Gtk.StringList()
-        del_dropdown.props.model = self.del_list
-
-        for key in keys:
-            self.del_list.append(key)
-
-        del_btn = Gtk.Button()
-        del_btn.set_label("Delete selected")
-        del_btn.connect('clicked', self.del_selected)
-        del_content_box.append(del_btn)
-
-        self.del_win.show()
-
-    def del_selected(self, widget):
-        self.db_api.pop(str(self.selected_to_del))
-        self.del_win.destroy()
-        keys = self.db_api.db.keys()
-        for key in keys:
-            self.del_list.append(key)
-        self.save_records()
-        _tmp_win = Adw.Window()
-        self.err_window(transient_for=self, err_title="Deleted successfully", err_msg=f"{self.selected_to_del} has been successfully deleted and the records saved locally.")
-
-    def on_to_del_selected(self, dropdown, _):
-        # Selected Gtk.StringObject
-        selected = dropdown.props.selected_item
-        if selected is not None:
-            self.selected_to_del = selected.props.string
+        internal_db_fp = open(str(self.data_path), 'r')
+        _internal_db = json.load(internal_db_fp)
+        internal_db_fp.close()
+        _validator_omio = self.db_api.validate_omio(json.dumps(_internal_db))
+        if not _validator_omio:
+            err_window = ErrorWindow(transient_for=self, message="The internal database is corrupt.")
+            err_window.show()
+        internal_db = _internal_db
+        # Adding data to the internal db is easy
+        if internal_db != {}:
+            # We don't want to load an empty db as sitemarker's initialization takes care of that.
+            for key in internal_db.keys():
+                try:
+                    _name = key
+                    _url = internal_db[key]["URL"]
+                    _categories = internal_db[key]["Categories"]
+                    self.db_api.push(_name, _url, _categories)
+                except OspyataException:
+                    # This library... loves throwing errors... We must handle it.
+                    # Instead of suppressing it, we will print it to stderr.
+                    # For now.
+                    printerr(OspyataException))
 
     def on_import_action(self, widget, _):
         # Import records.
         self.import_omio_fn()
+
+
+        definitions = Definitions()
+        data_dir = definitions.data_dir()
+
+        internal_db_fp = open(str(self.data_path), 'r')
+        _internal_db = json.load(internal_db_fp)
+        internal_db_fp.close()
+        _validator_omio = self.db_api.validate_omio(json.dumps(_internal_db))
+        if not _validator_omio:
+            err_window = ErrorWindow(transient_for=self, message="The internal database is corrupt.")
+            err_window.show()
+        internal_db = _internal_db
+        # Adding data to the internal db is easy
+        if internal_db != {}:
+            # We don't want to load an empty db as sitemarker's initialization takes care of that.
+            for key in internal_db.keys():
+                try:
+                    _name = key
+                    _url = internal_db[key]["URL"]
+                    _categories = internal_db[key]["Categories"]
+                    self.db_api.push(_name, _url, _categories)
+                except OspyataException:
+                    # This library... loves throwing errors... We must handle it.
+                    # Instead of suppressing it, we will print it to stderr.
+                    # For now.
+                    printerr(OspyataException)))
 
 
     def create_action(self, name, callback):

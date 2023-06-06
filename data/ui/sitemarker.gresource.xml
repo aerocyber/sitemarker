@@ -5,6 +5,8 @@
     <file preprocess="xml-stripblanks">add.ui</file>
     <file preprocess="xml-stripblanks">gtk/help-overlay.ui</file>
     <file preprocess="xml-stripblanks">error_window.ui</file>
+    <file preprocess="xml-stripblanks">delete.ui</file>
+    <file preprocess="xml-stripblanks">notify_window.ui</file>
   </gresource>
 </gresources>
 
