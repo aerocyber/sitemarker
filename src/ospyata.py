@@ -3,6 +3,9 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
+# Sitemarker note: Updated to use ospyata from https://github.com/aerocyber/ospyata/blob/dcb089481fb960e04876163e57da3a3be345c308/src/ospyata/osmata.py
+
+
 import json
 import re
 from typing import List
@@ -65,8 +68,6 @@ class Osmata:
         """
 
         data = json.loads(dat)
-        if data == {}:
-            return True # An empty db is just as valid as a perfectly filled DB.
         _keys = data.keys()
         _urls = []
         _is_cat_list = True

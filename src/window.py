@@ -27,9 +27,7 @@ from gi.repository import Gtk
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gdk
-from . import ospyata as osmata
 from urllib.parse import unquote
-from .ospyata import OspyataException
 import datetime
 import pathlib
 import sys
@@ -37,6 +35,7 @@ import json
 import webbrowser
 import os
 from .definitions import Definitions
+from .data import Data
 
 from .add import AddWindow
 from .delete import DeleteWindow
@@ -70,9 +69,6 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         self.create_action('import', self.on_import_action)
         self.create_action('export', self.on_export_action)
 
-        # The DB interface
-        self.db_api = osmata.Osmata()
-
         definitions = Definitions()
         data_dir = definitions.data_dir()
 
@@ -82,66 +78,34 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         # all of a sudden, we do not want the data to be unrecoverable.
         # Copying internal.omio file is just enough to get the data back.
         self.data_path = definitions.data_path()
+        self.data_api = Data(self.data_path)
+
         if not pathlib.Path.exists(pathlib.Path(self.data_path)):
             pathlib.Path(str(data_dir)).mkdir(parents=True, exist_ok=True)
             f = open(str(self.data_path), 'w')
             f.write('{}')
             f.close()
 
-        internal_db_fp = open(str(self.data_path), 'r')
-        _internal_db = json.load(internal_db_fp)
-        internal_db_fp.close()
-        _validator_omio = self.db_api.validate_omio(json.dumps(_internal_db))
-        if not _validator_omio:
-            err_window = ErrorWindow(transient_for=self, message="The internal database is corrupt.")
-            err_window.show()
-        internal_db = _internal_db
-        # Adding data to the internal db is easy
-        if internal_db != {}:
-            # We don't want to load an empty db as sitemarker's initialization takes care of that.
-            for key in internal_db.keys():
-                try:
-                    _name = key
-                    _url = internal_db[key]["URL"]
-                    _categories = internal_db[key]["Categories"]
-                    self.db_api.push(_name, _url, _categories)
-                except OspyataException:
-                    # This library... loves throwing errors... We must handle it.
-                    # Instead of suppressing it, we will print it to stderr.
-                    # For now.
-                    printerr(OspyataException)
+        _err = self.data_api.read_from_db_file()
+        if _err != None:
+            if _err.length > 0 and (type(_err) is list):
+                for i in _err:
+                    printerr(i)
+            else:
+                printerr(_err)
 
 
     def on_add_action(self, widget, _):
         add_win = AddWindow()
         add_win.show()
 
-
-        definitions = Definitions()
-        data_dir = definitions.data_dir()
-
-        internal_db_fp = open(str(self.data_path), 'r')
-        _internal_db = json.load(internal_db_fp)
-        internal_db_fp.close()
-        _validator_omio = self.db_api.validate_omio(json.dumps(_internal_db))
-        if not _validator_omio:
-            err_window = ErrorWindow(transient_for=self, message="The internal database is corrupt.")
-            err_window.show()
-        internal_db = _internal_db
-        # Adding data to the internal db is easy
-        if internal_db != {}:
-            # We don't want to load an empty db as sitemarker's initialization takes care of that.
-            for key in internal_db.keys():
-                try:
-                    _name = key
-                    _url = internal_db[key]["URL"]
-                    _categories = internal_db[key]["Categories"]
-                    self.db_api.push(_name, _url, _categories)
-                except OspyataException:
-                    # This library... loves throwing errors... We must handle it.
-                    # Instead of suppressing it, we will print it to stderr.
-                    # For now.
-                    printerr(OspyataException)))
+        _err = self.data_api.read_from_db_file()
+        if _err != None:
+            if _err.length > 0 and (type(_err) is list):
+                for i in _err:
+                    printerr(i)
+            else:
+                printerr(_err)
 
     def on_view_action(self, widget, _):
         # Update the code to view all records.
@@ -155,31 +119,13 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         del_win.show()
 
 
-        definitions = Definitions()
-        data_dir = definitions.data_dir()
-
-        internal_db_fp = open(str(self.data_path), 'r')
-        _internal_db = json.load(internal_db_fp)
-        internal_db_fp.close()
-        _validator_omio = self.db_api.validate_omio(json.dumps(_internal_db))
-        if not _validator_omio:
-            err_window = ErrorWindow(transient_for=self, message="The internal database is corrupt.")
-            err_window.show()
-        internal_db = _internal_db
-        # Adding data to the internal db is easy
-        if internal_db != {}:
-            # We don't want to load an empty db as sitemarker's initialization takes care of that.
-            for key in internal_db.keys():
-                try:
-                    _name = key
-                    _url = internal_db[key]["URL"]
-                    _categories = internal_db[key]["Categories"]
-                    self.db_api.push(_name, _url, _categories)
-                except OspyataException:
-                    # This library... loves throwing errors... We must handle it.
-                    # Instead of suppressing it, we will print it to stderr.
-                    # For now.
-                    printerr(OspyataException))
+        _err = self.data_api.read_from_db_file()
+        if _err != None:
+            if _err.length > 0 and (type(_err) is list):
+                for i in _err:
+                    printerr(i)
+            else:
+                printerr(_err)
 
     def on_import_action(self, widget, _):
         # Import records.
@@ -196,21 +142,14 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         if not _validator_omio:
             err_window = ErrorWindow(transient_for=self, message="The internal database is corrupt.")
             err_window.show()
-        internal_db = _internal_db
-        # Adding data to the internal db is easy
-        if internal_db != {}:
-            # We don't want to load an empty db as sitemarker's initialization takes care of that.
-            for key in internal_db.keys():
-                try:
-                    _name = key
-                    _url = internal_db[key]["URL"]
-                    _categories = internal_db[key]["Categories"]
-                    self.db_api.push(_name, _url, _categories)
-                except OspyataException:
-                    # This library... loves throwing errors... We must handle it.
-                    # Instead of suppressing it, we will print it to stderr.
-                    # For now.
-                    printerr(OspyataException)))
+
+        _err = self.data_api.read_from_db_file()
+        if _err != None:
+            if _err.length > 0 and (type(_err) is list):
+                for i in _err:
+                    printerr(i)
+            else:
+                printerr(_err)
 
 
     def create_action(self, name, callback):

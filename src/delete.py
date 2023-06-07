@@ -1,7 +1,6 @@
 from gi.repository import Adw
 from gi.repository import Gtk
-from . import ospyata as osmata
-from .ospyata import OspyataException
+from .data import Data
 import pathlib
 import sys
 import json
@@ -29,40 +28,20 @@ class DeleteWindow(Adw.Window):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.db_api = osmata.Osmata()
 
         definitions = Definitions()
         data_dir = definitions.data_dir()
 
-
-        # The internal.omio file is just as valid as the original file.
-        # This is by design because, if for some reason the application does not work
-        # all of a sudden, we do not want the data to be unrecoverable.
-        # Copying internal.omio file is just enough to get the data back.
         self.data_path = definitions.data_path()
+        self.data_api = Data(self.data_path)
 
-        internal_db_fp = open(str(self.data_path), 'r')
-        _internal_db = json.load(internal_db_fp)
-        internal_db_fp.close()
-        _validator_omio = self.db_api.validate_omio(json.dumps(_internal_db))
-        if not _validator_omio:
-            err_window = ErrorWindow(transient_for=self, message="The internal database is corrupt.")
-            err_window.show()
-        internal_db = _internal_db
-        # Adding data to the internal db is easy
-        if internal_db != {}:
-            # We don't want to load an empty db as sitemarker's initialization takes care of that.
-            for key in internal_db.keys():
-                try:
-                    _name = key
-                    _url = internal_db[key]["URL"]
-                    _categories = internal_db[key]["Categories"]
-                    self.db_api.push(_name, _url, _categories)
-                except OspyataException:
-                    # This library... loves throwing errors... We must handle it.
-                    # Instead of suppressing it, we will print it to stderr.
-                    # For now.
-                    printerr(OspyataException)
+        _err = self.data_api.read_from_db_file()
+        if _err != None:
+            if _err.length > 0 and (type(_err) is list):
+                for i in _err:
+                    printerr(i)
+            else:
+                printerr(_err)
 
         keys = self.db_api.db.keys()
         self.key_list = Gtk.StringList()
@@ -78,13 +57,25 @@ class DeleteWindow(Adw.Window):
 
     def del_selected(self, widget):
         self.db_api.pop(str(self.selected_to_del))
-        self.destroy()
-        keys = self.db_api.db.keys()
+
+        keys = self.data_api.db_api.db.keys()
         for key in keys:
             self.key_list.append(key)
-        self.save_records()
+
+        self.data_api.save_db()
+
+        _err = self.data_api.read_from_db_file()
+        if _err != None:
+            if _err.length > 0 and (type(_err) is list):
+                for i in _err:
+                    printerr(i)
+            else:
+                printerr(_err)
+
         _tmp_win = Adw.Window()
         info_window = NotifyWindow(transient_for=self, message=f"{self.selected_to_del} has been successfully deleted and the records saved locally.")
+        info_window.show()
+        self.destroy()
 
     def on_to_del_selected(self, dropdown, _):
         # Selected Gtk.StringObject
@@ -92,12 +83,3 @@ class DeleteWindow(Adw.Window):
         if selected is not None:
             self.selected_to_del = selected.props.string
 
-    def save_records(self):
-        # Save the records.
-
-        # We are replacing the existing database.
-        # This is by design because as new data is being entered,
-        # the old database becomes outdated.
-        f = open(str(self.data_path), 'w')
-        f.write(self.db_api.dumpOmio())
-        f.close()

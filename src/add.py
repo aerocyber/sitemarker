@@ -1,7 +1,6 @@
 from gi.repository import Adw
 from gi.repository import Gtk
-from . import ospyata as osmata
-from .ospyata import OspyataException
+from .data import Data
 import json
 import sys
 from .definitions import Definitions
@@ -30,36 +29,17 @@ class AddWindow(Adw.Window):
         super().__init__(**kwargs)
         definitions = Definitions()
         self.data_path = definitions.data_path()
-        self.db_api = osmata.Osmata()
+        self.data_api = Data(data_file_path=self.data_path)
         self.add_button_okay.connect('clicked', self.add_record)
         self.add_button_cancel.connect('clicked', lambda add_button_cancel: self.destroy())
 
-        internal_db_fp = open(str(self.data_path), 'r')
-        _internal_db = json.load(internal_db_fp)
-        internal_db_fp.close()
-
-        _validator_omio = self.db_api.validate_omio(json.dumps(_internal_db))
-
-        if not _validator_omio:
-            # super.err_window(err_title="Invalid Internal DB", err_msg="The internal database is corrupt. Reset it.")
-            _err_win = ErrorWindow(transient_for=self)
-            _err_win.show()
-
-        internal_db = _internal_db
-        # Adding data to the internal db is easy
-        if internal_db != {}:
-            # We don't want to load an empty db as sitemarker's initialization takes care of that.
-            for key in internal_db.keys():
-                try:
-                    _name = key
-                    _url = internal_db[key]["URL"]
-                    _categories = internal_db[key]["Categories"]
-                    self.db_api.push(_name, _url, _categories)
-                except OspyataException:
-                    # This library... loves throwing errors... We must handle it.
-                    # Instead of suppressing it, we will print it to stderr.
-                    # For now.
-                    printerr(OspyataException)
+        _err = self.data_api.read_from_db_file()
+        if _err != None:
+            if _err.length > 0 and (type(_err) is list):
+                for i in _err:
+                    printerr(i)
+            else:
+                printerr(_err)
 
     def add_record(self, add_button_okay):
 
@@ -92,7 +72,7 @@ class AddWindow(Adw.Window):
             return
 
         try:
-            _is_valid = self.db_api.validate_url(url)
+            _is_valid = self.data_api.db_api.validate_url(url)
         except Exception as e:
             _is_valid = False
 
@@ -105,7 +85,7 @@ class AddWindow(Adw.Window):
         if len(categories) == 0:
             categories = []
 
-        _records = json.loads(self.db_api.dumpOmio())
+        _records = json.loads(self.data_api.db_api.dumpOmio())
         found = 0
         for key in _records:
             if key == name:
@@ -120,15 +100,19 @@ class AddWindow(Adw.Window):
                 return
         if found == 0:
             if not (name == '' or url == ''):
-                self.db_api.push(name, url, categories)
-                self.save_records()
+                _err = self.db_api.push(name, url, categories)
+                if _err != None:
+                    if _err.length > 0 and (type(_err) is list):
+                        for i in _err:
+                            printerr(i)
+                    else:
+                        printerr(_err)
+                self.data_api.save_db()
+                _err = self.data_api.read_from_db_file()
+                if _err != None:
+                    if _err.length > 0 and (type(_err) is list):
+                        for i in _err:
+                            printerr(i)
+                    else:
+                        printerr(_err)
                 self.destroy()
-    def save_records(self):
-        # Save the records.
-
-        # We are replacing the existing database.
-        # This is by design because as new data is being entered,
-        # the old database becomes outdated.
-        f = open(str(self.data_path), 'w')
-        f.write(self.db_api.dumpOmio())
-        f.close()
