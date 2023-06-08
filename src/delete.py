@@ -43,7 +43,7 @@ class DeleteWindow(Adw.Window):
             else:
                 printerr(_err)
 
-        keys = self.db_api.db.keys()
+        keys = self.data_api.db_api.db.keys()
         self.key_list = Gtk.StringList()
 
         for key in keys:
@@ -56,9 +56,10 @@ class DeleteWindow(Adw.Window):
         self.del_button_cancel.connect('clicked', lambda del_button_cancel: self.destroy())
 
     def del_selected(self, widget):
-        self.db_api.pop(str(self.selected_to_del))
+        self.data_api.db_api.pop(str(self.selected_to_del))
 
         keys = self.data_api.db_api.db.keys()
+        self.key_list = Gtk.StringList()
         for key in keys:
             self.key_list.append(key)
 
@@ -66,7 +67,7 @@ class DeleteWindow(Adw.Window):
 
         _err = self.data_api.read_from_db_file()
         if _err != None:
-            if _err.length > 0 and (type(_err) is list):
+            if len(_err) > 0 and (type(_err) is list):
                 for i in _err:
                     printerr(i)
             else:

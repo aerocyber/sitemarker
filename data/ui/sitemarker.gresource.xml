@@ -7,6 +7,7 @@
     <file preprocess="xml-stripblanks">error_window.ui</file>
     <file preprocess="xml-stripblanks">delete.ui</file>
     <file preprocess="xml-stripblanks">notify_window.ui</file>
+    <file preprocess="xml-stripblanks">view.ui</file>
   </gresource>
 </gresources>
 

@@ -32,6 +32,7 @@ class AddWindow(Adw.Window):
         self.data_api = Data(data_file_path=self.data_path)
         self.add_button_okay.connect('clicked', self.add_record)
         self.add_button_cancel.connect('clicked', lambda add_button_cancel: self.destroy())
+        # printinfo(self.data_api.db_api.db)
 
         _err = self.data_api.read_from_db_file()
         if _err != None:
@@ -76,7 +77,7 @@ class AddWindow(Adw.Window):
         except Exception as e:
             _is_valid = False
 
-        if name and url and (not _is_valid):
+        if (name and url) and (not _is_valid):
             _dialog_invalid_url = ErrorWindow(transient_for=self, message="Entered URL is invalid")
             _dialog_invalid_url.show()
             return
@@ -85,32 +86,45 @@ class AddWindow(Adw.Window):
         if len(categories) == 0:
             categories = []
 
-        _records = json.loads(self.data_api.db_api.dumpOmio())
+        _records = self.data_api.get_all()
         found = 0
+
         for key in _records:
             if key == name:
                 found = 1
                 name_exists_dialog = ErrorWindow(transient_for=self, message="Record with provided name is already present in DB.")
                 name_exists_dialog.show()
                 return
-            if _records[key]["URL"] == url:
+
+            elif _records[key]["URL"] == url:
                 found = 2
                 url_exists_dialog = ErrorWindow(transient_for=self, message="Record with provided URL is already present in DB.")
                 url_exists_dialog.show()
                 return
+
         if found == 0:
-            if not (name == '' or url == ''):
-                _err = self.db_api.push(name, url, categories)
+
+            if (name != '' and url != ''):
+
+                _err = self.data_api.add_data(name, url, categories)
+                #self.data_api.save_db()
+
                 if _err != None:
-                    if _err.length > 0 and (type(_err) is list):
+
+                    if len(_err) > 0 and (type(_err) is list):
+
                         for i in _err:
                             printerr(i)
+
                     else:
                         printerr(_err)
-                self.data_api.save_db()
+
+
                 _err = self.data_api.read_from_db_file()
-                if _err != None:
-                    if _err.length > 0 and (type(_err) is list):
+
+                if _err != None and type(_err) is list:
+
+                    if len(_err) > 0 and (type(_err) is list):
                         for i in _err:
                             printerr(i)
                     else:

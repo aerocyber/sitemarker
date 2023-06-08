@@ -28,7 +28,8 @@ sitemarker_sources = [
   'delete.py',
   'error_window.py',
   'notify_window.py',
-  'data.py'
+  'data.py',
+  'view.py'
 ]
 
 install_data(sitemarker_sources, install_dir: moduledir)

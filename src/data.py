@@ -7,35 +7,52 @@ import json
 class Data:
     def __init__(self, data_file_path: str):
         self.data_path = data_file_path
-        self.db_api = osmata.Osmata
+        self.db_api = osmata.Osmata()
     
     def read_from_db_file(self):
-        if not pathlib.PurePath.exists(pathlib.Path(self.data_path)):
+        if not pathlib.Path.exists(pathlib.Path(self.data_path)):
             f = open(self.data_path, 'x')
             f.close()
         fp = open(self.data_path, 'r')
+
+        self.db_api = osmata.Osmata()
+
         try:
             db = json.load(fp)
+            fp.close()
         except Exception as e:
             return f"Internal database is corrupt. Please see internal.omio file in {self.db_path}"
         else:
-            _is_valid = self.db_api.validate_omio(db)
+            _is_valid = self.db_api.validate_omio(json.dumps(db))
             errors = {}
+
             if not _is_valid:
                 return f"Internal database is corrupt. Please see internal.omio file in {self.db_path}"
             else:
-                for key in db.keys():
-                    name = key
-                    url = db[name]["URL"]
-                    categories = db[name]["Categories"]
-                    try:
-                        self.db_api.push(name, url, categories)
-                    except OspyataException as e:
-                        errors[name] = e
-            
-            if errors.keys().length > 0:
+                if db != {}:
+                    tmp_db = {}
+                    for key in db.keys():
+                        if len(self.db_api.db.keys()) == 0:
+                            tmp_db[key] = {"URL": db[key]["URL"], "Categories": db[key]["Categories"]}
+                        else:
+                            for name in self.db_api.db.keys():
+                                if key != name:
+                                    if db[key]["URL"] != self.db_api.db[name]["URL"]:
+                                        tmp_db[key] = {"URL": db[key]["URL"], "Categories": db[key]["Categories"]}
+                                        continue
+                                    else:
+                                        error[self.db_api.db[name]["URL"]] = "Present in DB."
+                                        continue
+                                else:
+                                    error[name] = "Present in db."
+                                    continue
+
+                    for key in tmp_db.keys():
+                        self.db_api.push(key, tmp_db[key]["URL"], tmp_db[key]["Categories"])
+
+            if len(errors.keys()) > 0 and type(errors) is dict:
                 return errors
-            
+
             return None
     
     def save_db(self):
@@ -47,7 +64,7 @@ class Data:
         try:
             self.db_api.push(name=name, url=url, categories=categories)
         except OspyataException as e:
-            return "The enetered data is present in records."
+            return "The entered data is present in records."
         
         self.save_db()
         _errors = self.read_from_db_file()

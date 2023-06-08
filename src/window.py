@@ -40,6 +40,7 @@ from .data import Data
 from .add import AddWindow
 from .delete import DeleteWindow
 from .error_window import ErrorWindow
+from .view import ViewWindow
 
 
 def printerr(*args):
@@ -88,7 +89,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
         _err = self.data_api.read_from_db_file()
         if _err != None:
-            if _err.length > 0 and (type(_err) is list):
+            if len(_err) > 0 and (type(_err) is list):
                 for i in _err:
                     printerr(i)
             else:
@@ -101,7 +102,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
         _err = self.data_api.read_from_db_file()
         if _err != None:
-            if _err.length > 0 and (type(_err) is list):
+            if len(_err) > 0 and (type(_err) is list):
                 for i in _err:
                     printerr(i)
             else:
@@ -109,9 +110,10 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
     def on_view_action(self, widget, _):
         # Update the code to view all records.
-        print("View action triggered.")
-        db = json.loads(self.db_api.dumpOmio())
-        self.view_element(self, db=db)
+        db = json.loads(self.data_api.db_api.dumpOmio())
+        # self.view_element(self, db=db)
+        view_win = ViewWindow(transient_for=self)
+        view_win.show()
 
     def on_del_action(self, widget, _):
         # Delete a record.
@@ -121,7 +123,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
         _err = self.data_api.read_from_db_file()
         if _err != None:
-            if _err.length > 0 and (type(_err) is list):
+            if len(_err) > 0 and (type(_err) is list):
                 for i in _err:
                     printerr(i)
             else:
@@ -175,93 +177,6 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         f = open(str(self.data_path), 'w')
         f.write(self.db_api.dumpOmio())
         f.close()
-
-    def view_element(self, widget, db, win_title="View Records"):
-        # View all records from db.
-        view_dialog = Adw.Window()
-        view_dialog.set_transient_for(self)
-        view_dialog.set_default_size(550, 400)
-        view_dialog.set_title(win_title)
-
-        view_box = Gtk.Box()
-        view_box.set_orientation(Gtk.Orientation.VERTICAL)
-        view_box.append(Adw.HeaderBar())
-        view_dialog.set_content(view_box)
-
-        view_records_list_box = Gtk.ListBox.new()
-
-        for key in db.keys():
-            url = db[key]["URL"]
-            tags = db[key]["Categories"]
-
-
-            column = Gtk.Box()
-            column.set_orientation(Gtk.Orientation.HORIZONTAL)
-            column.set_margin_start(10)
-            column.set_margin_end(10)
-            column.set_margin_top(20)
-            column.set_margin_bottom(20)
-            column.set_spacing(50)
-
-            data_box = Gtk.Box()
-            data_box.set_margin_start(10)
-            data_box.set_margin_end(10)
-            data_box.set_margin_top(10)
-            data_box.set_margin_bottom(10)
-            data_box.set_spacing(10)
-            data_box.set_orientation(Gtk.Orientation.VERTICAL)
-            data_box.set_spacing(10)
-
-            _name_item = Gtk.Label()
-            _name_item.set_label(key)
-
-            _url_item = Gtk.Label()
-            _url_item.set_label(url)
-
-            _categories_item = Gtk.Label()
-            _cats = "Applied tags: "
-            for i in tags:
-                _cats += i
-                if len(tags) != tags.index(i) + 1:
-                    _cats += ", "
-            _categories_item.set_label(_cats)
-
-            data_box.append(_name_item)
-            data_box.append(_url_item)
-            data_box.append(_categories_item)
-
-            control_box = Gtk.Box()
-            control_box.set_margin_start(10)
-            control_box.set_margin_end(10)
-            control_box.set_margin_top(10)
-            control_box.set_margin_bottom(10)
-            control_box.set_orientation(Gtk.Orientation.VERTICAL)
-            control_box.set_spacing(10)
-
-            open_in_browser = Gtk.Button()
-            open_in_browser.set_label("Open in Browser")
-            open_in_browser.connect("clicked", lambda open_in_browser: webbrowser.open_new_tab(url))
-            control_box.append(open_in_browser)
-
-            copy_ = Gtk.Button()
-            copy_.set_label("Copy to Clipboard")
-            copy_.connect("clicked", lambda copy_: self.copy2clipboard(url))
-            control_box.append(copy_)
-
-            column.append(data_box)
-            column.append(control_box)
-            view_records_list_box.append(column)
-
-        view_box.append(view_records_list_box)
-        view_dialog.show()
-
-    def get_clipboard(self):
-        clipboard = Gdk.Display().get_default().get_clipboard()
-        return clipboard
-
-    def copy2clipboard(self, text: str):
-        _clipboard = self.get_clipboard()
-        _clipboard.set(text)
 
     def on_view_omio_action(self, widget, _):
         # View omio file.
