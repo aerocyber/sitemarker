@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk" version="4.0"/>
+  <requires lib="Adw" version="1.0"/>
+  <template class="DeleteWindow" parent="AdwWindow">
+    <property name="default-width">400</property>
+    <property name="default-height">300</property>
+    <property name="title">Delete Record</property>
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkHeaderBar" id="header_bar"/>
+        </child>
+        <child>
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
+            <property name="margin-start">40</property>
+            <property name="margin-end">40</property>
+            <property name="margin-top">50</property>
+            <property name="margin-bottom">50</property>
+            <property name="spacing">50</property>
+            <child>
+              <object class="GtkDropDown" id="del_dropdown"/>
+            </child>
+            <child>
+              <object class="GtkBox">
+                <property name="margin-top">20</property>
+                <property name="margin-bottom">20</property>
+                <property name="margin-start">200</property>
+                <property name="margin-end">200</property>
+                <property name="orientation">horizontal</property>
+                <property name="spacing">10</property>
+                <child>
+                  <object class="GtkButton" id="del_button_okay">
+                    <property name="label" translatable="yes">Delete record</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="del_button_cancel">
+                    <property name="label" translatable="yes">Cancel</property>
+                  </object>
+                </child>
+              </object>
+            </child>"
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+
+</interface>
+
