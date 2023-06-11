@@ -53,12 +53,7 @@
   <releases>
     <release version="1.1.0" date="2023-06-11">
       <description>
-        <p>
-          <ul>
-            <li>Update the UI for a more cleaner look.</li>
-            <li>Separate code and UI.<li>
-          </ul>
-        </p>
+        <p>Update the UI to look cleaner.</p>
       </description>
     </release>
     <release version="1.0.1" date="2023-05-31" />
