@@ -2,7 +2,7 @@
 <interface>
   <requires lib="gtk" version="4.0"/>
   <requires lib="Adw" version="1.0"/>
-  <template class="ViewWindow" parent="AdwWindow">
+  <template class="ViewOmioWindow" parent="AdwWindow">
     <property name="default-width">600</property>
     <property name="default-height">400</property>
     <property name="title">View Records</property>

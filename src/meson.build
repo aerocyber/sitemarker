@@ -29,7 +29,8 @@ sitemarker_sources = [
   'error_window.py',
   'notify_window.py',
   'data.py',
-  'view.py'
+  'view.py',
+  'view_omio.py'
 ]
 
 install_data(sitemarker_sources, install_dir: moduledir)

@@ -27,6 +27,7 @@ from gi.repository import Gtk
 from gi.repository import Gio
 from gi.repository import GLib
 from gi.repository import Gdk
+from gi.repository import Pango
 from urllib.parse import unquote
 import datetime
 import pathlib
@@ -36,11 +37,14 @@ import webbrowser
 import os
 from .definitions import Definitions
 from .data import Data
+from . import ospyata as osmata
 
 from .add import AddWindow
 from .delete import DeleteWindow
 from .error_window import ErrorWindow
 from .view import ViewWindow
+from .view_omio import ViewOmioWindow
+from .notify_window import NotifyWindow
 
 
 def printerr(*args):
@@ -140,7 +144,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         internal_db_fp = open(str(self.data_path), 'r')
         _internal_db = json.load(internal_db_fp)
         internal_db_fp.close()
-        _validator_omio = self.db_api.validate_omio(json.dumps(_internal_db))
+        _validator_omio = self.data_api.db_api.validate_omio(json.dumps(_internal_db))
         if not _validator_omio:
             err_window = ErrorWindow(transient_for=self, message="The internal database is corrupt.")
             err_window.show()
@@ -180,12 +184,10 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
     def on_view_omio_action(self, widget, _):
         # View omio file.
-        print("View omio file content action triggered.")
         self.view_db_as_file()
 
     def view_db_as_file(self):
         # File opening
-        print("File opening for reading.")
         file_open_view_dialog = Gtk.FileDialog.new()
         file_open_view_dialog.set_accept_label("Open")
 
@@ -237,89 +239,15 @@ class SitemarkerWindow(Adw.ApplicationWindow):
                 final_filenames = handle_filenames([filename])
                 db = {}
                 try:
-                    db = osmata.Osmata().loadOmio(final_filenames[0])
+                    _db = osmata.Osmata()
+                    _db.loadOmio(final_filenames[0])
                 except Exception:
-                    printerr("Invalid file")
+                    printerr(f"Invalid file: {final_filenames[0]}")
                     err_window = ErrorWindow(transient_for=self, message="Invalid File")
                     err_window.show()
                     return
 
-
-                view_dialog = Adw.Window()
-                view_dialog.set_transient_for(self)
-                view_dialog.set_default_size(550, 400)
-                view_dialog.set_title("Records in " + final_filenames[0])
-
-                view_box = Gtk.Box()
-                view_box.set_orientation(Gtk.Orientation.VERTICAL)
-                view_box.append(Adw.HeaderBar())
-                view_dialog.set_content(view_box)
-
-                view_records_list_box = Gtk.ListBox.new()
-
-                for key in db.keys():
-                    url = db[key]["URL"]
-                    tags = db[key]["Categories"]
-
-
-                    column = Gtk.Box()
-                    column.set_orientation(Gtk.Orientation.HORIZONTAL)
-                    column.set_margin_start(10)
-                    column.set_margin_end(10)
-                    column.set_margin_top(20)
-                    column.set_margin_bottom(20)
-                    column.set_spacing(50)
-
-                    data_box = Gtk.Box()
-                    data_box.set_margin_start(10)
-                    data_box.set_margin_end(10)
-                    data_box.set_margin_top(10)
-                    data_box.set_margin_bottom(10)
-                    data_box.set_spacing(10)
-                    data_box.set_orientation(Gtk.Orientation.VERTICAL)
-                    data_box.set_spacing(10)
-
-                    _name_item = Gtk.Label()
-                    _name_item.set_label(key)
-
-                    _url_item = Gtk.Label()
-                    _url_item.set_label(url)
-
-                    _categories_item = Gtk.Label()
-                    _cats = "Applied tags: "
-                    for i in tags:
-                        _cats += i
-                        if len(tags) != tags.index(i) + 1:
-                            _cats += ", "
-                    _categories_item.set_label(_cats)
-
-                    data_box.append(_name_item)
-                    data_box.append(_url_item)
-                    data_box.append(_categories_item)
-
-                    control_box = Gtk.Box()
-                    control_box.set_margin_start(10)
-                    control_box.set_margin_end(10)
-                    control_box.set_margin_top(10)
-                    control_box.set_margin_bottom(10)
-                    control_box.set_orientation(Gtk.Orientation.VERTICAL)
-                    control_box.set_spacing(10)
-
-                    open_in_browser = Gtk.Button()
-                    open_in_browser.set_label("Open in Browser")
-                    open_in_browser.connect("clicked", lambda open_in_browser: webbrowser.open_new_tab(url))
-                    control_box.append(open_in_browser)
-
-                    copy_ = Gtk.Button()
-                    copy_.set_label("Copy to Clipboard")
-                    copy_.connect("clicked", lambda copy_: self.copy2clipboard(url))
-                    control_box.append(copy_)
-
-                    column.append(data_box)
-                    column.append(control_box)
-                    view_records_list_box.append(column)
-
-                view_box.append(view_records_list_box)
+                view_dialog = ViewOmioWindow(transient_for=self, data_path=final_filenames[0])
                 view_dialog.show()
 
         # file_open_view_dialog.open(view_dialog, None, open_response)
@@ -327,8 +255,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
     def on_export_action(self, widget, _):
         # Import records.
-        print("Export records action triggered.")
-        internal_db = self.db_api.dumpOmio()
+        internal_db = self.data_api.db_api.dumpOmio()
         def export_db_as_file():
             file_save_export_dialog = Gtk.FileDialog.new()
             file_save_export_dialog.set_accept_label("Save as")
@@ -373,14 +300,19 @@ class SitemarkerWindow(Adw.ApplicationWindow):
                     file = file_save_export_dialog.save_finish(result)
                 except GLib.Error as err:
                     print("Could not open files: ", err.message)
+                    err_win = ErrorWindow(transient_for=self, message=f"Could not open files: {err.message}")
+                    err_win.show()
                 else:
                     filename = file.get_uri()
                     final_filenames = handle_filenames([filename])
                     f = open(final_filenames[0], 'w')
                     f.write(internal_db)
                     f.close()
+                    info_win = NotifyWindow(transient_for=self, message="Exported database.")
+                    info_win.show()
             file_save_export_dialog.save(self, None, save_response)
         export_db_as_file()
+
     def import_omio_fn(self):
         # File opening
         file_open_view_dialog = Gtk.FileDialog.new()
@@ -407,7 +339,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
                     if _filename.startswith('file://'):  # drag&drop
                         _filename = _filename[7:]  # remove 'file://'
                         _filename = unquote(_filename)  # remove %20
-                        _filename = _filename.strip('\r\n\x00')  # remove spaces
+                        _filename = _filename.strip(r'\r\n\x00')  # remove spaces
                     return _filename
                 filenames = [str(x) for x in filenames]
                 _final_filenames = []
@@ -429,6 +361,8 @@ class SitemarkerWindow(Adw.ApplicationWindow):
                 file = file_open_view_dialog.open_finish(result)
             except GLib.Error as err:
                 print("Could not open files: ", err.message)
+                err_win = ErrorWindow(transient_for=self, message=f"Could not open files: {err.message}")
+                err_win.show()
             else:
                 filename = file.get_uri()
                 final_filenames = handle_filenames([filename])
@@ -458,8 +392,20 @@ class SitemarkerWindow(Adw.ApplicationWindow):
                         margin_end = 10,
                         margin_top = 20,
                         margin_bottom = 20,
+                        wrap = True,
+                        wrap_mode = Pango.WrapMode.CHAR
                     )
                 )
+                scroll_box = Gtk.ScrolledWindow()
+                scroll_box.set_margin_top(10)
+                scroll_box.set_margin_bottom(10)
+                scroll_box.set_margin_start(10)
+                scroll_box.set_margin_end(10)
+                scroll_box.set_max_content_height(500)
+                scroll_box.set_min_content_height(400)
+                scroll_box.set_max_content_width(200)
+                scroll_box.set_min_content_width(100)
+                view_box.append(scroll_box)
 
                 view_records_list_box = Gtk.ListBox.new()
 
@@ -468,8 +414,8 @@ class SitemarkerWindow(Adw.ApplicationWindow):
                     tags = db[key]["Categories"]
                     f = False # Is it found in db?
 
-                    for int_key in self.db_api.db:
-                        int_url = self.db_api.db[int_key]["URL"]
+                    for int_key in self.data_api.db_api.db:
+                        int_url = self.data_api.db_api.db[int_key]["URL"]
                         column = Gtk.Box()
                         column.set_orientation(Gtk.Orientation.HORIZONTAL)
                         column.set_margin_start(10)
@@ -491,14 +437,20 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
                         if (int_key == key) or (int_url == url):
                             _name_item = Gtk.Label()
+                            _name_item.set_wrap(True)
+                            _name_item.set_wrap_mode(Pango.WrapMode.WORD)
                             _name_item.set_label(key)
 
                             f = True
 
                             _url_item = Gtk.Label()
+                            _url_item.set_wrap(True)
+                            _url_item.set_wrap_mode(Pango.WrapMode.CHAR)
                             _url_item.set_label(url)
 
                             _categories_item = Gtk.Label()
+                            _categories_item.set_wrap(True)
+                            _categories_item.set_wrap_mode(Pango.WrapMode.WORD)
                             _cats = "Applied tags: "
                             for i in tags:
                                 _cats += i
@@ -511,10 +463,10 @@ class SitemarkerWindow(Adw.ApplicationWindow):
                                 column.append(_categories_item)
                                 view_records_list_box.append(column)
                     if not f:
-                        self.db_api.push(key, url, tags)
-                        self.save_records()
+                        self.data_api.db_api.push(key, url, tags)
+                        self.data_api.save_db()
 
-                view_box.append(view_records_list_box)
+                scroll_box.set_child(view_records_list_box)
                 view_dialog.show()
 
         # file_open_view_dialog.open(view_dialog, None, open_response)
