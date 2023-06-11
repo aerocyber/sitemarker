@@ -81,7 +81,7 @@ class SitemarkerApplication(Adw.Application):
                                 application_name='SiteMarker',
                                 application_icon='io.github.aerocyber.sitemarker',
                                 developer_name='Aero',
-                                version='sitemarker-dev',
+                                version='1.1.0',
                                 developers=['Aero https://github.com/aerocyber'],
                                 copyright='© 2023 Aero',
                                 license_type=Gtk.License.MIT_X11,
