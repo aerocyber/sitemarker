@@ -51,11 +51,12 @@
     <keyword>free</keyword>
   </keywords>
   <releases>
-    <release version="1.0.1" date="2023-05-31">
+    <release version="1.1.0" date="2023-06-11">
       <description>
-        <p>Release that respects $XDG_DATA_HOME.</p>
+        <p>Update the UI to look cleaner.</p>
       </description>
     </release>
+    <release version="1.0.1" date="2023-05-31" />
     <release version="1.0.0" date="2023-05-30" />
   </releases>
 </component>
