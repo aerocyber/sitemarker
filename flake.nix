@@ -1,19 +1,17 @@
 {
   inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
-  outputs = { self, nixpkgs }@inputs:
+  inputs.mach-nix.url = "github:DavHau/mach-nix?ref=3.3.0";
+  outputs = { self, nixpkgs, mach-nix }@inputs:
   let
-    ghcVersion = "ghc92";
+    pythonVersion = "python311";
     system = "x86_64-linux";
+    mach-nix-wrapper = import mach-nix { inherit pkgs pythonVersion; };
     pkgs = nixpkgs.legacyPackages.${system};
-    dependencies = with pkgs; [ meson ninja gobject-introspection gettext glib python3 pkg-config gtk4 desktop-file-utils appstream python311Packages.pygobject3 ];
   in
   {
-    packages.${system}.default = pkgs;
+    devShells.${system}.default = pkgs.mkShell {
+      buildInputs = with pkgs; [ meson python311Packages.pygobject3 ninja gobject-introspection gettext glib gtk4 desktop-file-utils appstream ];
 
-    devShells.${system}.default = dependencies.shellFor {
-      packages = p: [ dependencies ];
-      nativeBuildInputs = tools ++ [ pkgs.readline ];
     };
   };
 }
