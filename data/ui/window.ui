@@ -54,36 +54,6 @@
               <property name="action-name">win.del</property>
             </object>
           </child>
-          <child>
-            <object class="GtkButton" id="view_omio_file_records">
-              <property name="margin-top">10</property>
-              <property name="margin-bottom">10</property>
-              <property name="margin-start">25</property>
-              <property name="margin-end">25</property>
-              <property name="label" translatable="yes">View omio file records</property>
-              <property name="action-name">win.view-omio</property>
-            </object>
-          </child>
-          <child>
-            <object class="GtkButton" id="import_omio_file_records">
-              <property name="margin-top">10</property>
-              <property name="margin-bottom">10</property>
-              <property name="margin-start">25</property>
-              <property name="margin-end">25</property>
-              <property name="label" translatable="yes">Import records</property>
-              <property name="action-name">win.import</property>
-            </object>
-          </child>
-          <child>
-            <object class="GtkButton" id="export_omio_file_records">
-              <property name="margin-top">10</property>
-              <property name="margin-bottom">10</property>
-              <property name="margin-start">25</property>
-              <property name="margin-end">25</property>
-              <property name="label" translatable="yes">Export records</property>
-              <property name="action-name">win.export</property>
-            </object>
-          </child>
           </object>
         </child>
       </object>
@@ -102,6 +72,18 @@
       <item>
         <attribute name="label" translatable="yes">_About SiteMarker</attribute>
         <attribute name="action">app.about</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Import records</attribute>
+        <attribute name="action-name">win.import</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">Export records</attribute>
+        <attribute name="action-name">win.export</attribute>
+      </item>
+      <item>
+        <attribute name="label" translatable="yes">View omio file records</attribute>
+        <attribute name="action-name">win.view-omio</attribute>
       </item>
     </section>
   </menu>

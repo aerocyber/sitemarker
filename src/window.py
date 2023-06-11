@@ -61,9 +61,6 @@ class SitemarkerWindow(Adw.ApplicationWindow):
     add_record = Gtk.Template.Child()
     view_records = Gtk.Template.Child()
     del_record = Gtk.Template.Child()
-    view_omio_file_records = Gtk.Template.Child()
-    import_omio_file_records = Gtk.Template.Child()
-    export_omio_file_records = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
