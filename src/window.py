@@ -77,6 +77,15 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         definitions = Definitions()
         data_dir = definitions.data_dir()
 
+        # Check if DB exist in application's default (data) location
+        # The dot in front of sitemarker is because we want to create a hidden directory
+        # in *nix systems. It doesn't have any effect on Windows, but, the *nix
+        # system has a default layout for $HOME. We don't want sitemarker to break that.
+        if not os.getenv("XDG_DATA_HOME"):
+            data_dir = pathlib.PurePath.joinpath(pathlib.Path.home(), '.local', 'share', 'sitemarker')
+        else:
+            data_dir = pathlib.PurePath.joinpath(pathlib.Path(os.getenv("XDG_DATA_HOME")), 'sitemarker')
+
 
         # The internal.omio file is just as valid as the original file.
         # This is by design because, if for some reason the application does not work
