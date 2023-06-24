@@ -87,6 +87,7 @@ class SitemarkerApplication(Adw.Application):
                                 license_type=Gtk.License.MIT_X11,
                                 comments="An open source bookmark manager.")
         about.set_website("https://github.com/aerocyber/sitemarker")
+        about.add_link("Donate", "https://buymeacoffee.com/aerocyber")
 
         # Contributors require credits, especially code contributors.
         contributors = self.get_contributors()
