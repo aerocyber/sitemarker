@@ -1,5 +1,7 @@
 # SiteMarker Docs
 
+## :warning: The Documentation is still incomplete
+
 ## About
 
 SiteMarker is an open-source bookmark manager written with GTK4 and Adwaita in Python. It is a minimal application that can be downloaded from [Flathub](https://flathub.com/app/io.github.aerocyber.sitemarker) or be built from source and installed.
