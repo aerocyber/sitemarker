@@ -57,6 +57,12 @@
                 <property name="action-name">win.export</property>
               </object>
             </child>
+            <child>
+              <object class="GtkShortcutsShortcut">
+                <property name="title" translatable="yes" context="shortcut window">Documentation</property>
+                <property name="action-name">win.docs</property>
+              </object>
+            </child>
           </object>
         </child>
       </object>
