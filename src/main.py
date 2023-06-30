@@ -43,12 +43,14 @@ class SitemarkerApplication(Adw.Application):
 
         self.create_action('quit', lambda *_: self.quit(), ['<primary>q'])
         self.create_action('about', self.on_about_action)
+        self.create_action('import', self.on_import_action)
         self.set_accels_for_action("win.add", ['<ctrl>n'])
         self.set_accels_for_action("win.del", ['<ctrl>d'])
         self.set_accels_for_action("win.view", ['<ctrl>v'])
         self.set_accels_for_action("win.view-omio", ['<ctrl>o'])
         self.set_accels_for_action("win.import", ['<ctrl>i'])
         self.set_accels_for_action("win.export", ['<ctrl>e'])
+        self.set_accels_for_action("win.docs", ['<ctrl>h'])
 
         # Dark mode
         dark_mode = self.settings.get_boolean("dark-mode")
@@ -75,13 +77,17 @@ class SitemarkerApplication(Adw.Application):
             win = SitemarkerWindow(application=self)
         win.present()
 
+    def on_import_action():
+        s = SiteMarkerWindow()
+        s.on_import_action()
+
     def on_about_action(self, widget, _):
         """Callback for the app.about action."""
         about = Adw.AboutWindow(transient_for=self.props.active_window,
                                 application_name='SiteMarker',
                                 application_icon='io.github.aerocyber.sitemarker',
                                 developer_name='Aero',
-                                version='1.1.0',
+                                version='1.2.0',
                                 developers=['Aero https://github.com/aerocyber'],
                                 copyright='© 2023 Aero',
                                 license_type=Gtk.License.MIT_X11,
