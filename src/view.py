@@ -1,5 +1,5 @@
 from gi.repository import Adw
-from gi.repository import Gtk
+from gi.repository import Gtk, Gdk
 from .data import Data
 import pathlib
 import sys
