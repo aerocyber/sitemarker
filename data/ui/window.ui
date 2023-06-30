@@ -82,6 +82,10 @@
         <attribute name="action-name">win.view-omio</attribute>
       </item>
       <item>
+        <attribute name="label" translatable="yes">_Visit Docs</attribute>
+        <attribute name="action">win.docs</attribute>
+      </item>
+      <item>
         <attribute name="label" translatable="yes">_About SiteMarker</attribute>
         <attribute name="action">app.about</attribute>
       </item>
