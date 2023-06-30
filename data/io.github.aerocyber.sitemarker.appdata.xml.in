@@ -51,11 +51,12 @@
     <keyword>free</keyword>
   </keywords>
   <releases>
-    <release version="1.2.0" date="2023-06-30">
+    <release version="1.2.1" date="2023-06-30">
       <description>
-        <p>Mainly a bugfix release that addresses a few issues that include import/export and viewing .omio files. Updated screenshots. For more, see: https://github.com/aerocyber/sitemarker/releases/tag/1.2.0</p>
+        <p>Fix version info</p>
       </description>
     </release>
+    <release version="1.2.0" date="2023-06-30" />
     <release version="1.1.0" date="2023-06-11" />
     <release version="1.0.1" date="2023-05-31" />
     <release version="1.0.0" date="2023-05-30" />
