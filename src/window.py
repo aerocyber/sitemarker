@@ -61,6 +61,9 @@ class SitemarkerWindow(Adw.ApplicationWindow):
     add_record = Gtk.Template.Child()
     view_records = Gtk.Template.Child()
     del_record = Gtk.Template.Child()
+    import_record = Gtk.Template.Child()
+    export_record = Gtk.Template.Child()
+    view_omio = Gtk.Template.Child()
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -70,6 +73,11 @@ class SitemarkerWindow(Adw.ApplicationWindow):
         self.create_action('view-omio', self.on_view_omio_action)
         self.create_action('import', self.on_import_action)
         self.create_action('export', self.on_export_action)
+        self.create_action('docs', self.on_docs_action)
+
+        self.import_record.connect("clicked", self.on_import_action)
+        self.export_record.connect("clicked", self.on_export_action)
+        self.view_omio.connect("clicked", self.on_view_omio_action)
 
         definitions = Definitions()
         data_dir = definitions.data_dir()
@@ -118,10 +126,10 @@ class SitemarkerWindow(Adw.ApplicationWindow):
             else:
                 printerr(_err)
 
+    def on_docs_action(self, widget, _):
+        webbrowser.open_new_tab("https://aerocyber.github.io/sitemarker")
+
     def on_view_action(self, widget, _):
-        # Update the code to view all records.
-        db = json.loads(self.data_api.db_api.dumpOmio())
-        # self.view_element(self, db=db)
         view_win = ViewWindow(transient_for=self)
         view_win.show()
 
@@ -190,6 +198,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
 
     def on_view_omio_action(self, widget, _):
         # View omio file.
+        print("Inside on_view_omio_action") # TODO: Remove after debugging
         self.view_db_as_file()
 
     def view_db_as_file(self):
@@ -276,6 +285,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
             file_save_export_dialog.set_initial_name(default_name)
             file_save_export_dialog.set_modal(self)
             file_save_export_dialog.set_title("Choose a file to export to")
+
             def save_response(file_save_export_dialog, result):
                 ##### Credits of handle_filenames and clean_filenames: Curtail project
                 ##### https://github.com/Huluti/Curtail/blob/ab0e268bbb4c30900daf30ff255db243baa82465/src/window.py
@@ -316,6 +326,7 @@ class SitemarkerWindow(Adw.ApplicationWindow):
                     f.close()
                     info_win = NotifyWindow(transient_for=self, message="Exported database.")
                     info_win.show()
+
             file_save_export_dialog.save(self, None, save_response)
         export_db_as_file()
 
