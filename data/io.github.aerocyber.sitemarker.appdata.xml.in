@@ -1,14 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <component type="desktop">
-  <!--Created with jdAppStreamEdit 6.0-->
   <id>io.github.aerocyber.sitemarker.desktop</id>
   <name>SiteMarker</name>
-  <summary>An open source bookmark manager.</summary>
+  <summary>An open source bookmark manager</summary>
   <developer_name>Aero</developer_name>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
   <description>
-    <p>An open source bookmark manager.</p>
+    <p>An open source bookmark manager</p>
   </description>
   <screenshots>
     <screenshot>
@@ -51,11 +50,12 @@
     <keyword>free</keyword>
   </keywords>
   <releases>
-    <release version="1.2.1" date="2023-06-30">
+    <release version="1.2.2" date="2023-07-01">
       <description>
-        <p>Fix version info</p>
+        <p>Fix summary</p>
       </description>
     </release>
+    <release version="1.2.1" date="2023-06-30">
     <release version="1.2.0" date="2023-06-30" />
     <release version="1.1.0" date="2023-06-11" />
     <release version="1.0.1" date="2023-05-31" />
