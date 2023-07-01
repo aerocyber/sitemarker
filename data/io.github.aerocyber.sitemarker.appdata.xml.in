@@ -3,12 +3,12 @@
   <!--Created with jdAppStreamEdit 6.0-->
   <id>io.github.aerocyber.sitemarker.desktop</id>
   <name>SiteMarker</name>
-  <summary>An open source bookmark manager.</summary>
+  <summary>An open source bookmark manager</summary>
   <developer_name>Aero</developer_name>
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MIT</project_license>
   <description>
-    <p>An open source bookmark manager.</p>
+    <p>An open source bookmark manager</p>
   </description>
   <screenshots>
     <screenshot>
