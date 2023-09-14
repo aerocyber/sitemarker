@@ -1,70 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   width="210mm"
-   height="297mm"
-   viewBox="0 0 210 297"
-   version="1.1"
-   id="svg1"
-   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
-   sodipodi:docname="io.github.aerocyber.sitemarker.svg"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <sodipodi:namedview
-     id="namedview1"
-     pagecolor="#ffffff"
-     bordercolor="#000000"
-     borderopacity="0.25"
-     inkscape:showpageshadow="2"
-     inkscape:pageopacity="0.0"
-     inkscape:pagecheckerboard="0"
-     inkscape:deskcolor="#d1d1d1"
-     inkscape:document-units="mm"
-     inkscape:zoom="0.78363065"
-     inkscape:cx="408.9937"
-     inkscape:cy="523.84373"
-     inkscape:window-width="1366"
-     inkscape:window-height="699"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
-     inkscape:window-maximized="1"
-     inkscape:current-layer="layer1"
-     showgrid="false" />
-  <defs
-     id="defs1" />
-  <g
-     inkscape:label="Layer 1"
-     inkscape:groupmode="layer"
-     id="layer1">
-    <path
-       id="rect1"
-       style="fill:#3737c8;stroke-width:1.5"
-       d="m 68.946694,78.235687 h 50.847456 c 4.29049,0 7.74457,3.454078 7.74457,7.744569 V 184.3832 c 0,4.29049 -3.45408,7.74457 -7.74457,7.74457 L 94.370422,163.27688 68.946694,192.12777 c -2.836615,3.219 -7.744568,-3.45408 -7.744568,-7.74457 V 85.980256 c 0,-4.290491 3.454077,-7.744569 7.744568,-7.744569 z"
-       sodipodi:nodetypes="ssssscssss" />
-    <g
-       id="g2"
-       transform="matrix(0.83675327,0,0,0.81560726,-47.994509,13.386832)">
-      <rect
-         style="fill:#1c1c24;stroke-width:1.91219"
-         id="rect2"
-         width="71.049011"
-         height="13.612343"
-         x="-5.4606986"
-         y="209.95233"
-         ry="6.8061714"
-         transform="rotate(-45)" />
-      <rect
-         style="fill:#1c1c24;stroke-width:1.09393"
-         id="rect2-5"
-         width="14.845505"
-         height="21.321299"
-         x="-5.5884318"
-         y="198.94907"
-         ry="3.4751866"
-         transform="rotate(-45)" />
-    </g>
-  </g>
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" width="128" height="128" viewBox="0 0 128 128" xml:space="preserve">
+<desc>Created with Fabric.js 5.2.4</desc>
+<defs>
+</defs>
+<g transform="matrix(1 0 0 1 64 64)" id="13a00d45-3559-43b4-a2d6-c5fb2c47a4be"  >
+<rect style="stroke: none; stroke-width: 1; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(255,255,255); fill-rule: nonzero; opacity: 1; visibility: hidden;" vector-effect="non-scaling-stroke"  x="-64" y="-64" rx="0" ry="0" width="128" height="128" />
+</g>
+<g transform="matrix(Infinity NaN NaN Infinity 0 0)" id="75b9c72d-985b-45e3-95e2-b9498965221e"  >
+</g>
+<g transform="matrix(0.12 0 0 0.12 64 64)"  >
+<g style="" vector-effect="non-scaling-stroke"   >
+		<g transform="matrix(3.78 0 0 3.78 0 0)" id="rect1"  >
+<path style="stroke: none; stroke-width: 1.5; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(55,55,200); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  transform=" translate(-94.37, -135.61)" d="M 68.946694 78.235687 L 119.79415 78.235687 C 124.08464000000001 78.235687 127.53872 81.689765 127.53872 85.980256 L 127.53872 184.3832 C 127.53872 188.67369 124.08464 192.12777 119.79415 192.12777 L 94.370422 163.27688 L 68.946694 192.12777 C 66.110079 195.34677 61.20212599999999 188.67369 61.20212599999999 184.3832 L 61.20212599999999 85.980256 C 61.20212599999999 81.689765 64.65620299999999 78.235687 68.946694 78.235687 z" stroke-linecap="round" />
+</g>
+		<g transform="matrix(2.24 -2.18 2.24 2.18 13.88 -54.99)" id="rect2"  >
+<rect style="stroke: none; stroke-width: 1.91219; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(28,28,36); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  x="-35.5245055" y="-6.8061715" rx="6.8061714" ry="6.8061714" width="71.049011" height="13.612343" />
+</g>
+		<g transform="matrix(2.24 -2.18 2.24 2.18 -65.23 -9.04)" id="rect2-5"  >
+<rect style="stroke: none; stroke-width: 1.09393; stroke-dasharray: none; stroke-linecap: butt; stroke-dashoffset: 0; stroke-linejoin: miter; stroke-miterlimit: 4; fill: rgb(28,28,36); fill-rule: nonzero; opacity: 1;" vector-effect="non-scaling-stroke"  x="-7.4227525" y="-10.6606495" rx="3.4751866" ry="3.4751866" width="14.845505" height="21.321299" />
+</g>
+</g>
+</g>
 </svg>
