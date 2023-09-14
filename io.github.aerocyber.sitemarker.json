@@ -29,7 +29,7 @@
                 {
                     "type" : "git",
                     "url" : ".",
-                    "branch": "dev"
+                    "branch": "main"
                 }
             ]
         }
