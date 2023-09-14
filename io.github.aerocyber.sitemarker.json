@@ -5,10 +5,8 @@
     "sdk" : "org.gnome.Sdk",
     "command" : "sitemarker",
     "finish-args" : [
-        "--share=network",
-        "--share=ipc",
-        "--socket=fallback-x11",
-        "--device=dri",
+    	"--device=dri",
+    	"--share=ipc",
         "--socket=wayland"
     ],
     "cleanup" : [
@@ -31,7 +29,7 @@
                 {
                     "type" : "git",
                     "url" : ".",
-                    "branch": "main"
+                    "branch": "dev"
                 }
             ]
         }

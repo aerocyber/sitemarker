@@ -50,11 +50,12 @@
     <keyword>free</keyword>
   </keywords>
   <releases>
-    <release version="1.2.2" date="2023-07-01">
+    <release version="1.2.3" date="2023-09-14">
       <description>
-        <p>Fix summary</p>
+        Update icon, donate link, permission.
       </description>
     </release>
+    <release version="1.2.2" date="2023-07-01" />
     <release version="1.2.1" date="2023-06-30" />
     <release version="1.2.0" date="2023-06-30" />
     <release version="1.1.0" date="2023-06-11" />

@@ -87,13 +87,13 @@ class SitemarkerApplication(Adw.Application):
                                 application_name='SiteMarker',
                                 application_icon='io.github.aerocyber.sitemarker',
                                 developer_name='Aero',
-                                version='1.2.2',
+                                version='1.2.3',
                                 developers=['Aero https://github.com/aerocyber'],
                                 copyright='© 2023 Aero',
                                 license_type=Gtk.License.MIT_X11,
                                 comments="An open source bookmark manager.")
         about.set_website("https://github.com/aerocyber/sitemarker")
-        about.add_link("Donate", "https://github.com/sponsors/aerocyber")
+        about.add_link("Donate", "https://buymeacoffee.com/aerocyber")
 
         # Contributors require credits, especially code contributors.
         contributors = self.get_contributors()
