@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "io.github.aerocyber" "\0"
-            VALUE "FileDescription", "sitemarker" "\0"
+            VALUE "FileDescription", "Sitemarker" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "sitemarker" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2024 io.github.aerocyber. All rights reserved." "\0"
             VALUE "OriginalFilename", "sitemarker.exe" "\0"
-            VALUE "ProductName", "sitemarker" "\0"
+            VALUE "ProductName", "Sitemarker" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
