@@ -1,1 +1,1 @@
-dch --create -v 1.0-1 --package sitemarker
+dch --create -v 2.0-1 --package sitemarker

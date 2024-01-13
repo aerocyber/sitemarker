@@ -1,7 +1,0 @@
-[Desktop Entry]
-Type=Application
-Name=SiteMarker
-Icon=io.github.aerocyber.sitemarker
-Exec=sitemarker
-Categories=GTK;Utility;
-StartupNotify=true

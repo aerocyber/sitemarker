@@ -1,33 +1,66 @@
-# sitemarker
+# Sitemarker
 
-An open source bookmark manager written in Gtk4
+An open source bookmark manager written in Flutter
 
-## Building 
+## Requirements
 
-### Linux
+Install [Flutter](https://flutter.dev) for building.
 
-### using `meson`
-
-#### Requirements
-
-The build was tested on Fedora 38 with the following pre-requisite packages:
-
-- glib2-devel
-- gettext
-- meson
-- ninja-build
-
-Install them on Fedora (tested on 38) with:
+Fetch the dependencies using:
 
 ```bash
-sudo dnf install meson ninja-build gettext glib2-devel -y
+flutter pub get
 ```
 
-#### Command
+## Building
+
+Building is as simple as running the following command in the root of the project dir:
 
 ```bash
-meson build
-cd build
-sudo ninja install
+flutter build <dist>
 ```
 
+where `dist` is one of the option in `flutter build` subcommands.
+
+:warning: web is not supported and issues submitted will be closed without notice.
+
+## Releases
+
+Checkout the [releases](https://github.com/aerocyber/sitemarker/releases) page and obtain the latest stable release!
+
+### Distribution packages
+
+The following packages are (or will be) available via package managers:
+
+* Flatpak via Flathub: [Go to flathub page](https://flathub.org/app/io.aerocyber.sitemarker)
+* Snap via Snapstore: [Go to Snapstore page](https://snapstore.io/osmata)
+
+## Documentation
+
+See [docs](docs/index.md) [here](https://aerocyber.github.io/sitemarker).
+
+## Reporting issues
+
+Giving accurate bug report is essential for the continuous development of sitemarker. You can report all issues at [Github Issues](https://github.com/aerocyber/sitemarker/issues).
+
+## Contribution
+
+For all contributions to this project, please [open a pull request](https://github.com/aerocyber/sitemarker/pulls). See [Contribution Guidelines](#contribution-guideline) before opening a PR.
+
+You can [sponsor](https://github.com/sponsors/aerocyber) the project as well!
+
+### COntribution Guideline
+
+Contribution guidelines exist to help contrbutors to make contribution to the right place.
+
+There exist different ways to contribute.
+
+* All security fixes are considered with **_topmost_** priority. Hence, they're to be **_committed DIRECTLY to `main` branch and PR opened AGAINST `main`_**.
+
+These PRs MUST be labelled `PRIORITY: 0` and `Security` and will be reviewed under 2 days.
+
+* All code commits MUST go to `dev` branch. They must have a tag which suits the need, say `Feaure Implementation`, `Enhancement`, `Bug fix`.
+
+* All translations MUST go to `dev` branch. They must have a tag of `Translation`. All translations are in the `translations` directory in the root dir.
+
+The translations can be done by copying `base.json` to your `locale.json` file and editing them. Please make sure to **_COPY_** and NOT MOVE the base.json file.
