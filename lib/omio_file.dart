@@ -94,9 +94,6 @@ class OmioFile {
   bool writeToOmioFile() {
     /// Write SitemarkerRecords to .omio file.
     String? dat = smr?.toJson();
-    if (dat == null) {
-      return false;
-    }
 
     var writer = omioFilePath.openWrite();
     writer.write(dat);
