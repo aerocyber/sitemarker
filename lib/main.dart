@@ -1,6 +1,12 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:sitemarker/components/card_add.dart';
+import 'package:sitemarker/components/card_delete.dart';
+import 'package:sitemarker/components/card_edit.dart';
+import 'package:sitemarker/components/card_search.dart';
+import 'package:sitemarker/components/nav_drawer.dart';
+import 'package:sitemarker/components/card_view.dart';
 import 'package:sitemarker/errors.dart';
 import 'package:sitemarker/sitemarker_data.dart';
 import 'package:sitemarker/omio_file.dart';
@@ -113,195 +119,34 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             GestureDetector(
-              child: Card(
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(4)),
-                ),
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(20),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          const Icon(Icons.add),
-                          Container(
-                            width: 15,
-                          ),
-                          Expanded(
-                              child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Container(
-                                height: 5,
-                              ),
-                              const Text(
-                                "Add Record",
-                              ),
-                              Container(
-                                height: 5,
-                              ),
-                            ],
-                          )),
-                          Container(
-                            height: 5,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              child: const CardAdd(),
               onTap: () =>
                   {}, // TODO: Implement adding record via page navigation
             ),
-            Card(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-              ),
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Icon(Icons.edit),
-                        Container(
-                          width: 15,
-                        ),
-                        Expanded(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              height: 5,
-                            ),
-                            const Text(
-                              "Edit Record",
-                            ),
-                            Container(
-                              height: 5,
-                            ),
-                          ],
-                        )),
-                        Container(
-                          height: 5,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            GestureDetector(
+              onTap: () =>
+                  {}, // TODO: Implement editing record via page navigation
+              child: const CardEdit(),
             ),
-            Card(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-              ),
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Icon(Icons.delete),
-                        Container(
-                          width: 15,
-                        ),
-                        Expanded(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              height: 5,
-                            ),
-                            const Text(
-                              "Delete Record",
-                            ),
-                            Container(
-                              height: 5,
-                            ),
-                          ],
-                        )),
-                        Container(
-                          height: 5,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            GestureDetector(
+              onTap: () =>
+                  {}, // TODO: Implement deleting record via page navigation
+              child: const CardDelete(),
             ),
-            Card(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(4)),
-              ),
-              clipBehavior: Clip.antiAliasWithSaveLayer,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(20),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        const Icon(Icons.search),
-                        Container(
-                          width: 15,
-                        ),
-                        Expanded(
-                            child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Container(
-                              height: 5,
-                            ),
-                            const Text(
-                              "Search for Record",
-                            ),
-                            Container(
-                              height: 5,
-                            ),
-                          ],
-                        )),
-                        Container(
-                          height: 5,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+            GestureDetector(
+              onTap: () =>
+                  {}, // TODO: Implement searching record via page navigation
+              child: const CardSearch(),
+            ),
+            GestureDetector(
+              onTap: () =>
+                  {}, // TODO: Implement viewing record via page navigation
+              child: const CardView(),
             ),
           ],
         ),
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: const [
-            DrawerHeader(
-                decoration:
-                    BoxDecoration(color: Color.fromARGB(255, 84, 143, 232)),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Options",
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ))
-          ],
-        ),
-      ),
+      drawer: const NavDrawer(),
     );
   }
 }
