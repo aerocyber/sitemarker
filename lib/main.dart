@@ -1,11 +1,16 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:sitemarker/errors.dart';
+import 'package:sitemarker/sitemarker_data.dart';
+import 'package:sitemarker/omio_file.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const SitemarkerApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SitemarkerApp extends StatelessWidget {
+  const SitemarkerApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -32,13 +37,13 @@ class MyApp extends StatelessWidget {
             seedColor: const Color.fromARGB(255, 137, 70, 252)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Sitemarker'),
+      home: const SitemarkerHome(title: 'Sitemarker'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class SitemarkerHome extends StatefulWidget {
+  const SitemarkerHome({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -52,11 +57,12 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SitemarkerHome> createState() => _SitemarkerHomeState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _SitemarkerHomeState extends State<SitemarkerHome> {
+  late SitemarkerRecords smr;
+  late File omioFileLocation;
 
   void _incrementCounter() {
     setState(() {
@@ -65,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // so that the display can reflect the updated values. If we changed
       // _counter without calling setState(), then the build method would not be
       // called again, and so nothing would appear to happen.
-      _counter++;
     });
   }
 
@@ -86,6 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        centerTitle: true,
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -106,21 +112,196 @@ class _MyHomePageState extends State<MyHomePage> {
           // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            GestureDetector(
+              child: Card(
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(4)),
+                ),
+                clipBehavior: Clip.antiAliasWithSaveLayer,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Icon(Icons.add),
+                          Container(
+                            width: 15,
+                          ),
+                          Expanded(
+                              child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Container(
+                                height: 5,
+                              ),
+                              const Text(
+                                "Add Record",
+                              ),
+                              Container(
+                                height: 5,
+                              ),
+                            ],
+                          )),
+                          Container(
+                            height: 5,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              onTap: () =>
+                  {}, // TODO: Implement adding record via page navigation
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            Card(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+              ),
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Icon(Icons.edit),
+                        Container(
+                          width: 15,
+                        ),
+                        Expanded(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              height: 5,
+                            ),
+                            const Text(
+                              "Edit Record",
+                            ),
+                            Container(
+                              height: 5,
+                            ),
+                          ],
+                        )),
+                        Container(
+                          height: 5,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Card(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+              ),
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Icon(Icons.delete),
+                        Container(
+                          width: 15,
+                        ),
+                        Expanded(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              height: 5,
+                            ),
+                            const Text(
+                              "Delete Record",
+                            ),
+                            Container(
+                              height: 5,
+                            ),
+                          ],
+                        )),
+                        Container(
+                          height: 5,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Card(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(4)),
+              ),
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        const Icon(Icons.search),
+                        Container(
+                          width: 15,
+                        ),
+                        Expanded(
+                            child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Container(
+                              height: 5,
+                            ),
+                            const Text(
+                              "Search for Record",
+                            ),
+                            Container(
+                              height: 5,
+                            ),
+                          ],
+                        )),
+                        Container(
+                          height: 5,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: const [
+            DrawerHeader(
+                decoration:
+                    BoxDecoration(color: Color.fromARGB(255, 84, 143, 232)),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Options",
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ))
+          ],
+        ),
+      ),
     );
   }
 }
