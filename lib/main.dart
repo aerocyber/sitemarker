@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:sitemarker/components/card_add.dart';
 import 'package:sitemarker/components/card_delete.dart';
@@ -7,11 +5,18 @@ import 'package:sitemarker/components/card_edit.dart';
 import 'package:sitemarker/components/card_search.dart';
 import 'package:sitemarker/components/nav_drawer.dart';
 import 'package:sitemarker/components/card_view.dart';
+import 'package:sitemarker/model.dart';
+import 'package:sitemarker/objectbox_bind.dart';
+import 'package:sitemarker/pages/dialog.dart';
+import 'package:sitemarker/pages/page_add.dart';
+import 'package:sitemarker/pages/page_view.dart';
 import 'package:sitemarker/errors.dart';
-import 'package:sitemarker/sitemarker_data.dart';
-import 'package:sitemarker/omio_file.dart';
+import 'package:sitemarker/sitemarker_record.dart';
 
-void main() {
+late ObjectBox objectbox;
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  objectbox = await ObjectBox.create();
   runApp(const SitemarkerApp());
 }
 
@@ -67,61 +72,27 @@ class SitemarkerHome extends StatefulWidget {
 }
 
 class _SitemarkerHomeState extends State<SitemarkerHome> {
-  late SitemarkerRecords smr;
-  late File omioFileLocation;
+  final recordBox = objectbox.store.box<SitemarkerInternalRecord>();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-    });
-  }
+  _SitemarkerHomeState();
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
         centerTitle: true,
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             GestureDetector(
               child: const CardAdd(),
-              onTap: () =>
-                  {}, // TODO: Implement adding record via page navigation
+              onTap: () {
+                _navigateGetData(context);
+              },
             ),
             GestureDetector(
               onTap: () =>
@@ -139,8 +110,15 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
               child: const CardSearch(),
             ),
             GestureDetector(
-              onTap: () =>
-                  {}, // TODO: Implement viewing record via page navigation
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ViewPage(
+                        ob: recordBox,
+                      ),
+                    ));
+              },
               child: const CardView(),
             ),
           ],
@@ -148,5 +126,47 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
       ),
       drawer: const NavDrawer(),
     );
+  }
+
+  Future<void> _navigateGetData(BuildContext context) async {
+    try {
+      final SitemarkerRecord result = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => PageAdd()),
+      );
+
+      if (!mounted) return;
+      String tagString = '';
+      for (int i = 0; i < result.tags.length; i++) {
+        tagString = "$tagString ${result.tags[i]}";
+        if (i != result.tags.length - 1) {
+          tagString = '$tagString, ';
+        }
+      }
+      SitemarkerInternalRecord smir =
+          SitemarkerInternalRecord(result.name, result.url, tagString);
+      recordBox.put(smir);
+    } on InvalidUrlError {
+      showAlertDialog(
+        context,
+        "Invalid URL",
+        "Please enter a valid URL.",
+      );
+    } on DuplicateRecordException {
+      showAlertDialog(context, "Duplicate Entry",
+          "There is already an entry with the provided name/URL.");
+    }
+  }
+
+  void showAlertDialog(
+      BuildContext context, String dialogTitle, String bodyText) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return DialogInfo(
+            alertTitle: dialogTitle,
+            alertBody: bodyText,
+          );
+        });
   }
 }

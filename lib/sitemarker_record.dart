@@ -6,7 +6,9 @@ class SitemarkerRecord {
   late String url;
   late List<String> tags;
 
-  SitemarkerRecord(String name, String url, List<String> tags) {
+  SitemarkerRecord();
+
+  void setRecord(String name, String url, List<String> tags) {
     if (isValidUrl(url)) {
       this.name = name;
       this.url = url;
@@ -18,11 +20,6 @@ class SitemarkerRecord {
 
   bool isValidUrl(String url) {
     /// Check if URL is valid.
-    try {
-      Uri _ = Uri.dataFromString(url);
-    } on InvalidUrlError {
-      return false;
-    }
-    return true;
+    return Uri.parse(url).isAbsolute;
   }
 }

@@ -7,17 +7,7 @@ class SitemarkerRecords {
   /// Sitemarker internal API implementation.
   List<SitemarkerRecord> smRecords = [];
 
-  SitemarkerRecords(SitemarkerRecord? smr) {
-    if (smr != null) {
-      SitemarkerRecord? isFnd = search(smr.name, smr.url);
-
-      if (isFnd != null) {
-        throw DuplicateRecordException(smr);
-      } else {
-        smRecords.add(smr);
-      }
-    }
-  }
+  SitemarkerRecords();
 
   bool isValidUrl(String url) {
     /// Check if URL is valid.
@@ -53,10 +43,13 @@ class SitemarkerRecords {
     }
     SitemarkerRecord? smr = search(name, url);
     if (smr == null) {
-      SitemarkerRecord smrTmp = SitemarkerRecord(name, url, tags);
+      SitemarkerRecord smrTmp = SitemarkerRecord();
+      smrTmp.setRecord(name, url, tags);
       smRecords.add(smrTmp);
     } else {
-      throw DuplicateRecordException(SitemarkerRecord(name, url, tags));
+      SitemarkerRecord x = SitemarkerRecord();
+      x.setRecord(name, url, tags);
+      throw DuplicateRecordException(x);
     }
   }
 
@@ -98,5 +91,9 @@ class SitemarkerRecords {
       };
     }
     return jsonEncode(map);
+  }
+
+  int length() {
+    return smRecords.length;
   }
 }
