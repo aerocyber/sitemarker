@@ -1,4 +1,4 @@
-import 'package:sitemarker/errors.dart';
+import 'package:sitemarker/operations/errors.dart';
 
 class SitemarkerRecord {
   /// Each record in Sitemarker is represented as a SitemarkerRecord object.

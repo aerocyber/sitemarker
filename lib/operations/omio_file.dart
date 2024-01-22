@@ -1,34 +1,34 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:sitemarker/sitemarker_data.dart';
+import 'package:sitemarker/operations/errors.dart';
+import 'package:sitemarker/operations/sitemarker_data.dart';
 
 class OmioFile {
   /// All .omio file related operations are done via OmioFile.
   SitemarkerRecords smr = SitemarkerRecords();
   late String omioFilePath;
-  late File omioFile;
 
   OmioFile(this.omioFilePath);
 
   bool readOmioFile() {
-    // /// Read omio file content and write value to SitemarkerRecords object smr
-    // //String dat = omioFilePath.readAsStringSync(encoding: utf8);
-    // bool isValid = isValidOmio(dat);
-    // if (!isValid) {
-    //   throw InvalidOmioFileExcepion(omioFilePath);
-    // }
-    // var data = jsonDecode(dat);
-    // if (data != null) {
-    //   data?.forEach((key, value) {
-    //     String name = key;
-    //     String url = value["URL"];
-    //     List<String> tags = value["Categories"];
+    /// Read omio file content and write value to SitemarkerRecords object smr
+    String dat = File(omioFilePath).readAsStringSync(encoding: utf8);
+    bool isValid = isValidOmio(dat);
+    if (!isValid) {
+      throw InvalidOmioFileExcepion(File(omioFilePath));
+    }
+    var data = jsonDecode(dat);
+    if (data != null) {
+      data?.forEach((key, value) {
+        String name = key;
+        String url = value["URL"];
+        List<String> tags = value["Categories"];
 
-    //     smr.addRecord(name, url, tags);
-    //   });
-    // } else {
-    //   return false;
-    // }
+        smr.addRecord(name, url, tags);
+      });
+    } else {
+      return false;
+    }
     return true;
   }
 
@@ -91,13 +91,10 @@ class OmioFile {
     return isValidOmio;
   }
 
-  bool writeToOmioFile(SitemarkerRecords smrsToWrite) {
-    // /// Write SitemarkerRecords to .omio file.
-    // String dat = smrsToWrite.toJson();
+  void writeToOmioFile(SitemarkerRecords smrsToWrite) {
+    /// Write SitemarkerRecords to .omio file.
+    String dat = smrsToWrite.toJson();
 
-    // var writer = omioFilePath.openWrite();
-    // writer.write(dat);
-    // writer.close();
-    return true;
+    File(omioFilePath).writeAsStringSync(dat);
   }
 }
