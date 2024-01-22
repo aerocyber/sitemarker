@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:sitemarker/sitemarker_record.dart';
-import 'package:sitemarker/errors.dart';
+import 'package:sitemarker/operations/sitemarker_record.dart';
+import 'package:sitemarker/operations/errors.dart';
 
 class SitemarkerRecords {
   /// Sitemarker internal API implementation.

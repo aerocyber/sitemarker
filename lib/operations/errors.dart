@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:sitemarker/sitemarker_record.dart';
+import 'package:sitemarker/operations/sitemarker_record.dart';
 
 class InvalidUrlError implements Exception {
   /// Raised when the URL is invalid.
@@ -8,7 +8,7 @@ class InvalidUrlError implements Exception {
 
   @override
   String toString() {
-    return "The URL $url is invalid";
+    return 'The URL $url is invalid';
   }
 }
 
@@ -19,7 +19,7 @@ class RecordNotFoundException implements Exception {
 
   @override
   String toString() {
-    return "Record with name: $name is not found in records.";
+    return 'Record with name: $name is not found in records.';
   }
 }
 
@@ -30,7 +30,7 @@ class DuplicateRecordException implements Exception {
 
   @override
   String toString() {
-    return "There exist a record with name ${smr.name} or URL ${smr.url}";
+    return 'There exist a record with name ${smr.name} or URL ${smr.url}';
   }
 }
 
@@ -41,6 +41,17 @@ class InvalidOmioFileExcepion implements Exception {
 
   @override
   String toString() {
-    return "The file $omioFilePath is not a valid omio file.";
+    return 'The file $omioFilePath is not a valid omio file.';
+  }
+}
+
+class CouldNotLaunchBrowserException implements Exception {
+  /// Raised when URL could not be launched via browser
+  String url;
+  CouldNotLaunchBrowserException(this.url);
+
+  @override
+  String toString() {
+    return "$url couldn't be launched via browser.";
   }
 }

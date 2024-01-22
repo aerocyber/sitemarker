@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class CardView extends StatelessWidget {
-  const CardView({super.key});
+class CardNew extends StatelessWidget {
+  const CardNew({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +25,7 @@ class CardView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Icon(
-                    Icons.table_rows,
+                    Icons.add,
                     color: Theme.of(context).colorScheme.secondary,
                   ),
                   Container(
@@ -36,7 +36,7 @@ class CardView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        "View Records",
+                        "Add Record",
                       ),
                     ],
                   )),

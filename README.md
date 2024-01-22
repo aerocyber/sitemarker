@@ -43,6 +43,16 @@ See [docs](docs/index.md) [here](https://aerocyber.github.io/sitemarker).
 
 Giving accurate bug report is essential for the continuous development of sitemarker. You can report all issues at [Github Issues](https://github.com/aerocyber/sitemarker/issues).
 
+## Yet to be completed
+
+The following features are not completed.
+
+* Themes: Dark theme, light theme and system preferred.
+* Save settings: Save the settings using shared_preferences and make it load on start up
+* Introduction screen for new users
+* Migration of data from `internal.omio` file
+* Import/Export of data to/from internal database
+
 ## Contribution
 
 For all contributions to this project, please [open a pull request](https://github.com/aerocyber/sitemarker/pulls). See [Contribution Guidelines](#contribution-guideline) before opening a PR.
