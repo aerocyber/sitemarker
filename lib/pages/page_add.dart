@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sitemarker/operations/data_model.dart';
-import 'package:sitemarker/operations/dbrecord_provider.dart';
+import 'package:sitemarker/data/data_model.dart';
+import 'package:sitemarker/data/dbrecord_provider.dart';
+import 'package:sitemarker/operations/sitemarker_data.dart';
 
-class PageAdd extends StatelessWidget {
-  PageAdd({super.key});
+class PageAdd extends StatefulWidget {
+  const PageAdd({super.key});
+
+  @override
+  State<PageAdd> createState() => _PageAddState();
+}
+
+class _PageAddState extends State<PageAdd> {
   final _formkey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
-    String recName = '', recUrl = '';
+    String recName = '';
+    String recUrl = '';
     List<String> recTags = [];
     String recTagString = '';
+    List<String> nameList = [];
+    List<String> urlList = [];
+    late List<DBRecord> dbRec;
 
     return Scaffold(
       appBar: AppBar(
@@ -19,15 +30,21 @@ class PageAdd extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Consumer<DBRecordProvider>(builder: (context, value, child) {
+        dbRec = value.records;
+        for (int i = 0; i < dbRec.length; i++) {
+          nameList.add(dbRec[i].name);
+          urlList.add(dbRec[i].url);
+        }
         return Center(
           child: Form(
             key: _formkey,
             child: Padding(
               padding: const EdgeInsets.all(150),
               child: Wrap(
-                spacing: 100,
+                spacing: 200,
                 children: <Widget>[
                   TextFormField(
+                    maxLength: 100,
                     decoration: const InputDecoration(
                       icon: Icon(Icons.subject),
                       hintText: 'Enter the name to be associated with the URL',
@@ -35,13 +52,18 @@ class PageAdd extends StatelessWidget {
                     ),
                     validator: (name) {
                       if (name == null || name.isEmpty) {
-                        return "Please enter a name";
+                        return "Please enter a name.";
+                      } else if (nameList.contains(name)) {
+                        return 'The name entered has been associated with a different record.';
                       }
-                      recName = name;
                       return null;
+                    },
+                    onSaved: (name) {
+                      recName = name!;
                     },
                   ),
                   TextFormField(
+                    maxLength: 250,
                     decoration: const InputDecoration(
                       icon: Icon(Icons.link),
                       hintText: 'Enter the URL',
@@ -51,14 +73,20 @@ class PageAdd extends StatelessWidget {
                       if (url == null || url.isEmpty) {
                         return "Please enter a link";
                       }
-                      if (!(Uri.parse(url).isAbsolute)) {
+                      if (!SitemarkerRecords.isValidUrl(url)) {
                         return "Please enter a valid URL";
                       }
-                      recUrl = url;
+                      if (urlList.contains(url)) {
+                        return 'The URL entered has been associated with a different record.';
+                      }
                       return null;
+                    },
+                    onSaved: (url) {
+                      recUrl = url!;
                     },
                   ),
                   TextFormField(
+                    maxLength: 250,
                     decoration: const InputDecoration(
                       icon: Icon(Icons.tag),
                       hintText:
@@ -66,6 +94,9 @@ class PageAdd extends StatelessWidget {
                       labelText: 'Tags (separated by ,)',
                     ),
                     validator: (tags) {
+                      return null;
+                    },
+                    onSaved: (tags) {
                       List<String> tagList = [];
                       if (tags != null && tags.isNotEmpty) {
                         List<String> tmp = tags.split(',');
@@ -74,8 +105,9 @@ class PageAdd extends StatelessWidget {
                         }
                       }
                       recTags = tagList;
-                      recTagString = recTags.toString();
-                      return null;
+                      for (int i = 0; i < recTags.length; i++) {
+                        recTagString += recTags[i];
+                      }
                     },
                   ),
                   Padding(
@@ -90,7 +122,9 @@ class PageAdd extends StatelessWidget {
                             recUrl = '';
                             recTagString = '';
                             recTags = [];
-                            Navigator.pop(context);
+                            Navigator.pop(
+                              context,
+                            );
                           },
                           child: const Row(
                             children: [
@@ -104,12 +138,19 @@ class PageAdd extends StatelessWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            DBRecord rec = DBRecord(
-                                name: recName, url: recUrl, tags: recTagString);
-                            Provider.of<DBRecordProvider>(context,
-                                    listen: false)
-                                .insertRecord(rec);
-                            Navigator.pop(context);
+                            if (_formkey.currentState!.validate()) {
+                              _formkey.currentState!.save();
+                              DBRecord rec = DBRecord(
+                                  name: recName,
+                                  url: recUrl,
+                                  tags: recTagString);
+                              Provider.of<DBRecordProvider>(context,
+                                      listen: false)
+                                  .insertRecord(rec);
+                              Navigator.pop(
+                                context,
+                              );
+                            }
                           },
                           child: const Row(
                             children: [

@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sitemarker/operations/data_model.dart';
+import 'package:provider/provider.dart';
+import 'package:sitemarker/data/data_model.dart';
+import 'package:sitemarker/data/dbrecord_provider.dart';
+
+// TODO: Validate for existence,
+// TODO: Set initial values
 
 class PageEdit extends StatelessWidget {
   final DBRecord record;
@@ -22,7 +27,7 @@ class PageEdit extends StatelessWidget {
               record.name = recName;
               record.url = recUrl;
               record.tags = recTags.toString();
-              // obbx.insertRecord(record);
+              Provider.of<DBRecordProvider>(context).insertRecord(record);
             },
             icon: const Icon(Icons.save),
           ),
@@ -37,6 +42,7 @@ class PageEdit extends StatelessWidget {
               spacing: 100,
               children: <Widget>[
                 TextFormField(
+                  initialValue: record.name,
                   decoration: const InputDecoration(
                     icon: Icon(Icons.subject),
                     hintText: 'Enter the name to be associated with the URL',
@@ -51,6 +57,7 @@ class PageEdit extends StatelessWidget {
                   },
                 ),
                 TextFormField(
+                  initialValue: record.url,
                   decoration: const InputDecoration(
                     icon: Icon(Icons.link),
                     hintText: 'Enter the URL',

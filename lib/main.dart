@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sitemarker/operations/dbrecord_provider.dart';
+import 'package:sitemarker/data/dbrecord_provider.dart';
 import 'package:sitemarker/pages/page_settings.dart';
 import 'package:sitemarker/pages/page_view.dart';
 
 void main() {
-  runApp(const SitemarkerApp());
+  runApp(ChangeNotifierProvider(
+    create: (context) => DBRecordProvider(),
+    child: const SitemarkerApp(),
+  ));
 }
 
 class SitemarkerApp extends StatelessWidget {

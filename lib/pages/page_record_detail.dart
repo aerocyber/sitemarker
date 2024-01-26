@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sitemarker/operations/data_model.dart';
+import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/pages/page_edit.dart';
 
 class DetailPage extends StatelessWidget {

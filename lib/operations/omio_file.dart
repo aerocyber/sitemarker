@@ -55,7 +55,7 @@ class OmioFile {
               if (value.containsKey("Categories")) {
                 if (value["URL"] is String) {
                   if (value["Categories"] is List<String>) {
-                    if (smr.isValidUrl(value["URL"]) == true) {
+                    if (SitemarkerRecords.isValidUrl(value["URL"]) == true) {
                       isValidOmio = true;
                     } else {
                       isValidOmio = false;

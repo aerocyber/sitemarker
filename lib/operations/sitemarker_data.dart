@@ -9,7 +9,7 @@ class SitemarkerRecords {
 
   SitemarkerRecords();
 
-  bool isValidUrl(String url) {
+  static bool isValidUrl(String url) {
     /// Check if URL is valid.
     try {
       Uri _ = Uri.dataFromString(url);

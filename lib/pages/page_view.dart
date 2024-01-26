@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/operations/errors.dart';
 import 'package:sitemarker/pages/page_add.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
-import 'package:sitemarker/operations/dbrecord_provider.dart';
-import 'package:sitemarker/components/record_item.dart';
+import 'package:sitemarker/data/dbrecord_provider.dart';
 
 class ViewPage extends StatefulWidget {
   const ViewPage({super.key});
@@ -15,6 +15,9 @@ class ViewPage extends StatefulWidget {
 
 class _ViewPageState extends State<ViewPage> {
   final List<String> recordNames = [];
+  late List<DBRecord> recordsList;
+
+  GlobalKey globalKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +39,9 @@ class _ViewPageState extends State<ViewPage> {
             padding: const EdgeInsets.all(10.0),
             child: Consumer<DBRecordProvider>(
               builder: (context, value, child) {
-                for (int i = 0; i < value.records.length; i++) {
-                  recordNames.add(value.records[i].name);
+                recordsList = value.records.toList();
+                for (int i = 0; i < recordsList.length; i++) {
+                  recordNames.add(recordsList[i].name);
                 }
                 return IconButton(
                   onPressed: () {
@@ -58,20 +62,69 @@ class _ViewPageState extends State<ViewPage> {
         alignment: Alignment.center,
         child: Consumer<DBRecordProvider>(
           builder: (context, value, child) {
-            return value.records.isEmpty
+            // ignore: prefer_is_empty
+            return value.records.length > 0
                 ? ListView.builder(
                     padding: const EdgeInsets.all(20),
                     itemCount: value.records.length,
                     itemBuilder: (context, index) {
-                      return RecordItem(record: value.records.toList()[index]);
+                      String domainUrl = recordsList[index].url.split(
+                          "//")[recordsList[index].url.split('//').length - 1];
+                      String domain = domainUrl.split('/')[0];
+                      return ListTile(
+                        leading: CircleAvatar(
+                          radius: 30,
+                          backgroundColor:
+                              const Color.fromARGB(255, 182, 99, 196),
+                          child: Image.network(
+                              'https://icons.duckduckgo.com/ip3/$domain.ico',
+                              errorBuilder: (BuildContext context,
+                                  Object exception, StackTrace? stackTrace) {
+                            return Text(
+                              domain.characters.first.toUpperCase(),
+                              textAlign: TextAlign.center,
+                            );
+                          }),
+                        ),
+                        title: Center(
+                          child: Text(
+                            recordNames[index],
+                          ),
+                        ),
+                        subtitle: Column(
+                          children: [
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                              recordsList[index].url,
+                            ),
+                            Text(
+                              recordsList[index].tags,
+                            ),
+                          ],
+                        ),
+                        trailing: IconButton(
+                          onPressed: () {
+                            Provider.of<DBRecordProvider>(context,
+                                    listen: false)
+                                .deleteRecord(recordsList[index]);
+                          },
+                          icon: const Icon(Icons.delete),
+                        ),
+                      );
                     },
                   )
                 : Center(
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.error,
                           color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        const SizedBox(
+                          width: 10,
                         ),
                         Text(
                           'No records in database',
@@ -89,7 +142,7 @@ class _ViewPageState extends State<ViewPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => PageAdd()),
+            MaterialPageRoute(builder: (context) => const PageAdd()),
           );
         },
         child: const Icon(Icons.add),
