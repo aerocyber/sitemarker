@@ -1,0 +1,29 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/flatpak/flatpak-builder/main/data/flatpak-manifest.schema.json
+
+---
+app-id: io.github.aerocyber.sitemarker
+runtime: org.freedesktop.Platform
+runtime-version: "22.08"
+sdk: org.freedesktop.Sdk
+command: sitemarker
+separate-locales: false
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --device=dri
+  - --share=network
+modules:
+  - name: Sitemarker
+    buildsystem: simple
+    only-arches:
+      - x86_64
+    build-commands:
+      - "./build-flatpak.sh"
+    sources:
+      - type: file
+        url: https://github.com/aerocyber/sitemarker/releases/download/v1.0.0/FlutterApp-Linux-Portable.tar.gz
+        sha256: 
+      - type: dir
+        path: ../sitemarker
+      - type: file
+        path: build-flatpak.sh
