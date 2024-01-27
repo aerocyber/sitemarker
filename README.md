@@ -17,10 +17,17 @@ flutter pub get
 Building is as simple as running the following command in the root of the project dir:
 
 ```bash
+flutter pub run build_runner build
 flutter build <dist>
 ```
 
 where `dist` is one of the option in `flutter build` subcommands.
+
+Or, alternatively, run:
+
+```bash
+./build.sh # For all builds.
+```
 
 :warning: web is not supported and issues submitted will be closed without notice.
 
