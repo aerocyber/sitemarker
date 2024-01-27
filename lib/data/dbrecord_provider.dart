@@ -50,8 +50,9 @@ class DBRecordProvider extends ChangeNotifier {
     await isar!.writeTxn(() async {
       await isar.dBRecords.put(record);
       _records.add(record);
-      notifyListeners();
+      // notifyListeners();
     });
+    notifyListeners();
   }
 
   void deleteRecord(DBRecord record) async {
@@ -67,7 +68,7 @@ class DBRecordProvider extends ChangeNotifier {
     // You know what? I might as well do a special announcement for that if
     // you do.
     deleteWorkaround();
-    notifyListeners();
+    // notifyListeners();
   }
 
   void deleteWorkaround() async {

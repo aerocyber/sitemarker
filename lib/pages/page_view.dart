@@ -13,7 +13,7 @@ class ViewPage extends StatefulWidget {
 }
 
 class _ViewPageState extends State<ViewPage> {
-  final List<String> recordNames = [];
+  List<String> recordNames = [];
 
   GlobalKey globalKey = GlobalKey();
 
@@ -37,6 +37,7 @@ class _ViewPageState extends State<ViewPage> {
             padding: const EdgeInsets.all(10.0),
             child: Consumer<DBRecordProvider>(
               builder: (context, value, child) {
+                recordNames = [];
                 for (int i = 0; i < value.records.length; i++) {
                   recordNames.add(value.records[i].name);
                 }
@@ -65,8 +66,8 @@ class _ViewPageState extends State<ViewPage> {
                     padding: const EdgeInsets.all(20),
                     itemCount: value.records.length,
                     itemBuilder: (context, index) {
-                      String domainUrl = value.records[index].url.split(
-                          "//")[value.records[index].url.split('//').length - 1];
+                      String domainUrl = value.records[index].url.split("//")[
+                          value.records[index].url.split('//').length - 1];
                       String domain = domainUrl.split('/')[0];
                       return ListTile(
                         leading: CircleAvatar(
@@ -85,7 +86,7 @@ class _ViewPageState extends State<ViewPage> {
                         ),
                         title: Center(
                           child: Text(
-                            recordNames[index],
+                            value.records[index].name,
                           ),
                         ),
                         subtitle: Column(
