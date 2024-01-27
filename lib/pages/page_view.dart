@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/operations/errors.dart';
 import 'package:sitemarker/pages/page_add.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,7 +14,6 @@ class ViewPage extends StatefulWidget {
 
 class _ViewPageState extends State<ViewPage> {
   final List<String> recordNames = [];
-  late List<DBRecord> recordsList;
 
   GlobalKey globalKey = GlobalKey();
 
@@ -39,9 +37,8 @@ class _ViewPageState extends State<ViewPage> {
             padding: const EdgeInsets.all(10.0),
             child: Consumer<DBRecordProvider>(
               builder: (context, value, child) {
-                recordsList = value.records.toList();
-                for (int i = 0; i < recordsList.length; i++) {
-                  recordNames.add(recordsList[i].name);
+                for (int i = 0; i < value.records.length; i++) {
+                  recordNames.add(value.records[i].name);
                 }
                 return IconButton(
                   onPressed: () {
@@ -68,8 +65,8 @@ class _ViewPageState extends State<ViewPage> {
                     padding: const EdgeInsets.all(20),
                     itemCount: value.records.length,
                     itemBuilder: (context, index) {
-                      String domainUrl = recordsList[index].url.split(
-                          "//")[recordsList[index].url.split('//').length - 1];
+                      String domainUrl = value.records[index].url.split(
+                          "//")[value.records[index].url.split('//').length - 1];
                       String domain = domainUrl.split('/')[0];
                       return ListTile(
                         leading: CircleAvatar(
@@ -97,10 +94,10 @@ class _ViewPageState extends State<ViewPage> {
                               height: 5,
                             ),
                             Text(
-                              recordsList[index].url,
+                              value.records[index].url,
                             ),
                             Text(
-                              recordsList[index].tags,
+                              value.records[index].tags,
                             ),
                           ],
                         ),
@@ -108,7 +105,7 @@ class _ViewPageState extends State<ViewPage> {
                           onPressed: () {
                             Provider.of<DBRecordProvider>(context,
                                     listen: false)
-                                .deleteRecord(recordsList[index]);
+                                .deleteRecord(value.records[index]);
                           },
                           icon: const Icon(Icons.delete),
                         ),

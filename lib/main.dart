@@ -5,6 +5,7 @@ import 'package:sitemarker/pages/page_settings.dart';
 import 'package:sitemarker/pages/page_view.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(ChangeNotifierProvider(
     create: (context) => DBRecordProvider(),
     child: const SitemarkerApp(),
