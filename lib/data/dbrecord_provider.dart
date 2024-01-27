@@ -56,7 +56,7 @@ class DBRecordProvider extends ChangeNotifier {
     final isar = await db;
     await isar!.writeTxn(() async {
       await isar.dBRecords.delete(record.id);
-      _records.remove(record);
+      _records = await isar.dBRecords.where().findAll();
 
       notifyListeners();
     });
