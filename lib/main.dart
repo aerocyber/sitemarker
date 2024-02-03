@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
 import 'package:sitemarker/pages/page_settings.dart';
 import 'package:sitemarker/pages/page_view.dart';
+import 'package:sitemarker/color_schemes.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,11 +23,9 @@ class SitemarkerApp extends StatelessWidget {
       create: (context) => DBRecordProvider(),
       child: MaterialApp(
         title: 'Sitemarker',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: const Color.fromARGB(255, 134, 39, 250)),
-          useMaterial3: true,
-        ),
+        theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
+        darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
+        themeMode: ThemeMode.system,
         home: const SitemarkerHome(title: 'Sitemarker'),
       ),
     );
@@ -49,20 +48,8 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   shape: const RoundedRectangleBorder(
-      //       borderRadius: BorderRadius.all(Radius.circular(8.0))),
-      //   centerTitle: true,
-      //   elevation: 2.0,
-      //   backgroundColor: Theme.of(context).colorScheme.background,
-      //   title: Text(
-      //     'Sitemarker',
-      //     style: TextStyle(
-      //       color: Theme.of(context).colorScheme.secondary,
-      //     ),
-      //   ),
-      // ),
       bottomNavigationBar: NavigationBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         selectedIndex: currentPageIndex,
         indicatorColor: Theme.of(context).colorScheme.inversePrimary,

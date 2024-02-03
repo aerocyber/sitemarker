@@ -10,7 +10,7 @@ class DBRecordProvider extends ChangeNotifier {
   List<DBRecord> _records = [];
   List<DBRecord> get records => _records;
   late String dbDir;
-  bool inspectorIsar = true;
+  bool inspectorIsar = false;
 
   void init() async {
     final isar = await db;

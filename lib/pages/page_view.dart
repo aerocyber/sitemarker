@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sitemarker/operations/errors.dart';
 import 'package:sitemarker/pages/page_add.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:sitemarker/pages/page_view_detail.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
 
@@ -22,14 +21,14 @@ class _ViewPageState extends State<ViewPage> {
     return Scaffold(
       appBar: AppBar(
         shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(8.0))),
+            borderRadius: BorderRadius.all(Radius.circular(6.0))),
         centerTitle: true,
         elevation: 2.0,
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(
           'Sitemarker',
           style: TextStyle(
-            color: Theme.of(context).colorScheme.secondary,
+            color: Theme.of(context).colorScheme.primary,
           ),
         ),
         actions: [
@@ -57,61 +56,100 @@ class _ViewPageState extends State<ViewPage> {
         ],
       ),
       body: Container(
+        color: Theme.of(context).colorScheme.background,
         alignment: Alignment.center,
         child: Consumer<DBRecordProvider>(
           builder: (context, value, child) {
             // ignore: prefer_is_empty
             return value.records.length > 0
-                ? ListView.builder(
+                ? ListView.separated(
                     padding: const EdgeInsets.all(20),
                     itemCount: value.records.length,
                     itemBuilder: (context, index) {
                       String domainUrl = value.records[index].url.split("//")[
                           value.records[index].url.split('//').length - 1];
                       String domain = domainUrl.split('/')[0];
-                      return ListTile(
-                        leading: CircleAvatar(
-                          radius: 30,
-                          backgroundColor:
-                              const Color.fromARGB(255, 182, 99, 196),
-                          child: Image.network(
-                              'https://icons.duckduckgo.com/ip3/$domain.ico',
-                              errorBuilder: (BuildContext context,
-                                  Object exception, StackTrace? stackTrace) {
-                            return Text(
-                              domain.characters.first.toUpperCase(),
-                              textAlign: TextAlign.center,
-                            );
-                          }),
-                        ),
-                        title: Center(
-                          child: Text(
-                            value.records[index].name,
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => PageViewDetail(
+                                        record: value.records[index],
+                                      )));
+                        },
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15.0),
+                            color: Theme.of(context).colorScheme.inversePrimary,
                           ),
-                        ),
-                        subtitle: Column(
-                          children: [
-                            const SizedBox(
-                              height: 5,
+                          child: ListTile(
+                            shape: RoundedRectangleBorder(
+                              side: const BorderSide(
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.circular(5),
                             ),
-                            Text(
-                              value.records[index].url,
+                            leading: CircleAvatar(
+                              radius: 30,
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.secondary,
+                              child: Text(
+                                domain.characters.first.toUpperCase(),
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                ),
+                              ),
                             ),
-                            Text(
-                              value.records[index].tags,
+                            title: Center(
+                              child: Text(
+                                value.records[index].name,
+                                style: TextStyle(
+                                  color:
+                                      Theme.of(context).colorScheme.secondary,
+                                ),
+                              ),
                             ),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          onPressed: () {
-                            Provider.of<DBRecordProvider>(context,
-                                    listen: false)
-                                .deleteRecord(value.records[index]);
-                          },
-                          icon: const Icon(Icons.delete),
+                            subtitle: Column(
+                              children: [
+                                const SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  value.records[index].url,
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                  ),
+                                ),
+                                Text(
+                                  value.records[index].tags,
+                                  style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            trailing: IconButton(
+                              onPressed: () {
+                                Provider.of<DBRecordProvider>(context,
+                                        listen: false)
+                                    .deleteRecord(value.records[index]);
+                              },
+                              icon: const Icon(Icons.delete),
+                            ),
+                          ),
                         ),
                       );
                     },
+                    separatorBuilder: (BuildContext context, int index) =>
+                        const SizedBox(
+                      height: 10,
+                    ),
                   )
                 : Center(
                     child: Row(
@@ -146,13 +184,6 @@ class _ViewPageState extends State<ViewPage> {
         child: const Icon(Icons.add),
       ),
     );
-  }
-
-  Future<void> launchURL(String url) async {
-    Uri url_ = Uri.parse(url);
-    if (!await launchUrl(url_)) {
-      throw CouldNotLaunchBrowserException(url);
-    }
   }
 
   showAlertDialog(BuildContext context, String url) {

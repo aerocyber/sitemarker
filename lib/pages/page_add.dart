@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
-import 'package:sitemarker/operations/sitemarker_data.dart';
 
 class PageAdd extends StatefulWidget {
   const PageAdd({super.key});
@@ -26,7 +25,12 @@ class _PageAddState extends State<PageAdd> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Add Record"),
+        title: Text(
+          "Add Record",
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.primary,
+          ),
+        ),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: Consumer<DBRecordProvider>(builder: (context, value, child) {
@@ -45,6 +49,7 @@ class _PageAddState extends State<PageAdd> {
                 children: <Widget>[
                   TextFormField(
                     maxLength: 100,
+                    autofocus: true,
                     decoration: const InputDecoration(
                       icon: Icon(Icons.subject),
                       hintText: 'Enter the name to be associated with the URL',
@@ -73,7 +78,7 @@ class _PageAddState extends State<PageAdd> {
                       if (url == null || url.isEmpty) {
                         return "Please enter a link";
                       }
-                      if (!SitemarkerRecords.isValidUrl(url)) {
+                      if (!Uri.parse(url).isAbsolute) {
                         return "Please enter a valid URL";
                       }
                       if (urlList.contains(url)) {
@@ -129,6 +134,9 @@ class _PageAddState extends State<PageAdd> {
                           child: const Row(
                             children: [
                               Icon(Icons.cancel),
+                              SizedBox(
+                                width: 10,
+                              ),
                               Text("Cancel"),
                             ],
                           ),
@@ -155,6 +163,9 @@ class _PageAddState extends State<PageAdd> {
                           child: const Row(
                             children: [
                               Icon(Icons.save),
+                              SizedBox(
+                                width: 10,
+                              ),
                               Text("Save record"),
                             ],
                           ),
