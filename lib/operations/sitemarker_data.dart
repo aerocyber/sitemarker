@@ -96,4 +96,8 @@ class SitemarkerRecords {
   int length() {
     return smRecords.length;
   }
+
+  List<SitemarkerRecord> getRecords() {
+    return smRecords;
+  }
 }

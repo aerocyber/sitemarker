@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:sitemarker/operations/errors.dart';
 import 'package:sitemarker/operations/sitemarker_data.dart';
+import 'package:sitemarker/operations/sitemarker_record.dart';
 
 class OmioFile {
   /// All .omio file related operations are done via OmioFile.
@@ -96,5 +97,9 @@ class OmioFile {
     String dat = smrsToWrite.toJson();
 
     File(omioFilePath).writeAsStringSync(dat);
+  }
+
+  List<SitemarkerRecord> getSmr() {
+    return smr.getRecords();
   }
 }
