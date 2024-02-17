@@ -17,7 +17,7 @@ class DBRecordProvider extends ChangeNotifier {
     final isar = await db;
     isar!.txn(() async {
       final dbrecordCollection = isar.dBRecords;
-      _records = await dbrecordCollection.where().findAll();
+      _records = await dbrecordCollection.where().isDeletedEqualTo(false).findAll();
       notifyListeners();
     });
   }

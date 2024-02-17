@@ -149,9 +149,11 @@ class _PageAddState extends State<PageAdd> {
                             if (_formkey.currentState!.validate()) {
                               _formkey.currentState!.save();
                               DBRecord rec = DBRecord(
-                                  name: recName,
-                                  url: recUrl,
-                                  tags: recTagString);
+                                name: recName,
+                                url: recUrl,
+                                tags: recTagString,
+                                isDeleted: false,
+                              );
                               Provider.of<DBRecordProvider>(context,
                                       listen: false)
                                   .insertRecord(rec);

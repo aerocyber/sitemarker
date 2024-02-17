@@ -9,5 +9,12 @@ class DBRecord {
   String url;
   String tags;
 
-  DBRecord({required this.name, required this.url, required this.tags});
+  @Index()
+  bool isDeleted;
+
+  DBRecord(
+      {required this.name,
+      required this.url,
+      required this.tags,
+      required this.isDeleted});
 }

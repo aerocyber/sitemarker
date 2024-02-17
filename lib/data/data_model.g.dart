@@ -17,18 +17,23 @@ const DBRecordSchema = CollectionSchema(
   name: r'DBRecord',
   id: 2513346286814997212,
   properties: {
-    r'name': PropertySchema(
+    r'isDeleted': PropertySchema(
       id: 0,
+      name: r'isDeleted',
+      type: IsarType.bool,
+    ),
+    r'name': PropertySchema(
+      id: 1,
       name: r'name',
       type: IsarType.string,
     ),
     r'tags': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'tags',
       type: IsarType.string,
     ),
     r'url': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'url',
       type: IsarType.string,
     )
@@ -38,7 +43,21 @@ const DBRecordSchema = CollectionSchema(
   deserialize: _dBRecordDeserialize,
   deserializeProp: _dBRecordDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'isDeleted': IndexSchema(
+      id: -786475870904832312,
+      name: r'isDeleted',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'isDeleted',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _dBRecordGetId,
@@ -65,9 +84,10 @@ void _dBRecordSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeString(offsets[0], object.name);
-  writer.writeString(offsets[1], object.tags);
-  writer.writeString(offsets[2], object.url);
+  writer.writeBool(offsets[0], object.isDeleted);
+  writer.writeString(offsets[1], object.name);
+  writer.writeString(offsets[2], object.tags);
+  writer.writeString(offsets[3], object.url);
 }
 
 DBRecord _dBRecordDeserialize(
@@ -77,9 +97,10 @@ DBRecord _dBRecordDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = DBRecord(
-    name: reader.readString(offsets[0]),
-    tags: reader.readString(offsets[1]),
-    url: reader.readString(offsets[2]),
+    isDeleted: reader.readBool(offsets[0]),
+    name: reader.readString(offsets[1]),
+    tags: reader.readString(offsets[2]),
+    url: reader.readString(offsets[3]),
   );
   return object;
 }
@@ -92,10 +113,12 @@ P _dBRecordDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 1:
       return (reader.readString(offset)) as P;
     case 2:
+      return (reader.readString(offset)) as P;
+    case 3:
       return (reader.readString(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -116,6 +139,14 @@ extension DBRecordQueryWhereSort on QueryBuilder<DBRecord, DBRecord, QWhere> {
   QueryBuilder<DBRecord, DBRecord, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<DBRecord, DBRecord, QAfterWhere> anyIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'isDeleted'),
+      );
     });
   }
 }
@@ -185,6 +216,51 @@ extension DBRecordQueryWhere on QueryBuilder<DBRecord, DBRecord, QWhereClause> {
       ));
     });
   }
+
+  QueryBuilder<DBRecord, DBRecord, QAfterWhereClause> isDeletedEqualTo(
+      bool isDeleted) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'isDeleted',
+        value: [isDeleted],
+      ));
+    });
+  }
+
+  QueryBuilder<DBRecord, DBRecord, QAfterWhereClause> isDeletedNotEqualTo(
+      bool isDeleted) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'isDeleted',
+              lower: [],
+              upper: [isDeleted],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'isDeleted',
+              lower: [isDeleted],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'isDeleted',
+              lower: [isDeleted],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'isDeleted',
+              lower: [],
+              upper: [isDeleted],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
 }
 
 extension DBRecordQueryFilter
@@ -237,6 +313,16 @@ extension DBRecordQueryFilter
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<DBRecord, DBRecord, QAfterFilterCondition> isDeletedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isDeleted',
+        value: value,
       ));
     });
   }
@@ -639,6 +725,18 @@ extension DBRecordQueryLinks
     on QueryBuilder<DBRecord, DBRecord, QFilterCondition> {}
 
 extension DBRecordQuerySortBy on QueryBuilder<DBRecord, DBRecord, QSortBy> {
+  QueryBuilder<DBRecord, DBRecord, QAfterSortBy> sortByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DBRecord, DBRecord, QAfterSortBy> sortByIsDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.desc);
+    });
+  }
+
   QueryBuilder<DBRecord, DBRecord, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -690,6 +788,18 @@ extension DBRecordQuerySortThenBy
     });
   }
 
+  QueryBuilder<DBRecord, DBRecord, QAfterSortBy> thenByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DBRecord, DBRecord, QAfterSortBy> thenByIsDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.desc);
+    });
+  }
+
   QueryBuilder<DBRecord, DBRecord, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -729,6 +839,12 @@ extension DBRecordQuerySortThenBy
 
 extension DBRecordQueryWhereDistinct
     on QueryBuilder<DBRecord, DBRecord, QDistinct> {
+  QueryBuilder<DBRecord, DBRecord, QDistinct> distinctByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isDeleted');
+    });
+  }
+
   QueryBuilder<DBRecord, DBRecord, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -756,6 +872,12 @@ extension DBRecordQueryProperty
   QueryBuilder<DBRecord, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<DBRecord, bool, QQueryOperations> isDeletedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isDeleted');
     });
   }
 

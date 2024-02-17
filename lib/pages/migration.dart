@@ -64,9 +64,11 @@ class MigratingScreen extends StatelessWidget {
       smrs = omf.getSmr();
       for (int i = 0; i < smrs.length; i++) {
         DBRecord record = DBRecord(
-            name: smrs[i].name,
-            url: smrs[i].url,
-            tags: smrs[i].tags.toString());
+          name: smrs[i].name,
+          url: smrs[i].url,
+          tags: smrs[i].tags.toString(),
+          isDeleted: false,
+        );
         Provider.of<DBRecordProvider>(context).insertRecord(record);
         // TODO: Test this
       }
