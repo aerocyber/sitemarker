@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sitemarker/data/data_helper.dart';
 import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
 
@@ -21,7 +22,7 @@ class _PageAddState extends State<PageAdd> {
     String recTagString = '';
     List<String> nameList = [];
     List<String> urlList = [];
-    late List<DBRecord> dbRec;
+    late List<SitemarkerRecord> dbRec;
 
     return Scaffold(
       appBar: AppBar(
@@ -148,11 +149,10 @@ class _PageAddState extends State<PageAdd> {
                           onPressed: () {
                             if (_formkey.currentState!.validate()) {
                               _formkey.currentState!.save();
-                              DBRecord rec = DBRecord(
+                              RecordDataModel rec = RecordDataModel(
                                 name: recName,
                                 url: recUrl,
                                 tags: recTagString,
-                                isDeleted: false,
                               );
                               Provider.of<DBRecordProvider>(context,
                                       listen: false)

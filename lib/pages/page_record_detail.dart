@@ -3,7 +3,7 @@ import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/pages/page_edit.dart';
 
 class DetailPage extends StatelessWidget {
-  final DBRecord record;
+  final SitemarkerRecord record;
   const DetailPage({super.key, required this.record});
 
   @override

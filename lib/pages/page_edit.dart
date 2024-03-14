@@ -4,7 +4,7 @@ import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
 
 class PageEdit extends StatelessWidget {
-  final DBRecord record;
+  final SitemarkerRecord record;
   final _formkey = GlobalKey<FormState>();
 
   PageEdit({super.key, required this.record});
@@ -17,7 +17,7 @@ class PageEdit extends StatelessWidget {
     String recTagString = '';
     List<String> nameList = [];
     List<String> urlList = [];
-    late List<DBRecord> dbRec;
+    late List<SitemarkerRecord> dbRec;
 
     return Scaffold(
       appBar: AppBar(
@@ -149,17 +149,18 @@ class PageEdit extends StatelessWidget {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            Provider.of<DBRecordProvider>(context,
-                                    listen: false)
-                                .deleteRecord(record);
                             if (_formkey.currentState!.validate()) {
                               _formkey.currentState!.save();
-                              record.name = recName;
-                              record.url = recUrl;
-                              record.tags = recTagString;
+                              SitemarkerRecord rec = SitemarkerRecord(
+                                id: record.id,
+                                name: recName,
+                                url: recUrl,
+                                tags: recTagString,
+                                isDeleted: false,
+                              );
                               Provider.of<DBRecordProvider>(context,
                                       listen: false)
-                                  .insertRecord(record);
+                                  .updateRecord(rec);
                               Navigator.of(context)
                                   .popUntil((route) => route.isFirst);
                             }

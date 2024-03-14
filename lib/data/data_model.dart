@@ -3,7 +3,7 @@ import 'package:sitemarker/data/shared_db.dart' as impl;
 
 part 'data_model.g.dart';
 
-@DriftDatabase(tables: [Records])
+@DriftDatabase(tables: [SitemarkerRecords])
 class SitemarkerDB extends _$SitemarkerDB {
   SitemarkerDB() : super(impl.connect());
 
@@ -11,23 +11,27 @@ class SitemarkerDB extends _$SitemarkerDB {
   int get schemaVersion => 1;
 
   // SELECTs
-  Future<List<Record>> get allRecords => select(records).get();
+  Future<List<SitemarkerRecord>> get allRecords =>
+      select(sitemarkerRecords).get();
 
-  Future<List<Record>> getRecordsByName(String name) {
-    return (select(records)..where((t) => t.name.equals(name))).get();
+  Future<List<SitemarkerRecord>> getRecordsByName(String name) {
+    return (select(sitemarkerRecords)..where((t) => t.name.equals(name))).get();
   }
 
   // INSERT
-  Future<int> insertRecord(Record record) => into(records).insert(record);
+  Future<int> insertRecord(SitemarkerRecord record) =>
+      into(sitemarkerRecords).insert(record);
 
   // UPDATE
-  Future<bool> updateRecord(Record record) => update(records).replace(record);
+  Future<bool> updateRecord(SitemarkerRecord record) =>
+      update(sitemarkerRecords).replace(record);
 
   // DELETE
-  Future<int> deleteRecord(Record record) => delete(records).delete(record);
+  Future<int> deleteRecord(SitemarkerRecord record) =>
+      delete(sitemarkerRecords).delete(record);
 }
 
-class Records extends Table {
+class SitemarkerRecords extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().unique()();
   TextColumn get url => text()();

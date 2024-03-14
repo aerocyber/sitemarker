@@ -3,11 +3,12 @@
 part of 'data_model.dart';
 
 // ignore_for_file: type=lint
-class $RecordsTable extends Records with TableInfo<$RecordsTable, Record> {
+class $SitemarkerRecordsTable extends SitemarkerRecords
+    with TableInfo<$SitemarkerRecordsTable, SitemarkerRecord> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $RecordsTable(this.attachedDatabase, [this._alias]);
+  $SitemarkerRecordsTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<int> id = GeneratedColumn<int>(
@@ -50,9 +51,9 @@ class $RecordsTable extends Records with TableInfo<$RecordsTable, Record> {
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'records';
+  static const String $name = 'sitemarker_records';
   @override
-  VerificationContext validateIntegrity(Insertable<Record> instance,
+  VerificationContext validateIntegrity(Insertable<SitemarkerRecord> instance,
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
@@ -87,9 +88,9 @@ class $RecordsTable extends Records with TableInfo<$RecordsTable, Record> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Record map(Map<String, dynamic> data, {String? tablePrefix}) {
+  SitemarkerRecord map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Record(
+    return SitemarkerRecord(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
@@ -104,18 +105,19 @@ class $RecordsTable extends Records with TableInfo<$RecordsTable, Record> {
   }
 
   @override
-  $RecordsTable createAlias(String alias) {
-    return $RecordsTable(attachedDatabase, alias);
+  $SitemarkerRecordsTable createAlias(String alias) {
+    return $SitemarkerRecordsTable(attachedDatabase, alias);
   }
 }
 
-class Record extends DataClass implements Insertable<Record> {
+class SitemarkerRecord extends DataClass
+    implements Insertable<SitemarkerRecord> {
   final int id;
   final String name;
   final String url;
   final String tags;
   final bool isDeleted;
-  const Record(
+  const SitemarkerRecord(
       {required this.id,
       required this.name,
       required this.url,
@@ -132,8 +134,8 @@ class Record extends DataClass implements Insertable<Record> {
     return map;
   }
 
-  RecordsCompanion toCompanion(bool nullToAbsent) {
-    return RecordsCompanion(
+  SitemarkerRecordsCompanion toCompanion(bool nullToAbsent) {
+    return SitemarkerRecordsCompanion(
       id: Value(id),
       name: Value(name),
       url: Value(url),
@@ -142,10 +144,10 @@ class Record extends DataClass implements Insertable<Record> {
     );
   }
 
-  factory Record.fromJson(Map<String, dynamic> json,
+  factory SitemarkerRecord.fromJson(Map<String, dynamic> json,
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Record(
+    return SitemarkerRecord(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       url: serializer.fromJson<String>(json['url']),
@@ -165,13 +167,13 @@ class Record extends DataClass implements Insertable<Record> {
     };
   }
 
-  Record copyWith(
+  SitemarkerRecord copyWith(
           {int? id,
           String? name,
           String? url,
           String? tags,
           bool? isDeleted}) =>
-      Record(
+      SitemarkerRecord(
         id: id ?? this.id,
         name: name ?? this.name,
         url: url ?? this.url,
@@ -180,7 +182,7 @@ class Record extends DataClass implements Insertable<Record> {
       );
   @override
   String toString() {
-    return (StringBuffer('Record(')
+    return (StringBuffer('SitemarkerRecord(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('url: $url, ')
@@ -195,7 +197,7 @@ class Record extends DataClass implements Insertable<Record> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Record &&
+      (other is SitemarkerRecord &&
           other.id == this.id &&
           other.name == this.name &&
           other.url == this.url &&
@@ -203,20 +205,20 @@ class Record extends DataClass implements Insertable<Record> {
           other.isDeleted == this.isDeleted);
 }
 
-class RecordsCompanion extends UpdateCompanion<Record> {
+class SitemarkerRecordsCompanion extends UpdateCompanion<SitemarkerRecord> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> url;
   final Value<String> tags;
   final Value<bool> isDeleted;
-  const RecordsCompanion({
+  const SitemarkerRecordsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.url = const Value.absent(),
     this.tags = const Value.absent(),
     this.isDeleted = const Value.absent(),
   });
-  RecordsCompanion.insert({
+  SitemarkerRecordsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required String url,
@@ -225,7 +227,7 @@ class RecordsCompanion extends UpdateCompanion<Record> {
   })  : name = Value(name),
         url = Value(url),
         tags = Value(tags);
-  static Insertable<Record> custom({
+  static Insertable<SitemarkerRecord> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? url,
@@ -241,13 +243,13 @@ class RecordsCompanion extends UpdateCompanion<Record> {
     });
   }
 
-  RecordsCompanion copyWith(
+  SitemarkerRecordsCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
       Value<String>? url,
       Value<String>? tags,
       Value<bool>? isDeleted}) {
-    return RecordsCompanion(
+    return SitemarkerRecordsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       url: url ?? this.url,
@@ -279,7 +281,7 @@ class RecordsCompanion extends UpdateCompanion<Record> {
 
   @override
   String toString() {
-    return (StringBuffer('RecordsCompanion(')
+    return (StringBuffer('SitemarkerRecordsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('url: $url, ')
@@ -292,10 +294,11 @@ class RecordsCompanion extends UpdateCompanion<Record> {
 
 abstract class _$SitemarkerDB extends GeneratedDatabase {
   _$SitemarkerDB(QueryExecutor e) : super(e);
-  late final $RecordsTable records = $RecordsTable(this);
+  late final $SitemarkerRecordsTable sitemarkerRecords =
+      $SitemarkerRecordsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities => [records];
+  List<DatabaseSchemaEntity> get allSchemaEntities => [sitemarkerRecords];
 }

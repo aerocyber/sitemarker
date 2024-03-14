@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sitemarker/data/data_helper.dart';
+import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/pages/page_add.dart';
 import 'package:sitemarker/pages/page_view_detail.dart';
 import 'package:provider/provider.dart';
@@ -136,9 +138,16 @@ class _ViewPageState extends State<ViewPage> {
                             ),
                             trailing: IconButton(
                               onPressed: () {
+                                SitemarkerRecord recordTemp =
+                                    value.records[index];
+                                RecordDataModel rec = RecordDataModel(
+                                  name: recordTemp.name,
+                                  url: recordTemp.url,
+                                  tags: recordTemp.tags,
+                                );
                                 Provider.of<DBRecordProvider>(context,
                                         listen: false)
-                                    .deleteRecord(value.records[index]);
+                                    .deleteRecord(rec);
                               },
                               icon: const Icon(Icons.delete),
                             ),

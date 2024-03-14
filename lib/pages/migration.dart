@@ -6,7 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sitemarker/data/data_model.dart';
+import 'package:sitemarker/data/data_helper.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
 import 'package:sitemarker/operations/errors.dart';
 import 'package:sitemarker/operations/omio_file.dart';
@@ -63,17 +63,16 @@ class MigratingScreen extends StatelessWidget {
       }
       smrs = omf.getSmr();
       for (int i = 0; i < smrs.length; i++) {
-        DBRecord record = DBRecord(
+        RecordDataModel record = RecordDataModel(
           name: smrs[i].name,
           url: smrs[i].url,
           tags: smrs[i].tags.toString(),
-          isDeleted: false,
         );
         Provider.of<DBRecordProvider>(context).insertRecord(record);
         // TODO: Test this
       }
       // Delete the file
-      File(path).deleteSync(recursive: true);
+      File(path).deleteSync(recursive: false);
     }
 
     return const Center(

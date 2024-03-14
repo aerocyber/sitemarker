@@ -5,7 +5,7 @@ import 'package:sitemarker/pages/page_edit.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PageViewDetail extends StatelessWidget {
-  final DBRecord record;
+  final SitemarkerRecord record;
 
   const PageViewDetail({super.key, required this.record});
 
