@@ -48,5 +48,7 @@ class DBRecordProvider extends ChangeNotifier {
 
   void updateRecord(SitemarkerRecord record) async {
     db.updateRecord(record);
+    _records = await db.allRecords;
+    notifyListeners();
   }
 }
