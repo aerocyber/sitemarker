@@ -37,12 +37,14 @@ dependencies:
   cupertino_icons: ^1.0.2
   url_launcher: ^6.2.3
   path_provider: ^2.1.2
-  path: ^1.8.3
+  path: ^1.9.0
   shared_preferences: ^2.2.2
-  isar: ^3.1.0+1
-  isar_flutter_libs: ^3.1.0+1
   universal_io: ^2.2.2
   provider: ^6.1.1
+  drift: ^2.16.0
+  sqlite3_flutter_libs: ^0.5.20
+  logger: ^2.1.0
+  sqlite3: ^2.4.0
 
 dev_dependencies:
   flutter_test:
@@ -54,8 +56,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
-  isar_generator: ^3.1.0+1
   build_runner: ^2.4.8
+  drift_dev: ^2.16.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
