@@ -1,10 +1,10 @@
 # SiteMarker Docs
 
-## :warning: The Documentation is still incomplete
+## The Documentation is still incomplete
 
 ## About
 
-SiteMarker is an open-source bookmark manager written with GTK4 and Adwaita in Python. It is a minimal application that can be downloaded from [Flathub](https://flathub.com/app/io.github.aerocyber.sitemarker) or be built from source and installed.
+SiteMarker is an open-source bookmark manager. The main aim behind the project is to make managing bookmarks as simple as typing them.
 
 ## Version Info
 
@@ -12,14 +12,15 @@ SiteMarker comes in 2 different version schemes:
 
 ### The stable version
 
-The current stable version can be installed via flatpak from flathub.
-The source of the stable versions can always be downloaded from GitHub, by browsing through the version tags or using the source assets in GitHub releases.
+Sitemarker has undergone a major rewrite from ground up. While the rewrite has been completed, it is not yet stable. So until it is determined to be usable for anyone, Sitemarker will be available only to the flatpak users of Linux distributions.
 
-Current stable version: 1.1.0
+See [Installation Guide](./installation_guide.md#stable-version) to install it.
+
+Current stable version: 1.2.3
 
 ### The development version
 
-This version is always in development and is not installable via flathub. You must follow the [Build Instructions in the Installation Guide](./installation_guide.md#Development Version) to install it. 
+This version is always in development and is not installable via stable channels like [Flathub](https://https://flathub.org/apps/io.github.aerocyber.sitemarker), [Snapcraft](https://snapcraft.io/osmata), package managers, APKs or Windows Installers. You must follow the [Build Instructions in the Installation Guide](./installation_guide.md#Development Version) to install it. Or, get it from the development/beta builds from [Github releases](https://github.com/aerocyber/sitemarker/releases).
 
 This version may be the next minor release OR the next major release.
 
