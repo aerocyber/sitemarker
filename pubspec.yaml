@@ -45,6 +45,8 @@ dependencies:
   sqlite3_flutter_libs: ^0.5.20
   logger: ^2.1.0
   sqlite3: ^2.4.0
+  window_manager: ^0.3.8
+
 
 dev_dependencies:
   flutter_test:

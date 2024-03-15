@@ -4,9 +4,16 @@ import 'package:sitemarker/data/dbrecord_provider.dart';
 import 'package:sitemarker/pages/page_settings.dart';
 import 'package:sitemarker/pages/page_view.dart';
 import 'package:sitemarker/color_schemes.dart';
+import 'package:window_manager/window_manager.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await WindowManager.instance.ensureInitialized();
+  windowManager.waitUntilReadyToShow().then((_) async {
+    await windowManager.setTitle("Sitemarker");
+  });
+
   runApp(ChangeNotifierProvider(
     create: (context) => DBRecordProvider(),
     child: const SitemarkerApp(),
@@ -22,6 +29,7 @@ class SitemarkerApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => DBRecordProvider(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Sitemarker',
         theme: ThemeData(useMaterial3: true, colorScheme: lightColorScheme),
         darkTheme: ThemeData(useMaterial3: true, colorScheme: darkColorScheme),
