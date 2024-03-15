@@ -2,6 +2,13 @@
 
 An open source bookmark manager written in Flutter
 
+## Support the Project
+
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/aerocyber?style=for-the-badge&logo=Github&label=GitHub%20Sponsors)](https://github.com/sponsors/aerocyber)
+[![Buy Me a Coffee](https://img.shields.io/github/sponsors/aerocyber?style=for-the-badge&logo=Buy%20Me%20a%20Coffee&logoColor=white&label=Buy%20Me%20a%20Coffee&labelColor=yellow)](https://www.buymeacoffee.com/aerocyber)
+
+Code contributions are always welcomed! [Please see the Pull Request Guide in the documentation to how to pull a PR for Sitemarker](./docs/issues_and_pr.md#pull-requests)
+
 ## Requirements
 
 Install [Flutter](https://flutter.dev) for building.
