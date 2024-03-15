@@ -1,0 +1,9 @@
+# Created with jdDesktopEntryEdit 1.4
+[Desktop Entry]
+Type=Application
+Name=Sitemarker
+Icon=io.github.aerocyber.sitemarker
+Exec=sitemarker
+Categories=Utility;GTK;
+Keywords=Sitemarker;sitemarker;bookmark;manager;bookmarks;
+SingleMainWindow=true

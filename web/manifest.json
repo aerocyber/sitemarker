@@ -1,11 +1,11 @@
 {
-    "name": "Sitemarker",
-    "short_name": "Sitemarker",
+    "name": "sitemarker",
+    "short_name": "sitemarker",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "An open source bookmark manager.",
+    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
