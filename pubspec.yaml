@@ -46,6 +46,8 @@ dependencies:
   logger: ^2.1.0
   sqlite3: ^2.4.0
   window_manager: ^0.3.8
+  http: ^1.2.1
+  package_info_plus: ^4.2.0
 
 
 dev_dependencies:

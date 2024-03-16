@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 class PageSettings extends StatelessWidget {
   const PageSettings({super.key});
 
+  final String version = '2.0.0'; // TODO: Update version here on release build.
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -20,7 +22,7 @@ class PageSettings extends StatelessWidget {
                   applicationLegalese:
                       '\u{a9} 2023-present Aero\nLicensed under the terms of MIT License',
                   applicationName: 'Sitemarker',
-                  applicationVersion: '2.0.0-dev',
+                  applicationVersion: version,
                   children: <Widget>[
                     RichText(
                       text: TextSpan(
@@ -48,7 +50,7 @@ class PageSettings extends StatelessWidget {
             const SizedBox(
               height: 20,
             ),
-            const Text('Version: 2.0.0-dev'),
+            Text('Version: $version'),
           ],
         ),
       ),
