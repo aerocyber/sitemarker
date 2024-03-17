@@ -7,8 +7,8 @@
    viewBox="0 0 1024 1024"
    version="1.1"
    id="svg1"
-   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
-   sodipodi:docname="sitemarker-1024x1024.svg"
+   inkscape:version="1.3.2 (091e20e, 2023-11-25, custom)"
+   sodipodi:docname="sitemarker-1024x1024-icon.svg"
    inkscape:export-filename="sitemarker-1024x1024.png"
    inkscape:export-xdpi="25.4"
    inkscape:export-ydpi="25.4"
@@ -26,13 +26,13 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="px"
-     inkscape:zoom="0.088388348"
-     inkscape:cx="124.45079"
-     inkscape:cy="820.24387"
-     inkscape:window-width="1600"
-     inkscape:window-height="831"
-     inkscape:window-x="0"
-     inkscape:window-y="32"
+     inkscape:zoom="0.1767767"
+     inkscape:cx="1895.0462"
+     inkscape:cy="2033.6391"
+     inkscape:window-width="1920"
+     inkscape:window-height="991"
+     inkscape:window-x="-9"
+     inkscape:window-y="-9"
      inkscape:window-maximized="1"
      inkscape:current-layer="layer1" />
   <defs
@@ -43,9 +43,10 @@
      id="layer1">
     <g
        id="g2"
-       transform="matrix(2.1126102,0,0,2.1429381,-471.36673,-492.44655)">
+       transform="matrix(1.1776626,0,0,1.1776626,-90.963248,-90.963248)">
       <g
-         id="g1">
+         id="g1"
+         transform="matrix(0.94868775,0,0,0.91015528,68.757586,85.388355)">
         <g
            id="g3"
            transform="matrix(1,0.16360391,0,1,0,-78.597012)">
@@ -237,7 +238,7 @@
       </g>
       <g
          id="g8"
-         transform="translate(-3.2196573,-26.512155)">
+         transform="matrix(0.94868775,0,0,0.91015528,67.465515,61.258175)">
         <path
            id="rect7"
            style="fill:#916f6f;stroke:#916f6f;stroke-width:1.62247"
@@ -253,7 +254,7 @@
       </g>
       <g
          id="g8-0"
-         transform="translate(-3.2022239,-8.1392699)">
+         transform="matrix(0.94868775,0,0,0.91015528,67.465557,77.980355)">
         <path
            id="rect7-78"
            style="fill:#916f6f;stroke:#916f6f;stroke-width:1.62247"
