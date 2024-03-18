@@ -8,16 +8,10 @@ import 'package:sitemarker/pages/page_settings.dart';
 import 'package:sitemarker/pages/page_view.dart';
 import 'package:sitemarker/color_schemes.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:window_manager/window_manager.dart';
 import 'package:http/http.dart' as http;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  await WindowManager.instance.ensureInitialized();
-  windowManager.waitUntilReadyToShow().then((_) async {
-    await windowManager.setTitle("Sitemarker");
-  });
 
   runApp(ChangeNotifierProvider(
     create: (context) => DBRecordProvider(),

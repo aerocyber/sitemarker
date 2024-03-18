@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "sitemarker" "\0"
+            VALUE "CompanyName", "Aero" "\0"
+            VALUE "FileDescription", "Sitemarker" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "sitemarker" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2024 com.example. All rights reserved." "\0"
+            VALUE "InternalName", "Sitemarker" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2024 Aero. All rights reserved." "\0"
             VALUE "OriginalFilename", "sitemarker.exe" "\0"
-            VALUE "ProductName", "sitemarker" "\0"
+            VALUE "ProductName", "Sitemarker" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END
