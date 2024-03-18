@@ -61,8 +61,8 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
     version = pkg.version;
 
     final Uri url = Uri.parse(updateUrl);
-    http.Response r = await http.get(url);
     try {
+      http.Response r = await http.get(url);
       if (r.statusCode == 200) {
         Map<dynamic, dynamic> upd = json.decode(r.body);
         if (upd["tag_name"] != "1.2.3-fix" &&

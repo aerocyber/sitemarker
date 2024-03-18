@@ -18,7 +18,6 @@ class _PageAddState extends State<PageAdd> {
   Widget build(BuildContext context) {
     String recName = '';
     String recUrl = '';
-    List<String> recTags = [];
     String recTagString = '';
     List<String> nameList = [];
     List<String> urlList = [];
@@ -33,6 +32,28 @@ class _PageAddState extends State<PageAdd> {
           ),
         ),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        actions: [
+          IconButton(
+              onPressed: () {
+                if (_formkey.currentState!.validate()) {
+                  _formkey.currentState!.save();
+                  RecordDataModel rec = RecordDataModel(
+                    name: recName,
+                    url: recUrl,
+                    tags: recTagString,
+                  );
+                  Provider.of<DBRecordProvider>(context, listen: false)
+                      .insertRecord(rec);
+                  Navigator.pop(
+                    context,
+                  );
+                }
+              },
+              icon: const Icon(Icons.save)),
+          const SizedBox(
+            width: 10,
+          ),
+        ],
       ),
       body: Consumer<DBRecordProvider>(builder: (context, value, child) {
         dbRec = value.records;
@@ -44,7 +65,7 @@ class _PageAddState extends State<PageAdd> {
           child: Form(
             key: _formkey,
             child: Padding(
-              padding: const EdgeInsets.all(150),
+              padding: const EdgeInsets.all(50),
               child: Wrap(
                 spacing: 200,
                 children: <Widget>[
@@ -103,77 +124,10 @@ class _PageAddState extends State<PageAdd> {
                       return null;
                     },
                     onSaved: (tags) {
-                      List<String> tagList = [];
                       if (tags != null && tags.isNotEmpty) {
-                        List<String> tmp = tags.split(',');
-                        for (int i = 0; i < tmp.length; i++) {
-                          tagList.add(tmp[i]);
-                        }
-                      }
-                      recTags = tagList;
-                      for (int i = 0; i < recTags.length; i++) {
-                        recTagString += recTags[i];
+                        recTagString = tags;
                       }
                     },
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 250, vertical: 30),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        ElevatedButton(
-                          onPressed: () {
-                            recName = '';
-                            recUrl = '';
-                            recTagString = '';
-                            recTags = [];
-                            Navigator.pop(
-                              context,
-                            );
-                          },
-                          child: const Row(
-                            children: [
-                              Icon(Icons.cancel),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text("Cancel"),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 100,
-                        ),
-                        ElevatedButton(
-                          onPressed: () {
-                            if (_formkey.currentState!.validate()) {
-                              _formkey.currentState!.save();
-                              RecordDataModel rec = RecordDataModel(
-                                name: recName,
-                                url: recUrl,
-                                tags: recTagString,
-                              );
-                              Provider.of<DBRecordProvider>(context,
-                                      listen: false)
-                                  .insertRecord(rec);
-                              Navigator.pop(
-                                context,
-                              );
-                            }
-                          },
-                          child: const Row(
-                            children: [
-                              Icon(Icons.save),
-                              SizedBox(
-                                width: 10,
-                              ),
-                              Text("Save record"),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
                   ),
                 ],
               ),
