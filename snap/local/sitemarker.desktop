@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Sitemarker
+Icon=${SNAP}/meta/sitemarker.png
+Exec=sitemarker
+Categories=Utility;GTK;
+Keywords=Sitemarker;sitemarker;bookmark;manager;bookmarks;
+Terminal=false
