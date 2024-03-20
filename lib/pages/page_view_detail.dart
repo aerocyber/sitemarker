@@ -68,9 +68,9 @@ class PageViewDetail extends StatelessWidget {
             ),
             child: ListTile(
               shape: RoundedRectangleBorder(
-                side: const BorderSide(
-                  width: 2,
-                ),
+                // side: const BorderSide(
+                //   width: 2,
+                // ),
                 borderRadius: BorderRadius.circular(5),
               ),
               leading: icons[index],
