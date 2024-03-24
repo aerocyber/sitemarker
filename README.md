@@ -10,6 +10,9 @@ An open source bookmark manager written in Flutter
 [![Buy Me a Coffee](https://img.shields.io/github/sponsors/aerocyber?style=for-the-badge&logo=Buy%20Me%20a%20Coffee&logoColor=white&label=Buy%20Me%20a%20Coffee&labelColor=yellow)](https://www.buymeacoffee.com/aerocyber)
 
 ### Experimental Crypto addresses
+
+Note that accepting crypto is purely on ATM experimental basis. No guarantee that they will be accepted forever.
+
 Monero: 449w7ivAZ4CB9xG1hxCroqSXrhvPDziJ4NzZ6SHcnvry9EiRFHHaqcFFbhQ1634VCCMcZUQFNRmH3go49aAKeLDC8HdDwcY
 
 Solana: 22ModgrvARKZCkwpcs8VWS9HXkq9M4iMKpLa5fTUHH1r
