@@ -11,7 +11,7 @@ An open source bookmark manager written in Flutter
 
 ### Experimental Crypto addresses
 
-Note that accepting crypto is purely on ATM experimental basis. No guarantee that they will be accepted forever.
+Note that accepting crypto is purely on an experimental basis. No guarantee that they will be accepted forever.
 
 Monero: 449w7ivAZ4CB9xG1hxCroqSXrhvPDziJ4NzZ6SHcnvry9EiRFHHaqcFFbhQ1634VCCMcZUQFNRmH3go49aAKeLDC8HdDwcY
 
