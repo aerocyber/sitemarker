@@ -9,15 +9,6 @@ An open source bookmark manager written in Flutter
 [![GitHub Sponsors](https://img.shields.io/github/sponsors/aerocyber?style=for-the-badge&logo=Github&label=GitHub%20Sponsors)](https://github.com/sponsors/aerocyber)
 [![Buy Me a Coffee](https://img.shields.io/github/sponsors/aerocyber?style=for-the-badge&logo=Buy%20Me%20a%20Coffee&logoColor=white&label=Buy%20Me%20a%20Coffee&labelColor=yellow)](https://www.buymeacoffee.com/aerocyber)
 
-### Experimental Crypto addresses
-Monero: 449w7ivAZ4CB9xG1hxCroqSXrhvPDziJ4NzZ6SHcnvry9EiRFHHaqcFFbhQ1634VCCMcZUQFNRmH3go49aAKeLDC8HdDwcY
-
-Solana: 22ModgrvARKZCkwpcs8VWS9HXkq9M4iMKpLa5fTUHH1r
-
-Ethereum: 0x7CB517dC3b34caf145b7B40759664AB128EcF5FE
-
-Polygon: 0x7CB517dC3b34caf145b7B40759664AB128EcF5FE
-
 ### Code contributions
 
 Code contributions are always welcomed! [Please see the Pull Request Guide in the documentation to how to pull a PR for Sitemarker](./docs/issues_and_pr.md#pull-requests)
