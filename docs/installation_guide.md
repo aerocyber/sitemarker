@@ -20,20 +20,14 @@ The stable version can also be installed after building it from source.
 
 The instructions assume the following packages are installed for your system:
  
+- Clang
+- CMake
+- git
+- GTK development headers
+- Ninja build
 - pkg-config
-- meson
-- ninja-build
-- python3
-- gettext
-- gettext-devel
-- python3-gobject
-- gtk4
-- gtk4-devel
-- libadwaita
-- Gio (Usually installed by gtk or gtk development  headers)
-- desktop-file-utils
-- appstream-util
-- glib2
+- liblzma-dev
+- libstdc++-12-dev
 
 For building, follow the commands in terminal:
 
@@ -42,7 +36,7 @@ For building, follow the commands in terminal:
 git clone https://github.com/aerocyber/sitemarker
 
 # Checkout the version to install.
-git checkout 1.1.0
+git checkout 1.2.3
 
 # Build it
 meson build
@@ -80,7 +74,7 @@ flatpak install --user Path/to/io.github.aerocyber.sitemarker.flatpak
 
 ### Windows and Mac
 
-Not officially supported.
+Not officially supported yet.
 
 ## Development Version
 
@@ -96,20 +90,14 @@ The development version can be installed after building it from source.
 
 The instructions assume the following packages are installed for your system:
  
+- Clang
+- CMake
+- git
+- GTK development headers
+- Ninja build
 - pkg-config
-- meson
-- ninja-build
-- python3
-- gettext
-- gettext-devel
-- python3-gobject
-- gtk4
-- gtk4-devel
-- libadwaita
-- Gio (Usually installed by gtk or gtk development  headers)
-- desktop-file-utils
-- appstream-util
-- glib2
+- liblzma-dev
+- libstdc++-12-dev
 
 For building, follow the commands in terminal:
 
@@ -120,31 +108,45 @@ git clone https://github.com/aerocyber/sitemarker
 # Checkout the dev branch to install.
 git checkout dev
 
+# Set platform. Platform should be  either of apk, linux or windows
+PLATFORM=linux
+
 # Build it
-meson build
+flutter build --release $PLATFORM
 
-# Install it
-cd build
-sudo ninja install
+# Open the directory location
+xdg-open ./build/
 
-# The installation fails due to the executable (sitemakrer) not having enough permissions. Fix it.
-sudo chmod +x $(which sitemarker)
 ```
 
 #### Installation with flatpak
 
-Building for installing with flatpak is fairly simple.
-
-Install [GNOME Builder](https://flathub.org/apps/org.gnome.Builder).
-
-Open the project in GNOME Builder and export it.
-Then, open terminal and execute:
+Run:
 
 ```bash
-flatpak install --user Path/to/io.github.aerocyber.sitemarker.flatpak
+./build-flatpak.sh
 ```
 
 ### Windows and Mac
 
-Not officially supported.
+Building on Windows require the installation of Visual Studio. Follow the official [flutter documentation](https://docs.flutter.dev/get-started/install/windows/desktop)
 
+```bash
+# Get the source code
+git clone https://github.com/aerocyber/sitemarker
+
+# Checkout the dev branch to install.
+git checkout dev
+
+# Set platform. Platform should be  either of apk, linux or windows
+PLATFORM=windows
+
+# Build it
+flutter build --release $PLATFORM
+
+# Open the directory location
+xdg-open ./build/
+
+```
+
+Mac is NOT officially supported. But you can try to run it.

@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='utf-8'?>
+<component type="desktop-application">
+  <!--Created with jdAppStreamEdit 9.0-->
+  <id>io.github.aerocyber.sitemarker.desktop</id>
+  <name>SiteMarker</name>
+  <summary>An open source bookmark manager</summary>
+  <developer>
+    <name>Aero</name>
+  </developer>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <update_contact>aerocyberdev@proton.me</update_contact>
+  <description>
+    <p>An open source bookmark manager</p>
+  </description>
+  <screenshots>
+    <screenshot>
+      <caption>View Records Light theme</caption>
+      <image type="source">https://raw.githubusercontent.com/aerocyber/sitemarker/main/screenshots/app-view-light.png</image>
+    </screenshot>
+    <screenshot type="default">
+      <caption>App Home Dark</caption>
+      <image type="source">https://raw.githubusercontent.com/aerocyber/sitemarker/main/screenshots/app-home-dark.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>App home light</caption>
+      <image type="source">https://raw.githubusercontent.com/aerocyber/sitemarker/main/screenshots/app-home-light.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>View Records Dark</caption>
+      <image type="source">https://raw.githubusercontent.com/aerocyber/sitemarker/main/screenshots/app-view-dark.png</image>
+    </screenshot>
+  </screenshots>
+  <releases>
+    <release version="1.2.3" date="2023-09-14" type="stable">
+      <description>
+        Update icon, donate link, permission.
+      </description>
+    </release>
+    <release version="1.2.2" date="2023-07-01" type="stable"/>
+    <release version="1.2.1" date="2023-06-30" type="stable"/>
+    <release version="1.2.0" date="2023-06-30" type="stable"/>
+    <release version="1.1.0" date="2023-06-11" type="stable"/>
+    <release version="1.0.1" date="2023-05-31" type="stable"/>
+    <release version="1.0.0" date="2023-05-30" type="stable"/>
+  </releases>
+  <url type="homepage">https://aerocyber.github.io/sitemarker</url>
+  <url type="bugtracker">https://github.com/aerocyber/sitemarker/issues</url>
+  <url type="donation">https://github.com/sponsors/aerocyber</url>
+  <url type="vcs-browser">https://github.com/aerocyber/sitemarker</url>
+  <categories>
+    <category>Utility</category>
+    <category>GTK</category>
+  </categories>
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+    <control>touch</control>
+  </supports>
+  <content_rating type="oars-1.1"/>
+  <keywords>
+    <keyword>bookmarks</keyword>
+    <keyword>bookmark</keyword>
+    <keyword>bookmark manager</keyword>
+    <keyword>bookmark managers</keyword>
+    <keyword>bookmark viewer</keyword>
+    <keyword>bookmark viewers</keyword>
+    <keyword>sitemarker</keyword>
+  </keywords>
+</component>

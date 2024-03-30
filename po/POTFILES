@@ -1,6 +1,0 @@
-data/io.github.aerocyber.sitemarker.desktop.in
-data/io.github.aerocyber.sitemarker.appdata.xml.in
-data/io.github.aerocyber.sitemarker.gschema.xml
-src/main.py
-src/window.py
-src/window.ui

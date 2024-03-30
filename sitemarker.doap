@@ -15,7 +15,7 @@ SiteMarker is an open source bookmark management app for GNOME.
   <download-page rdf:resource="https://github.com/aerocyber/sitemarker/releases" />
   <bug-database rdf:resource="https://github.com/aerocyber/sitemarker/issues" />
 
-  <programming-language>Python</programming-language>
+  <programming-language>Dart</programming-language>
 
   <maintainer>
     <foaf:Person>
