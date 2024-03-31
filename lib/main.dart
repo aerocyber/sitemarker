@@ -57,8 +57,7 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
       "https://api.github.com/repos/aerocyber/sitemarker/releases/latest";
 
   void _updateNotify() async {
-    PackageInfo pkg = await PackageInfo.fromPlatform();
-    version = pkg.version;
+    version = '2.0.0';
 
     final Uri url = Uri.parse(updateUrl);
     try {
