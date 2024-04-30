@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:sitemarker/data/data_helper.dart';
 import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/pages/page_add.dart';
@@ -120,11 +122,16 @@ class _ViewPageState extends State<ViewPage> {
                                 const SizedBox(
                                   height: 5,
                                 ),
-                                Text(
-                                  value.records[index].url,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
+                                GestureDetector(
+                                  onTap: () async {
+                                    await Clipboard.setData(ClipboardData(text: value.records[index].url));
+                                  },
+                                  child: Text(
+                                    value.records[index].url,
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context).colorScheme.tertiary,
+                                    ),
                                   ),
                                 ),
                                 Text(

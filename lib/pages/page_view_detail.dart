@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/operations/errors.dart';
 import 'package:sitemarker/pages/page_edit.dart';
@@ -35,6 +36,10 @@ class PageViewDetail extends StatelessWidget {
         ),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
+          IconButton(
+            onPressed: () => Clipboard.setData(ClipboardData(text: record.url)),
+            icon: const Icon(Icons.copy),
+          ),
           IconButton(
             onPressed: () => launchURL(record.url),
             icon: const Icon(Icons.link),
