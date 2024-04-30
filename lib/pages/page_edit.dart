@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
+import 'package:validators/validators.dart' as validators;
 
 class PageEdit extends StatelessWidget {
   final SitemarkerRecord record;
@@ -99,7 +100,7 @@ class PageEdit extends StatelessWidget {
                       if (url == null || url.isEmpty) {
                         return "Please enter a link";
                       }
-                      if (!Uri.parse(url).isAbsolute) {
+                      if (!validators.isURL(url, requireProtocol: false)) {
                         return "Please enter a valid URL";
                       }
                       if (urlList.contains(url)) {
