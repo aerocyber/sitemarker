@@ -47,8 +47,8 @@ class _ViewPageState extends State<ViewPage> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate:
-                          SitemarkerSearchDelegate(recordNames: recordNames),
+                      delegate: SitemarkerSearchDelegate(
+                          records: value.records, recordNames: recordNames),
                     );
                   },
                   icon: const Icon(Icons.search),
@@ -79,13 +79,13 @@ class _ViewPageState extends State<ViewPage> {
                         ),
                         child: ListTile(
                           onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageViewDetail(
-                                        record: value.records[index],
-                                      )));
-                        },
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PageViewDetail(
+                                          record: value.records[index],
+                                        )));
+                          },
                           shape: RoundedRectangleBorder(
                             side: const BorderSide(
                               width: 2,
@@ -110,8 +110,7 @@ class _ViewPageState extends State<ViewPage> {
                             child: Text(
                               value.records[index].name,
                               style: TextStyle(
-                                color:
-                                    Theme.of(context).colorScheme.secondary,
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),
                           ),
@@ -128,17 +127,15 @@ class _ViewPageState extends State<ViewPage> {
                                 child: Text(
                                   value.records[index].url,
                                   style: TextStyle(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .tertiary,
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary,
                                   ),
                                 ),
                               ),
                               Text(
                                 value.records[index].tags,
                                 style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.tertiary,
+                                  color: Theme.of(context).colorScheme.tertiary,
                                 ),
                               ),
                             ],
@@ -228,9 +225,8 @@ class _ViewPageState extends State<ViewPage> {
         ),
         TextButton(
           onPressed: () {
-            Provider.of<DBRecordProvider>(context,
-                                        listen: false)
-                                    .deleteRecord(rec);
+            Provider.of<DBRecordProvider>(context, listen: false)
+                .deleteRecord(rec);
             Navigator.of(context).pop();
           },
           child: const Text('OK'),
@@ -243,6 +239,7 @@ class _ViewPageState extends State<ViewPage> {
 }
 
 class SitemarkerSearchDelegate extends SearchDelegate {
+  List<SitemarkerRecord> records;
   List<String> recordNames;
 
   SitemarkerSearchDelegate(
@@ -251,6 +248,7 @@ class SitemarkerSearchDelegate extends SearchDelegate {
       super.searchFieldDecorationTheme,
       super.keyboardType,
       super.textInputAction,
+      required this.records,
       required this.recordNames});
 
   @override
@@ -289,6 +287,14 @@ class SitemarkerSearchDelegate extends SearchDelegate {
         var result = matchQuery[index];
         return ListTile(
           title: Text(result),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PageViewDetail(
+                          record: records[index],
+                        )));
+          },
         );
       },
     );
@@ -308,6 +314,14 @@ class SitemarkerSearchDelegate extends SearchDelegate {
         var result = matchQuery[index];
         return ListTile(
           title: Text(result),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PageViewDetail(
+                          record: records[index],
+                        )));
+          },
         );
       },
     );
