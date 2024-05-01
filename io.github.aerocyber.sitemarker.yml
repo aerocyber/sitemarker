@@ -10,8 +10,11 @@ separate-locales: false
 finish-args:
   - --share=ipc
   - --socket=wayland
+  - --socket=fallback-x11
   - --device=dri
   - --share=network
+  - --filesystem=xdg-documents:create
+  - --filesystem=xdg-data:create
 modules:
   - name: Sitemarker
     buildsystem: simple
