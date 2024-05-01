@@ -72,8 +72,13 @@ class _ViewPageState extends State<ViewPage> {
                       String domainUrl = value.records[index].url.split("//")[
                           value.records[index].url.split('//').length - 1];
                       String domain = domainUrl.split('/')[0];
-                      return GestureDetector(
-                        onTap: () {
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.0),
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                        ),
+                        child: ListTile(
+                          onTap: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -81,82 +86,75 @@ class _ViewPageState extends State<ViewPage> {
                                         record: value.records[index],
                                       )));
                         },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15.0),
-                            color: Theme.of(context).colorScheme.inversePrimary,
-                          ),
-                          child: ListTile(
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(5),
+                          shape: RoundedRectangleBorder(
+                            side: const BorderSide(
+                              width: 2,
                             ),
-                            leading: CircleAvatar(
-                              radius: 30,
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              child: Text(
-                                domain.characters.first.toUpperCase(),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .inversePrimary,
+                            borderRadius: BorderRadius.circular(5),
+                          ),
+                          leading: CircleAvatar(
+                            radius: 30,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            child: Text(
+                              domain.characters.first.toUpperCase(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary,
+                              ),
+                            ),
+                          ),
+                          title: Center(
+                            child: Text(
+                              value.records[index].name,
+                              style: TextStyle(
+                                color:
+                                    Theme.of(context).colorScheme.secondary,
+                              ),
+                            ),
+                          ),
+                          subtitle: Column(
+                            children: [
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              GestureDetector(
+                                onTap: () async {
+                                  await Clipboard.setData(ClipboardData(
+                                      text: value.records[index].url));
+                                },
+                                child: Text(
+                                  value.records[index].url,
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .tertiary,
+                                  ),
                                 ),
                               ),
-                            ),
-                            title: Center(
-                              child: Text(
-                                value.records[index].name,
+                              Text(
+                                value.records[index].tags,
                                 style: TextStyle(
                                   color:
-                                      Theme.of(context).colorScheme.secondary,
+                                      Theme.of(context).colorScheme.tertiary,
                                 ),
                               ),
-                            ),
-                            subtitle: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                GestureDetector(
-                                  onTap: () async {
-                                    await Clipboard.setData(ClipboardData(
-                                        text: value.records[index].url));
-                                  },
-                                  child: Text(
-                                    value.records[index].url,
-                                    style: TextStyle(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .tertiary,
-                                    ),
-                                  ),
-                                ),
-                                Text(
-                                  value.records[index].tags,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            trailing: IconButton(
-                              onPressed: () {
-                                SitemarkerRecord recordTemp =
-                                    value.records[index];
-                                RecordDataModel rec = RecordDataModel(
-                                  name: recordTemp.name,
-                                  url: recordTemp.url,
-                                  tags: recordTemp.tags,
-                                );
-                                onDeleteShowAlertDialog(context, rec);
-                              },
-                              icon: const Icon(Icons.delete),
-                            ),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            onPressed: () {
+                              SitemarkerRecord recordTemp =
+                                  value.records[index];
+                              RecordDataModel rec = RecordDataModel(
+                                name: recordTemp.name,
+                                url: recordTemp.url,
+                                tags: recordTemp.tags,
+                              );
+                              onDeleteShowAlertDialog(context, rec);
+                            },
+                            icon: const Icon(Icons.delete),
                           ),
                         ),
                       );
