@@ -71,6 +71,7 @@ class _PageAddState extends State<PageAdd> {
                 spacing: 200,
                 children: <Widget>[
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     maxLength: 100,
                     autofocus: true,
                     decoration: const InputDecoration(
@@ -91,6 +92,7 @@ class _PageAddState extends State<PageAdd> {
                     },
                   ),
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     maxLength: 250,
                     decoration: const InputDecoration(
                       icon: Icon(Icons.link),
@@ -114,6 +116,7 @@ class _PageAddState extends State<PageAdd> {
                     },
                   ),
                   TextFormField(
+                    textInputAction: TextInputAction.done,
                     maxLength: 250,
                     decoration: const InputDecoration(
                       icon: Icon(Icons.tag),

@@ -66,6 +66,7 @@ class PageEdit extends StatelessWidget {
               child: Wrap(
                 children: <Widget>[
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     maxLength: 100,
                     autofocus: true,
                     initialValue: record.name,
@@ -89,6 +90,7 @@ class PageEdit extends StatelessWidget {
                     },
                   ),
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     initialValue: record.url,
                     maxLength: 250,
                     decoration: const InputDecoration(
@@ -115,6 +117,7 @@ class PageEdit extends StatelessWidget {
                     },
                   ),
                   TextFormField(
+                    textInputAction: TextInputAction.done,
                     initialValue: record.tags,
                     maxLength: 250,
                     decoration: const InputDecoration(
