@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sitemarker/data/data_helper.dart';
 import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/pages/page_add.dart';
@@ -124,13 +123,15 @@ class _ViewPageState extends State<ViewPage> {
                                 ),
                                 GestureDetector(
                                   onTap: () async {
-                                    await Clipboard.setData(ClipboardData(text: value.records[index].url));
+                                    await Clipboard.setData(ClipboardData(
+                                        text: value.records[index].url));
                                   },
                                   child: Text(
                                     value.records[index].url,
                                     style: TextStyle(
-                                      color:
-                                          Theme.of(context).colorScheme.tertiary,
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .tertiary,
                                     ),
                                   ),
                                 ),
@@ -152,9 +153,7 @@ class _ViewPageState extends State<ViewPage> {
                                   url: recordTemp.url,
                                   tags: recordTemp.tags,
                                 );
-                                Provider.of<DBRecordProvider>(context,
-                                        listen: false)
-                                    .deleteRecord(rec);
+                                onDeleteShowAlertDialog(context, rec);
                               },
                               icon: const Icon(Icons.delete),
                             ),
@@ -202,7 +201,7 @@ class _ViewPageState extends State<ViewPage> {
     );
   }
 
-  showAlertDialog(BuildContext context, String url) {
+  onFailOpenURLShowAlertDialog(BuildContext context, String url) {
     String alertText =
         'Could not launch $url. Please open a browser and type in the URL';
 
@@ -210,6 +209,35 @@ class _ViewPageState extends State<ViewPage> {
       title: const Text('Error attempting to open URL'),
       content: Text(alertText),
       actions: [TextButton(onPressed: () {}, child: const Text('OK'))],
+    );
+
+    showDialog(context: context, builder: (BuildContext context) => ad);
+  }
+
+  onDeleteShowAlertDialog(BuildContext context, RecordDataModel rec) {
+    String alertText =
+        'Do you really want to delete record with name ${rec.name}? This is permanent and cannot be undone.';
+
+    AlertDialog ad = AlertDialog(
+      title: const Text('Confirm deletion?'),
+      content: Text(alertText),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(false);
+          },
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            Provider.of<DBRecordProvider>(context,
+                                        listen: false)
+                                    .deleteRecord(rec);
+            Navigator.of(context).pop();
+          },
+          child: const Text('OK'),
+        ),
+      ],
     );
 
     showDialog(context: context, builder: (BuildContext context) => ad);
