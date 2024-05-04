@@ -13,9 +13,9 @@ class PageViewDetail extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<String> entryTypes = [
-      'Name',
-      'URL',
-      'Tags',
+      'Name:',
+      'URL:',
+      'Tags:',
     ];
     final List<String> entries = [
       record.name,
@@ -74,40 +74,47 @@ class PageViewDetail extends StatelessWidget {
       ),
       body: ListView.separated(
         padding: const EdgeInsets.all(20),
-        itemBuilder: (context, index) {
+        itemBuilder: (BuildContext context, int index) {
           return Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15.0),
+              borderRadius: BorderRadius.circular(20.0),
               color: Theme.of(context).colorScheme.inversePrimary,
             ),
-            child: ListTile(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              leading: icons[index],
-              title: Center(
-                child: Row(
-                  children: [
-                    Text(entryTypes[index]),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      entries[index],
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.secondary,
-                      ),
-                    ),
-                  ],
+            height: 100,
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 20,
                 ),
-              ),
+                icons[index],
+                const SizedBox(
+                  width: 20,
+                ),
+                Text(
+                  entryTypes[index],
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+                const SizedBox(
+                  width: 20,
+                ),
+                Text(
+                  entries[index],
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.secondary,
+                  ),
+                ),
+              ],
             ),
           );
         },
-        separatorBuilder: (context, index) => const SizedBox(
-          height: 20,
-        ),
-        itemCount: 3,
+        separatorBuilder: (BuildContext context, int index) {
+          return const SizedBox(
+            height: 25,
+          );
+        },
+        itemCount: entries.length,
       ),
     );
   }
