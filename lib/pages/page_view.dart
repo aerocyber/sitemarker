@@ -123,9 +123,20 @@ class _ViewPageState extends State<ViewPage> {
                                 onTap: () async {
                                   await Clipboard.setData(ClipboardData(
                                       text: value.records[index].url));
+                                  const snackBar = SnackBar(
+                                    content: Text("URL copied to clipboard..."),
+                                    duration: Duration(milliseconds: 1500),
+                                  );
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  }
                                 },
                                 child: Text(
-                                  value.records[index].url,
+                                  value.records[index].url.length > 20
+                                      ? value.records[index].url
+                                          .substring(0, 21)
+                                      : value.records[index].url,
                                   style: TextStyle(
                                     color:
                                         Theme.of(context).colorScheme.tertiary,

@@ -37,7 +37,16 @@ class PageViewDetail extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: [
           IconButton(
-            onPressed: () => Clipboard.setData(ClipboardData(text: record.url)),
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: record.url));
+              const snackBar = SnackBar(
+                content: Text("URL copied to clipboard..."),
+                duration: Duration(milliseconds: 1500),
+              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(snackBar);
+              }
+            },
             icon: const Icon(Icons.copy),
           ),
           IconButton(
@@ -73,9 +82,6 @@ class PageViewDetail extends StatelessWidget {
             ),
             child: ListTile(
               shape: RoundedRectangleBorder(
-                // side: const BorderSide(
-                //   width: 2,
-                // ),
                 borderRadius: BorderRadius.circular(5),
               ),
               leading: icons[index],
