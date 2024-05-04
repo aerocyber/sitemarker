@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'dart:math' show Random;
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
@@ -51,12 +51,14 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
   _SitemarkerHomeState();
   int currentPageIndex = 0;
   late String version;
+  int showDonate = 40;
+  int? randomness;
 
   String updateUrl =
       "https://api.github.com/repos/aerocyber/sitemarker/releases/latest";
 
   void _updateNotify() async {
-    version = '2.0.0';
+    version = '2.1.0';
 
     final Uri url = Uri.parse(updateUrl);
     try {
@@ -107,12 +109,52 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
     );
   }
 
+  void _donateNotify() {
+    var ran = Random();
+    randomness ??= ran.nextInt(100);
+    String bmc = "https://buymeacoffee.com/aerocyber";
+    String ghs = "https://github.com/sponsors/aerocyber";
+    if (randomness! >= showDonate) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text("Support the project"),
+            content: const Text(
+                "This project is powered by awesome folks like you! Please donate to support the project's development! We support 2 ways of donations! Choose either of these."),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  launchUrl(Uri.parse(bmc));
+                },
+                child: const Text("Buy Me a Coffee"),
+              ),
+              TextButton(
+                onPressed: () {
+                  launchUrl(Uri.parse(ghs));
+                },
+                child: const Text("Github Sponsors"),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text("Remind me later"),
+              )
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _updateNotify();
+      _donateNotify();
     });
   }
 
