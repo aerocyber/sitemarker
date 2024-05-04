@@ -9,4 +9,4 @@
 - [] Bookmark import wizard (from browser, html file) { feature } {[ release: 2.2+ target ]}
 - [] Automatic bookmark updation through browser extension { feature } {[ release: 2.3+ target ]}
 - [x] Fix focus issues faced via keyboard { bug fix }
-- [] Improve search to make it link to the search result { feature } {[ release: 2.1+ target ]}
+- [x] Improve search to make it link to the search result { feature } {[ release: 2.1+ target ]}
