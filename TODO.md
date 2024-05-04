@@ -1,6 +1,6 @@
 # Checkpoints for next releases
 
-- [x] Make it recognoze domains, URLs starting with domains (without protocols) { bug fix }
+- [x] Make it recognize domains, URLs starting with domains (without protocols) { bug fix }
 - [x] Copy URL to clipboard { feature } {[ release: 2.1+ target ]}
 - [x] Delete confirmation { feature } {[ release: 2.1+ target ]}
 - [] Recycle bin { feature } {[ release: 2.2+ target ]}
