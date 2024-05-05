@@ -10,3 +10,5 @@
 - [] Automatic bookmark updation through browser extension { feature } {[ release: 2.3+ target ]}
 - [x] Fix focus issues faced via keyboard { bug fix }
 - [x] Improve search to make it link to the search result { feature } {[ release: 2.1+ target ]}
+- [] Import from/Export to .omio file {[ release: 2.2+ target ]}
+
