@@ -21,16 +21,25 @@ modules:
     only-arches:
       - x86_64
     build-commands:
-      - mkdir -p /app/bin
-      - cd sitemarker-2.0.0; mkdir -p /app/sitemarker; cp -r ./* /app/sitemarker; ln -s /app/sitemarker/sitemarker /app/bin/sitemarker
-      - cd sitemarker; mkdir -p /app/share/icons/hicolor/scalable/apps /app/share/icons/hicolor/symbolic/apps /app/share/applications /app/share/metainfo; cp -r data/icons/hicolor/scalable/apps/io.github.aerocyber.sitemarker.svg /app/share/icons/hicolor/scalable/apps; cp -r data/io.github.aerocyber.sitemarker.desktop /app/share/applications; cp data/icons/hicolor/symbolic/apps/io.github.aerocyber.sitemarker.svg /app/share/; cp -r data/io.github.aerocyber.sitemarker.appdata.xml /app/share/metainfo/
+      # - mkdir -p /app/bin
+      # - cd sitemarker-2.0.0; mkdir -p /app/sitemarker; cp -r ./* /app/sitemarker; ln -s /app/sitemarker/sitemarker /app/bin/sitemarker
+      # - cd sitemarker; mkdir -p /app/share/icons/hicolor/scalable/apps /app/share/icons/hicolor/symbolic/apps /app/share/applications /app/share/metainfo; cp -r data/icons/hicolor/scalable/apps/io.github.aerocyber.sitemarker.svg /app/share/icons/hicolor/scalable/apps; cp -r data/io.github.aerocyber.sitemarker.desktop /app/share/applications; cp data/icons/hicolor/symbolic/apps/io.github.aerocyber.sitemarker.svg /app/share/icons/hicolor/symbolic/apps/; cp -r data/io.github.aerocyber.sitemarker.appdata.xml /app/share/metainfo/
+      - "./build-flatpak.sh"
     sources:
-      - type: archive
+      - type: file
         url: https://github.com/aerocyber/sitemarker/releases/download/2.0.0/sitemarker-2.0.0-linux.tar.xz
         sha256: c628847545a41c05e3ef26f44b0a21ae7adecb11bf63196e39d71adff2d93c4c
-        archive-type: tar-xz
-        dest: sitemarker-2.0.0
-      - type: git
-        url: https://github.com/aerocyber/sitemarker.git
-        branch: stable
-        dest: sitemarker
+      - type: file
+        path: flatpak/icons/hicolor/scalable/apps/io.github.aerocyber.sitemarker.svg
+        dest: flatpak/icons/hicolor/scalable/apps
+      - type: file
+        path: flatpak/icons/hicolor/symbolic/apps/io.github.aerocyber.sitemarker.svg
+        dest: flatpak/icons/hicolor/symbolic/apps
+      - type: file
+        path: flatpak/io.github.aerocyber.sitemarker.desktop
+        dest: flatpak/
+      - type: file
+        path: flatpak/io.github.aerocyber.sitemarker.appdata.xml
+        dest: flatpak/
+      - type: file
+        path: build-flatpak.sh
