@@ -47,6 +47,7 @@ dependencies:
   sqlite3: ^2.4.0
   http: ^1.2.1
   package_info_plus: ^4.2.0
+  validators: ^3.0.0
 
 
 dev_dependencies:

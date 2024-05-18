@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:sitemarker/data/data_helper.dart';
 import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/pages/page_add.dart';
@@ -46,8 +47,8 @@ class _ViewPageState extends State<ViewPage> {
                   onPressed: () {
                     showSearch(
                       context: context,
-                      delegate:
-                          SitemarkerSearchDelegate(recordNames: recordNames),
+                      delegate: SitemarkerSearchDelegate(
+                          records: value.records, recordNames: recordNames),
                     );
                   },
                   icon: const Icon(Icons.search),
@@ -71,86 +72,97 @@ class _ViewPageState extends State<ViewPage> {
                       String domainUrl = value.records[index].url.split("//")[
                           value.records[index].url.split('//').length - 1];
                       String domain = domainUrl.split('/')[0];
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => PageViewDetail(
-                                        record: value.records[index],
-                                      )));
-                        },
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(15.0),
-                            color: Theme.of(context).colorScheme.inversePrimary,
+                      return Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(15.0),
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                        ),
+                        child: ListTile(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => PageViewDetail(
+                                          record: value.records[index],
+                                        )));
+                          },
+                          shape: RoundedRectangleBorder(
+                            side: const BorderSide(
+                              width: 2,
+                            ),
+                            borderRadius: BorderRadius.circular(5),
                           ),
-                          child: ListTile(
-                            shape: RoundedRectangleBorder(
-                              side: const BorderSide(
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            leading: CircleAvatar(
-                              radius: 30,
-                              backgroundColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              child: Text(
-                                domain.characters.first.toUpperCase(),
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .inversePrimary,
-                                ),
+                          leading: CircleAvatar(
+                            radius: 30,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                            child: Text(
+                              domain.characters.first.toUpperCase(),
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .inversePrimary,
                               ),
                             ),
-                            title: Center(
-                              child: Text(
-                                value.records[index].name,
-                                style: TextStyle(
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                ),
+                          ),
+                          title: Center(
+                            child: Text(
+                              value.records[index].name,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary,
                               ),
                             ),
-                            subtitle: Column(
-                              children: [
-                                const SizedBox(
-                                  height: 5,
-                                ),
-                                Text(
-                                  value.records[index].url,
+                          ),
+                          subtitle: Column(
+                            children: [
+                              const SizedBox(
+                                height: 5,
+                              ),
+                              GestureDetector(
+                                onTap: () async {
+                                  await Clipboard.setData(ClipboardData(
+                                      text: value.records[index].url));
+                                  const snackBar = SnackBar(
+                                    content: Text("URL copied to clipboard..."),
+                                    duration: Duration(milliseconds: 1500),
+                                  );
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(snackBar);
+                                  }
+                                },
+                                child: Text(
+                                  value.records[index].url.length > 20
+                                      ? value.records[index].url
+                                          .substring(0, 21)
+                                      : value.records[index].url,
                                   style: TextStyle(
                                     color:
                                         Theme.of(context).colorScheme.tertiary,
                                   ),
                                 ),
-                                Text(
-                                  value.records[index].tags,
-                                  style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.tertiary,
-                                  ),
+                              ),
+                              Text(
+                                value.records[index].tags,
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.tertiary,
                                 ),
-                              ],
-                            ),
-                            trailing: IconButton(
-                              onPressed: () {
-                                SitemarkerRecord recordTemp =
-                                    value.records[index];
-                                RecordDataModel rec = RecordDataModel(
-                                  name: recordTemp.name,
-                                  url: recordTemp.url,
-                                  tags: recordTemp.tags,
-                                );
-                                Provider.of<DBRecordProvider>(context,
-                                        listen: false)
-                                    .deleteRecord(rec);
-                              },
-                              icon: const Icon(Icons.delete),
-                            ),
+                              ),
+                            ],
+                          ),
+                          trailing: IconButton(
+                            onPressed: () {
+                              SitemarkerRecord recordTemp =
+                                  value.records[index];
+                              RecordDataModel rec = RecordDataModel(
+                                name: recordTemp.name,
+                                url: recordTemp.url,
+                                tags: recordTemp.tags,
+                              );
+                              onDeleteShowAlertDialog(context, rec);
+                            },
+                            icon: const Icon(Icons.delete),
                           ),
                         ),
                       );
@@ -195,7 +207,7 @@ class _ViewPageState extends State<ViewPage> {
     );
   }
 
-  showAlertDialog(BuildContext context, String url) {
+  onFailOpenURLShowAlertDialog(BuildContext context, String url) {
     String alertText =
         'Could not launch $url. Please open a browser and type in the URL';
 
@@ -207,9 +219,38 @@ class _ViewPageState extends State<ViewPage> {
 
     showDialog(context: context, builder: (BuildContext context) => ad);
   }
+
+  onDeleteShowAlertDialog(BuildContext context, RecordDataModel rec) {
+    String alertText =
+        'Do you really want to delete record with name ${rec.name}? This is permanent and cannot be undone.';
+
+    AlertDialog ad = AlertDialog(
+      title: const Text('Confirm deletion?'),
+      content: Text(alertText),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(false);
+          },
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            Provider.of<DBRecordProvider>(context, listen: false)
+                .deleteRecord(rec);
+            Navigator.of(context).pop();
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    );
+
+    showDialog(context: context, builder: (BuildContext context) => ad);
+  }
 }
 
 class SitemarkerSearchDelegate extends SearchDelegate {
+  List<SitemarkerRecord> records;
   List<String> recordNames;
 
   SitemarkerSearchDelegate(
@@ -218,6 +259,7 @@ class SitemarkerSearchDelegate extends SearchDelegate {
       super.searchFieldDecorationTheme,
       super.keyboardType,
       super.textInputAction,
+      required this.records,
       required this.recordNames});
 
   @override
@@ -256,6 +298,14 @@ class SitemarkerSearchDelegate extends SearchDelegate {
         var result = matchQuery[index];
         return ListTile(
           title: Text(result),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PageViewDetail(
+                          record: records[index],
+                        )));
+          },
         );
       },
     );
@@ -275,6 +325,14 @@ class SitemarkerSearchDelegate extends SearchDelegate {
         var result = matchQuery[index];
         return ListTile(
           title: Text(result),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => PageViewDetail(
+                          record: records[index],
+                        )));
+          },
         );
       },
     );

@@ -1,11 +1,21 @@
 import 'package:drift/drift.dart';
+// import 'package:sitemarker/data/logger_settings.dart';
 import 'package:sitemarker/data/shared_db.dart' as impl;
+// import 'package:logger/logger.dart';
 
 part 'data_model.g.dart';
 
 @DriftDatabase(tables: [SitemarkerRecords])
 class SitemarkerDB extends _$SitemarkerDB {
   SitemarkerDB() : super(impl.connect());
+  // Logger debuglogger = Logger(
+  //   printer: PrettyPrinter(),
+  //   output: LoggerOutput(filename: "sitemarker-devel.log"),
+  // );
+  // Logger prodLogger = Logger(
+  //   printer: PrettyPrinter(),
+  //   output: LoggerOutput(filename: "sitemarker.log"),
+  // );
 
   @override
   int get schemaVersion => 1;

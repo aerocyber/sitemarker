@@ -13,7 +13,7 @@ flutter build appbundle --tree-shake-icons --release --build-name=$VERSION --spl
 flutter build web --build-name=$VERSION --release --native-null-assertions --pwa-strategy=offline-first --web-resources-cdn --source-maps --dart2js-optimization O4 
 
 # Windows Release build
-flutter build appbundle --tree-shake-icons --release --build-name=$VERSION --split-debug-info=$VERSION-windows --no-obfuscate
+flutter build windows --tree-shake-icons --release --build-name=$VERSION --split-debug-info=$VERSION-windows --no-obfuscate
 
 # Linux snap Release build
 snapcraft

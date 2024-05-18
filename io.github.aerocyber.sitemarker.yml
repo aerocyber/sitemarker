@@ -2,28 +2,44 @@
 
 ---
 app-id: io.github.aerocyber.sitemarker
-runtime: org.freedesktop.Platform
-runtime-version: "22.08"
-sdk: org.freedesktop.Sdk
+runtime: org.gnome.Platform
+runtime-version: "46"
+sdk: org.gnome.Sdk
 command: sitemarker
 separate-locales: false
 finish-args:
   - --share=ipc
   - --socket=wayland
+  - --socket=fallback-x11
   - --device=dri
   - --share=network
+  - --filesystem=xdg-documents:create
+  - --filesystem=xdg-data:create
 modules:
   - name: Sitemarker
     buildsystem: simple
     only-arches:
       - x86_64
     build-commands:
+      # - mkdir -p /app/bin
+      # - cd sitemarker-2.0.0; mkdir -p /app/sitemarker; cp -r ./* /app/sitemarker; ln -s /app/sitemarker/sitemarker /app/bin/sitemarker
+      # - cd sitemarker; mkdir -p /app/share/icons/hicolor/scalable/apps /app/share/icons/hicolor/symbolic/apps /app/share/applications /app/share/metainfo; cp -r data/icons/hicolor/scalable/apps/io.github.aerocyber.sitemarker.svg /app/share/icons/hicolor/scalable/apps; cp -r data/io.github.aerocyber.sitemarker.desktop /app/share/applications; cp data/icons/hicolor/symbolic/apps/io.github.aerocyber.sitemarker.svg /app/share/icons/hicolor/symbolic/apps/; cp -r data/io.github.aerocyber.sitemarker.appdata.xml /app/share/metainfo/
       - "./build-flatpak.sh"
     sources:
       - type: file
-        url: https://github.com/aerocyber/sitemarker/releases/download/v1.0.0/FlutterApp-Linux-Portable.tar.gz
-        sha256: 
-      - type: dir
-        path: ../sitemarker
+        url: https://github.com/aerocyber/sitemarker/releases/download/2.0.0/sitemarker-2.0.0-linux.tar.xz
+        sha256: c628847545a41c05e3ef26f44b0a21ae7adecb11bf63196e39d71adff2d93c4c
+      - type: file
+        path: flatpak/icons/hicolor/scalable/apps/io.github.aerocyber.sitemarker.svg
+        dest: flatpak/icons/hicolor/scalable/apps
+      - type: file
+        path: flatpak/icons/hicolor/symbolic/apps/io.github.aerocyber.sitemarker.svg
+        dest: flatpak/icons/hicolor/symbolic/apps
+      - type: file
+        path: flatpak/io.github.aerocyber.sitemarker.desktop
+        dest: flatpak/
+      - type: file
+        path: flatpak/io.github.aerocyber.sitemarker.appdata.xml
+        dest: flatpak/
       - type: file
         path: build-flatpak.sh

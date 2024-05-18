@@ -1,47 +1,47 @@
 #!/bin/bash
-# Build the Flutter app and package into an archive.
+
+
+# Convert the archive of the Flutter app to a Flatpak.
+
+
 # Exit if any command fails
 set -e
+
 # Echo all commands for debug purposes
 set -x
 
 
-projectName=Sitemarker
-
-archiveName=$projectName-linux-portable.tar.gz
-baseDir=$(pwd)/build/flatpak/
-
+# No spaces in project name.
+projectName=sitemarker
 projectId=io.github.aerocyber.sitemarker
 executableName=sitemarker
 
-flutter pub get
-flutter build linux
 
-cd build/linux/x64/release/bundle || exit
-tar -czaf $archiveName ./*
-mv $archiveName "$baseDir"/
+# ------------------------------- Build Flatpak ----------------------------- #
 
 # Extract portable Flutter build.
 mkdir -p $projectName
-tar -xf $baseDir/$projectName-linux-portable.tar.gz -C $projectName
+tar -xf $projectName-2.0.0-linux.tar.xz -C $projectName
 
-
+# Copy the portable app to the Flatpak-based location.
 cp -r $projectName /app/
 chmod +x /app/$projectName/$executableName
 mkdir -p /app/bin
 ln -s /app/$projectName/$executableName /app/bin/$executableName
 
 # Install the icon.
-iconDir=/app/share/icons/hicolor/scalable/apps
-mkdir -p $iconDir
-cp -r assets/icons/$projectId.svg $iconDir/
+iconDirA=/app/share/icons/hicolor/scalable/apps
+iconDirB=/app/share/icons/hicolor/symbolic/apps
+mkdir -p $iconDirA $iconDirB
+cp -r flatpak/icons/hicolor/scalable/apps/$projectId.svg $iconDirA/
+cp -r flatpak/icons/hicolor/symbolic/apps/$projectId.svg $iconDirB/
 
 # Install the desktop file.
 desktopFileDir=/app/share/applications
 mkdir -p $desktopFileDir
-cp -r packaging/linux/$projectId.desktop $desktopFileDir/
+cp -r flatpak/$projectId.desktop $desktopFileDir/
 
 # Install the AppStream metadata file.
 metadataDir=/app/share/metainfo
 mkdir -p $metadataDir
-cp -r packaging/linux/$projectId.metainfo.xml $metadataDir/
+cp -r flatpak/$projectId.appdata.xml $metadataDir/

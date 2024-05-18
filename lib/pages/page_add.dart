@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sitemarker/data/data_helper.dart';
 import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
+import 'package:validators/validators.dart' as validators;
 
 class PageAdd extends StatefulWidget {
   const PageAdd({super.key});
@@ -70,6 +71,7 @@ class _PageAddState extends State<PageAdd> {
                 spacing: 200,
                 children: <Widget>[
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     maxLength: 100,
                     autofocus: true,
                     decoration: const InputDecoration(
@@ -90,6 +92,7 @@ class _PageAddState extends State<PageAdd> {
                     },
                   ),
                   TextFormField(
+                    textInputAction: TextInputAction.next,
                     maxLength: 250,
                     decoration: const InputDecoration(
                       icon: Icon(Icons.link),
@@ -100,7 +103,7 @@ class _PageAddState extends State<PageAdd> {
                       if (url == null || url.isEmpty) {
                         return "Please enter a link";
                       }
-                      if (!Uri.parse(url).isAbsolute) {
+                      if (!validators.isURL(url, requireProtocol: false)) {
                         return "Please enter a valid URL";
                       }
                       if (urlList.contains(url)) {
@@ -113,6 +116,7 @@ class _PageAddState extends State<PageAdd> {
                     },
                   ),
                   TextFormField(
+                    textInputAction: TextInputAction.done,
                     maxLength: 250,
                     decoration: const InputDecoration(
                       icon: Icon(Icons.tag),
