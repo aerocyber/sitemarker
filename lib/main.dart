@@ -217,7 +217,7 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         selectedIndex: currentPageIndex,
         indicatorColor: Theme.of(context).colorScheme.inversePrimary,

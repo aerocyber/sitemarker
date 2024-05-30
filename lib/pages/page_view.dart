@@ -59,7 +59,7 @@ class _ViewPageState extends State<ViewPage> {
         ],
       ),
       body: Container(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
         alignment: Alignment.center,
         child: Consumer<DBRecordProvider>(
           builder: (context, value, child) {
