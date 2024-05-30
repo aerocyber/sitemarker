@@ -178,6 +178,30 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
     }
   }
 
+  Future<String> getPath() async {
+    if (Platform.environment["XDG_DATA_HOME"] != null) {
+      return File("${Platform.environment["XDG_DATA_HOME"]}/sitemarker.db")
+          .path;
+    } else {
+      return File(
+              "${(await getApplicationSupportDirectory()).path}/sitemarker.db")
+          .path;
+    }
+  }
+
+  void _dbPathVerify() async {
+    final dbPath = File(await getPath());
+    if (File("${(await getApplicationDocumentsDirectory()).path}/sitemarker.db")
+            .existsSync() &&
+        !(dbPath.existsSync())) {
+      File src = File(
+          "${(await getApplicationDocumentsDirectory()).path}/sitemarker.db");
+      File dest = dbPath;
+      dest.writeAsBytesSync(src.readAsBytesSync());
+      src.deleteSync();
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -185,6 +209,7 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _updateNotify();
       _donateNotify();
+      _dbPathVerify();
     });
   }
 
