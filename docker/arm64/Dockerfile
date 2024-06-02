@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM arm64v8/fedora AS base
+FROM arm64v8/fedora:40 AS base
 ENV VERSION=2.1.1
 ENV BUILDNO=1
 ENV SITEMARKER_PLATFORM=arm64
