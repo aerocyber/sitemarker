@@ -46,7 +46,7 @@ dependencies:
   logger: ^2.1.0
   sqlite3: ^2.4.0
   http: ^1.2.1
-  package_info_plus: ^4.2.0
+  package_info_plus: ^8.0.0
   validators: ^3.0.0
 
 
@@ -59,7 +59,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
   build_runner: ^2.4.8
   drift_dev: ^2.16.0
 
