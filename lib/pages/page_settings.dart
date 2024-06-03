@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class PageSettings extends StatelessWidget {
   const PageSettings({super.key});
 
-  final String version = '2.1.0'; // TODO: Update version here on release build.
+  final String version = '2.2.0'; // TODO: Update version here on release build.
 
   @override
   Widget build(BuildContext context) {
