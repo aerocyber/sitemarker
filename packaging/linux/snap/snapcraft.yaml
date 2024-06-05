@@ -1,0 +1,54 @@
+name: sitemarker
+version: 2.1.0
+summary: Open source bookmark manager.
+description: |
+  Make sharing bookmarks easier using Osmata, the bookmark manager.
+contact: https://github.com/aerocyber/sitemarker/issues
+issues: https://github.com/aerocyber/sitemarker/issues
+license: MIT
+source-code: https://github.com/aerocyber/sitemarker
+title: Sitemarker
+website: https://github.com/aerocyber/sitemarker
+confinement: strict
+base: core24
+platforms:
+  amd64:
+  arm64:
+
+# grade: beta
+
+# slots:
+#  dbus-sitemarker:
+#    interface: dbus
+#    bus: session
+#    name: io.github.aerocyber.sitemarker
+
+apps:
+  sitemarker:
+    build-packages:
+      - curl
+      - git
+      - unzip
+      - xz-utils
+      - zip
+      - libglu1-mesa
+      - clang
+      - cmake
+      - ninja-build
+      - pkg-config
+      - libgtk-3-dev
+      - liblzma-dev
+      - libstdc++-12-dev
+    command: sitemarker
+    extensions: [gnome]
+    plugs:
+      - network
+      - home
+ #   slots:
+ #     - dbus-sitemarker
+
+parts:
+  sitemarker:
+    source: https://github.com/aerocyber/sitemarker.git
+    plugin: flutter
+    flutter-target: lib/main.dart

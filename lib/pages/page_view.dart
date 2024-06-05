@@ -59,7 +59,7 @@ class _ViewPageState extends State<ViewPage> {
         ],
       ),
       body: Container(
-        color: Theme.of(context).colorScheme.background,
+        color: Theme.of(context).colorScheme.surface,
         alignment: Alignment.center,
         child: Consumer<DBRecordProvider>(
           builder: (context, value, child) {
@@ -151,18 +151,21 @@ class _ViewPageState extends State<ViewPage> {
                               ),
                             ],
                           ),
-                          trailing: IconButton(
-                            onPressed: () {
-                              SitemarkerRecord recordTemp =
-                                  value.records[index];
-                              RecordDataModel rec = RecordDataModel(
-                                name: recordTemp.name,
-                                url: recordTemp.url,
-                                tags: recordTemp.tags,
-                              );
-                              onDeleteShowAlertDialog(context, rec);
-                            },
-                            icon: const Icon(Icons.delete),
+                          trailing: SizedBox(
+                            width: 100,
+                            child: IconButton(
+                              onPressed: () {
+                                SitemarkerRecord recordTemp =
+                                    value.records[index];
+                                RecordDataModel rec = RecordDataModel(
+                                  name: recordTemp.name,
+                                  url: recordTemp.url,
+                                  tags: recordTemp.tags,
+                                );
+                                onDeleteShowAlertDialog(context, rec);
+                              },
+                              icon: const Icon(Icons.delete),
+                            ),
                           ),
                         ),
                       );

@@ -1,6 +1,7 @@
 import 'dart:convert';
-import 'dart:math' show Random;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
 import 'package:sitemarker/pages/page_settings.dart';
@@ -8,6 +9,7 @@ import 'package:sitemarker/pages/page_view.dart';
 import 'package:sitemarker/color_schemes.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
+import 'package:universal_io/io.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,7 +60,7 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
       "https://api.github.com/repos/aerocyber/sitemarker/releases/latest";
 
   void _updateNotify() async {
-    version = '2.1.0';
+    version = '2.1.1';
 
     final Uri url = Uri.parse(updateUrl);
     try {
@@ -109,42 +111,94 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
     );
   }
 
-  void _donateNotify() {
-    var ran = Random();
-    randomness ??= ran.nextInt(100);
+  Future<Directory> getAppDir() async {
+    if (Platform.isLinux) {
+      return Directory(Platform.environment["XDG_DATA_DIR"] ??
+          "${Platform.environment["HOME"]}/.config/sitemarker");
+    } else {
+      return await getApplicationSupportDirectory();
+    }
+  }
+
+  void _donateNotify() async {
+    bool showDonate = true;
+    if (!kIsWeb) {
+      Directory dir = await getAppDir();
+      File f = File("${dir.path.toString()}/donate_show.timestamp");
+      if (!f.existsSync()) {
+        f.createSync(recursive: true);
+        f.writeAsStringSync(
+            "${DateTime.timestamp().day}-${DateTime.timestamp().month}-${DateTime.timestamp().year}");
+      } else {
+        var timestamp = f.readAsStringSync();
+        if (timestamp ==
+            "${DateTime.timestamp().day}-${DateTime.timestamp().month}-${DateTime.timestamp().year}") {
+          showDonate = false;
+        } else {
+          f.writeAsStringSync(
+              "${DateTime.timestamp().day}-${DateTime.timestamp().month}-${DateTime.timestamp().year}");
+        }
+      }
+    }
     String bmc = "https://buymeacoffee.com/aerocyber";
     String ghs = "https://github.com/sponsors/aerocyber";
-    if (randomness! >= showDonate) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text("Support the project"),
-            content: const Text(
-                "This project is powered by awesome folks like you! Please donate to support the project's development! We support 2 ways of donations! Choose either of these."),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  launchUrl(Uri.parse(bmc));
-                },
-                child: const Text("Buy Me a Coffee"),
-              ),
-              TextButton(
-                onPressed: () {
-                  launchUrl(Uri.parse(ghs));
-                },
-                child: const Text("Github Sponsors"),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text("Remind me later"),
-              )
-            ],
-          );
-        },
-      );
+    if (showDonate) {
+      if (mounted) {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text("Support the project"),
+              content: const Text(
+                  "This project is powered by awesome folks like you! Please donate to support the project's development! We support 2 ways of donations! Choose either of these."),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    launchUrl(Uri.parse(bmc));
+                  },
+                  child: const Text("Buy Me a Coffee"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    launchUrl(Uri.parse(ghs));
+                  },
+                  child: const Text("Github Sponsors"),
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("Remind me later"),
+                )
+              ],
+            );
+          },
+        );
+      }
+    }
+  }
+
+  Future<String> getPath() async {
+    if (Platform.environment["XDG_DATA_HOME"] != null) {
+      return File("${Platform.environment["XDG_DATA_HOME"]}/sitemarker.db")
+          .path;
+    } else {
+      return File(
+              "${(await getApplicationSupportDirectory()).path}/sitemarker.db")
+          .path;
+    }
+  }
+
+  void _dbPathVerify() async {
+    final dbPath = File(await getPath());
+    if (File("${(await getApplicationDocumentsDirectory()).path}/sitemarker.db")
+            .existsSync() &&
+        !(dbPath.existsSync())) {
+      File src = File(
+          "${(await getApplicationDocumentsDirectory()).path}/sitemarker.db");
+      File dest = dbPath;
+      dest.writeAsBytesSync(src.readAsBytesSync());
+      src.deleteSync();
     }
   }
 
@@ -155,6 +209,7 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _updateNotify();
       _donateNotify();
+      _dbPathVerify();
     });
   }
 
@@ -162,7 +217,7 @@ class _SitemarkerHomeState extends State<SitemarkerHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: NavigationBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         selectedIndex: currentPageIndex,
         indicatorColor: Theme.of(context).colorScheme.inversePrimary,
