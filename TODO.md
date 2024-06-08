@@ -15,3 +15,4 @@
 - [ ] Initial support for Sitemarker Cloud { feature } {[ release: 2.4+ target ]}
 - [x] Add space to the end of Delete button { bugfix } {[ release: 2.1.1+ target ]}
 - [x] Change Linux path to ~/.config/sitemarker/sitemarker.db instead of ~/Documents/sitemarker.db { bugfix } {[ release: 2.2+ target ]} (Solution: If the file exist at ~/Documents/ and does not exist at ~/.config/sitemarker/ or $XDG_DATA_DIR move it to $XDG_DATA_DIR if defined or ~/.config/sitemarker/)
+- [ ] Fix file associations
