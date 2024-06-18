@@ -1,1 +1,1 @@
-DOCKER_BUILDKIT=1 docker build .
+podman build --output=./build/docker/arm64 --target=binaries .

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:sitemarker/data/data_helper.dart';
 import 'package:sitemarker/data/data_model.dart';
 import 'package:sitemarker/pages/page_add.dart';
+// import 'package:sitemarker/pages/page_filter.dart'; // TODO: Next iteration?
 import 'package:sitemarker/pages/page_view_detail.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/data/dbrecord_provider.dart';
@@ -17,7 +18,177 @@ class ViewPage extends StatefulWidget {
 class _ViewPageState extends State<ViewPage> {
   List<String> recordNames = [];
 
-  GlobalKey globalKey = GlobalKey();
+  // final _formkey = GlobalKey<FormState>(); // TODO: Filter form
+
+  // TODO: Filter dialog
+  // void askForFilter() {
+  //   Map<String, dynamic> filters = {
+  //     "Name": {
+  //       "Has text": "",
+  //       "Starts with": "",
+  //       "Ends with": "",
+  //     },
+  //     "URL": {
+  //       "Has text": "",
+  //       "Starts with": "",
+  //       "Ends with": "",
+  //     },
+  //     "Tags": {
+  //       "Has tag": "",
+  //     },
+  //   };
+
+  //   showDialog(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return Consumer<DBRecordProvider>(builder: (context, value, child) {
+  //           return AlertDialog(
+  //             title: const Text("Filter data"),
+  //             content: Center(
+  //               child: Form(
+  //                 key: _formkey,
+  //                 child: Column(
+  //                   crossAxisAlignment: CrossAxisAlignment.center,
+  //                   children: [
+  //                     TextFormField(
+  //                       textInputAction: TextInputAction.next,
+  //                       maxLength: 100,
+  //                       autofocus: true,
+  //                       decoration: const InputDecoration(
+  //                         icon: Icon(Icons.subject),
+  //                         hintText: "Enter text present in Name",
+  //                         labelText: "Name contains the word:",
+  //                       ),
+  //                       onSaved: (nameFilter) {
+  //                         if (nameFilter != null) {
+  //                           filters["Name"]["Has text"] = nameFilter;
+  //                         }
+  //                       },
+  //                     ),
+  //                     TextFormField(
+  //                       textInputAction: TextInputAction.next,
+  //                       maxLength: 100,
+  //                       autofocus: true,
+  //                       decoration: const InputDecoration(
+  //                         icon: Icon(Icons.subject),
+  //                         hintText:
+  //                             "Enter the text with which Name starts with",
+  //                         labelText: "Name starts with the word:",
+  //                       ),
+  //                       onSaved: (nameFilter) {
+  //                         if (nameFilter != null) {
+  //                           filters["Name"]["Starts with"] = nameFilter;
+  //                         }
+  //                       },
+  //                     ),
+  //                     TextFormField(
+  //                       textInputAction: TextInputAction.next,
+  //                       maxLength: 100,
+  //                       autofocus: true,
+  //                       decoration: const InputDecoration(
+  //                         icon: Icon(Icons.subject),
+  //                         hintText: "Enter text with which Name ends with",
+  //                         labelText: "Name ends with the word:",
+  //                       ),
+  //                       onSaved: (nameFilter) {
+  //                         if (nameFilter != null) {
+  //                           filters["Name"]["Ends with"] = nameFilter;
+  //                         }
+  //                       },
+  //                     ),
+  //                     TextFormField(
+  //                       textInputAction: TextInputAction.next,
+  //                       maxLength: 100,
+  //                       autofocus: true,
+  //                       decoration: const InputDecoration(
+  //                         icon: Icon(Icons.subject),
+  //                         hintText: "Enter text present in uRL",
+  //                         labelText: "URL contains the word:",
+  //                       ),
+  //                       onSaved: (urlFilter) {
+  //                         if (urlFilter != null) {
+  //                           filters["URL"]["Has text"] = urlFilter;
+  //                         }
+  //                       },
+  //                     ),
+  //                     TextFormField(
+  //                       textInputAction: TextInputAction.next,
+  //                       maxLength: 100,
+  //                       autofocus: true,
+  //                       decoration: const InputDecoration(
+  //                         icon: Icon(Icons.subject),
+  //                         hintText: "Enter the text with which URL starts with",
+  //                         labelText: "URL starts with the word:",
+  //                       ),
+  //                       onSaved: (tagFilter) {
+  //                         if (tagFilter != null) {
+  //                           filters["Tags"]["Has tag"] = tagFilter;
+  //                         }
+  //                       },
+  //                     ),
+  //                     TextFormField(
+  //                       textInputAction: TextInputAction.next,
+  //                       maxLength: 100,
+  //                       autofocus: true,
+  //                       decoration: const InputDecoration(
+  //                         icon: Icon(Icons.subject),
+  //                         hintText: "Enter text with which URL ends with",
+  //                         labelText: "URL ends with the word:",
+  //                       ),
+  //                       onSaved: (urlFilter) {
+  //                         if (urlFilter != null) {
+  //                           filters["URL"]["Ends with"] = urlFilter;
+  //                         }
+  //                       },
+  //                     ),
+  //                     TextFormField(
+  //                       textInputAction: TextInputAction.next,
+  //                       maxLength: 100,
+  //                       autofocus: true,
+  //                       decoration: const InputDecoration(
+  //                         icon: Icon(Icons.subject),
+  //                         hintText: "Enter text with which URL ends with",
+  //                         labelText: "URL ends with the word:",
+  //                       ),
+  //                       onSaved: (urlFilter) {
+  //                         if (urlFilter != null) {
+  //                           filters["URL"]["Ends with"] = urlFilter;
+  //                         }
+  //                       },
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //             ),
+  //             actions: [
+  //               TextButton(
+  //                   onPressed: () {
+  //                     Navigator.pop(context);
+  //                   },
+  //                   child: const Text("Cancel")),
+  //               TextButton(
+  //                   onPressed: () async {
+  //                     if (_formkey.currentState!.validate()) {
+  //                       _formkey.currentState!.save();
+  //                       await Navigator.push(
+  //                           context,
+  //                           MaterialPageRoute(
+  //                             builder: (context) => PageFilter(
+  //                               filters: filters,
+  //                               records: value.records,
+  //                             ),
+  //                           ));
+  //                     }
+  //                     if (context.mounted) {
+  //                       Navigator.pop(context);
+  //                     }
+  //                   },
+  //                   child: const Text("Apply filter")),
+  //             ],
+  //           );
+  //         });
+  //       });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +226,15 @@ class _ViewPageState extends State<ViewPage> {
                 );
               },
             ),
+          ),
+          // TODO: Filter
+          // IconButton(
+          //     onPressed: () {
+          //       askForFilter();
+          //     },
+          //     icon: const Icon(Icons.filter_alt)),
+          const SizedBox(
+            width: 25,
           ),
         ],
       ),
