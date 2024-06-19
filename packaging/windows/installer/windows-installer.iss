@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define DistAppName "Sitemarker"
-#define DistAppVersion "2.1.0"
+#define DistAppVersion "2.1.2"
 #define DistAppPublisher "Aero"
 #define DistAppURL "https://aerocyber.github.io/sitemarker"
 #define DistAppExeName "sitemarker.exe"
@@ -24,13 +24,13 @@ AppUpdatesURL={#DistAppURL}
 DefaultDirName={autopf}\{#DistAppName}
 ChangesAssociations=yes
 DisableProgramGroupPage=yes
-LicenseFile=.\LICENSE
+LicenseFile=..\..\..\LICENSE
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputDir=.\build\windows\installer\
-OutputBaseFilename=Sitemarker-2.1.0-installer
-SetupIconFile=.\windows\runner\resources\app_icon.ico
+OutputDir=..\..\..\build\windows\installer\
+OutputBaseFilename=Sitemarker-{#DistAppVersion}-installer
+SetupIconFile=..\..\..\windows\runner\resources\app_icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -44,7 +44,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 [Files]
 Source: "..\..\..\build\windows\x64\runner\Release\{#DistAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\..\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "...\..\..\build\windows\x64\runner\Release\sqlite3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\..\build\windows\x64\runner\Release\sqlite3.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\..\build\windows\x64\runner\Release\sqlite3_flutter_libs_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\..\build\windows\x64\runner\Release\url_launcher_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\..\..\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
