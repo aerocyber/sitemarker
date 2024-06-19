@@ -29,6 +29,10 @@ if (keystorePropertiesFile.exists()) {
 }
 
 android {
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
+    }
     namespace "io.github.aerocyber.sitemarker"
     compileSdk flutter.compileSdkVersion
     ndkVersion "25.1.8937393"
