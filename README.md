@@ -2,6 +2,10 @@
 
 An open source bookmark manager written in Flutter
 
+## :warning: Under rewrite
+
+Sitemarker 3 is the upcoming version. As such 90% of the features are not implemented yet. For the latest release see [releases page.](https://github.com/aerocyber/sitemarker/releases/latest)
+
 ## Support
 
 ### GitHub Sponsors and Buy Me a Coffee
