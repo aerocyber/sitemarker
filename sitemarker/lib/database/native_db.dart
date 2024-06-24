@@ -30,6 +30,8 @@ Future<File> get getDatabaseFile async {
 Future<String> getPath() async {
   if (Platform.environment["XDG_DATA_HOME"] != null) {
     return File("${Platform.environment["XDG_DATA_HOME"]}/sitemarker.db").path;
+  } else if (Platform.environment["SNAP_USER_DATA"] != null) {
+    return File("${Platform.environment["SNAP_USER_COMMON"]}/sitemarker.db").path;
   } else {
     return File(
             "${(await getApplicationSupportDirectory()).path}/sitemarker.db")

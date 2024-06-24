@@ -1,6 +1,6 @@
 # Sitemarker
 
-An open source bookmark manager written in Flutter
+An elegant bookmark manager
 
 ## :warning: Under rewrite
 
