@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:sitemarker/logging/logger_api.dart';
+import 'package:sitemarker/settings/settings.dart';
 import 'package:sitemarker/settings/themes/themes.dart';
 import 'package:universal_io/io.dart';
 import 'package:sitemarker/data/db_provider.dart';
@@ -185,35 +186,13 @@ class _SitemarkerHomePageState extends State<SitemarkerHomePage> {
         elevation: 5.0,
         title: const Text('Sitemarker'),
         shape: const RoundedRectangleBorder(),
-        actions: <Widget>[
-          SizedBox(
-            width: 100,
-            child: Consumer<ThemesProvider>(builder: (context, value, child) {
-              return IconButton(
-                icon: value.darkTheme
-                    ? const Icon(Icons.dark_mode)
-                    : const Icon(Icons.light_mode),
-                onPressed: () {
-                  if (value.darkTheme) {
-                    value.switchThemeLight();
-                  } else {
-                    value.switchThemeDark();
-                  }
-                },
-                autofocus: false,
-              );
-            }),
-          ),
-        ],
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
       ),
       body: <Widget>[
         Center(
           child: const Text("Hello"),
         ),
-        Center(
-          child: const Text('Settings'),
-        ),
+        const PageSettings(),
       ][currentPage], // TODO: Fill in those widgets
       bottomNavigationBar: NavigationBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -225,14 +204,27 @@ class _SitemarkerHomePageState extends State<SitemarkerHomePage> {
         },
         destinations: <Widget>[
           NavigationDestination(
-            icon: Icon(Icons.home),
+            icon: currentPage == 0
+                ? Icon(
+                    Icons.home,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                : Icon(
+                    Icons.home_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(
-              Icons.settings,
-              color: Theme.of(context).colorScheme.primary,
-            ),
+            icon: currentPage == 1
+                ? Icon(
+                    Icons.settings,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
+                : Icon(
+                    Icons.settings_outlined,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
             label: 'Settings',
           ),
         ],
