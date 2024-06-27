@@ -4,10 +4,12 @@ import 'package:universal_io/io.dart';
 import 'package:flutter/foundation.dart' show kDebugMode;
 
 class FileLogger extends LogOutput {
-  late File file;
+  late final File file;
 
-  FileLogger() {
-    file = File("${getLogFileLocation()}");
+  @override
+  Future<void> init() async {
+    file = File(await getLogFileLocation());
+    return super.init();
   }
 
   @override
