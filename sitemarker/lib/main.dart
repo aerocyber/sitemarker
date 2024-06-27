@@ -1,60 +1,149 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+import 'package:sitemarker/logging/logger_api.dart';
+import 'package:universal_io/io.dart';
+import 'package:sitemarker/data/db_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sitemarker/pages/page_view_omio.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
+void main(List<String> args) async {
+  LoggerApi log = LoggerApi();
+  log.log("Initialized logger", 'info', null);
+  SharedPreferences sp = await SharedPreferences.getInstance();
+  if (args.isNotEmpty) {
+    log.log("Got command line argument: ${args[0]}", 'info', null);
+    runApp(SitemarkerApp(
+      showOmio: true,
+      path: args[0],
+      logger: log,
+      sp: sp,
+    ));
+  } else {
+    log.log("No command line argument", 'info', null);
+    runApp(SitemarkerApp(
+      showOmio: false,
+      path: null,
+      logger: log,
+      sp: sp,
+    ));
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class SitemarkerApp extends StatefulWidget {
+  const SitemarkerApp(
+      {super.key,
+      required this.showOmio,
+      required this.path,
+      required this.logger,
+      required this.sp});
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  final bool showOmio;
+  final String? path;
+  final LoggerApi logger;
+  final SharedPreferences sp;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<SitemarkerApp> createState() => _SitemarkerAppState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _SitemarkerAppState extends State<SitemarkerApp> {
+  late StreamSubscription intentSub;
+  final sharedFiles = <SharedMediaFile>[];
+  bool intentShow = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (Platform.isAndroid) {
+      // Intent when app in memory
+      intentSub =
+          ReceiveSharingIntent.instance.getMediaStream().listen((value) {
+        setState(() {
+          sharedFiles.clear();
+          sharedFiles.addAll(value);
+          intentShow = true;
+        });
+      }, onError: (err) {
+        widget.logger
+            .log("getIntentDataStream Error encountered", 'error', err);
+      });
+      // Intent when app is closed
+      ReceiveSharingIntent.instance.getInitialMedia().then((value) {
+        setState(() {
+          sharedFiles.clear();
+          sharedFiles.addAll(value);
+          ReceiveSharingIntent.instance.reset();
+          intentShow = true;
+        });
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    intentSub.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!intentShow) {
+      if (widget.showOmio == true) {
+        if (widget.path != null) {
+          return MaterialApp(
+            title: 'Sitemarker',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              useMaterial3: true,
+            ),
+            home: PageViewOmio(path: widget.path as String),
+          );
+        } else {
+          return MaterialApp(
+            title: 'Sitemarker',
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+              useMaterial3: true,
+            ),
+            home: const SitemarkerHomePage(),
+          );
+        }
+      } else {
+        return MaterialApp(
+          title: 'Sitemarker',
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          home: const SitemarkerHomePage(),
+        );
+      }
+    } else {
+      return MaterialApp(
+        title: 'Sitemarker',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: PageViewOmio(
+          path: sharedFiles[0] as String,
+        ),
+      );
+    }
+  }
+}
+
+class SitemarkerHomePage extends StatefulWidget {
+  const SitemarkerHomePage({super.key});
+
+  @override
+  State<SitemarkerHomePage> createState() => _SitemarkerHomePageState();
+}
+
+class _SitemarkerHomePageState extends State<SitemarkerHomePage> {
   int _counter = 0;
 
   void _incrementCounter() {
@@ -84,7 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        // title: Text(widget.title),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it

@@ -22,6 +22,7 @@ dependencies:
   http: ^1.2.1
   validators: ^3.0.0
   logger: ^2.3.0
+  receive_sharing_intent: ^1.8.0
 
 dev_dependencies:
   flutter_test:
