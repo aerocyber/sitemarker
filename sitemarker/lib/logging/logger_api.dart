@@ -52,13 +52,13 @@ class LoggerApi {
     } else if (level.toLowerCase() == 'info') {
       loggerObj.i(msg, time: DateTime.now());
     } else if (level.toLowerCase() == 'error') {
-      String _errmsg;
+      String errmsg;
       if (errMsg == null) {
-        _errmsg = msg;
+        errmsg = msg;
       } else {
-        _errmsg = errMsg;
+        errmsg = errMsg;
       }
-      loggerObj.e(msg, time: DateTime.now(), error: _errmsg);
+      loggerObj.e(msg, time: DateTime.now(), error: errmsg);
     }
   }
 }
