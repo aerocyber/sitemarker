@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/data/database/database.dart';
+import 'package:sitemarker/data/database/record_data_model.dart';
 import 'package:sitemarker/data/db_provider.dart';
 import 'package:sitemarker/pages/page_add.dart';
 import 'package:sitemarker/pages/page_view_detail.dart';
+import 'package:toastification/toastification.dart';
 
 class PageViewAll extends StatefulWidget {
   const PageViewAll({super.key});
@@ -52,45 +55,119 @@ class _PageViewAllState extends State<PageViewAll> {
         builder: (context, value, child) {
           return value.records.isNotEmpty
               ? ListView.separated(
+                  padding: const EdgeInsets.all(8.0),
                   itemBuilder: (context, index) {
                     // Get domain url
                     String domainUrl = value.records[index].url.split(
                         "//")[value.records[index].url.split("//").length - 1];
                     // Get domain
                     String domain = domainUrl.split('/')[0];
-                    return ListTile(
-                      isThreeLine: false,
-                      leading: CircleAvatar(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.secondary,
-                        child: Text(
-                          domain.characters.first.toUpperCase(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12.0),
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .tertiary
+                                .withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: ListTile(
+                        leading: CircleAvatar(
+                          radius: 30,
+                          backgroundColor:
+                              Theme.of(context).colorScheme.tertiary,
+                          child: Text(
+                            domain.characters.first.toUpperCase(),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color:
+                                  Theme.of(context).colorScheme.inversePrimary,
+                            ),
                           ),
                         ),
-                      ),
-                      title: Text(value.records[index].name),
-                      subtitle: Column(
-                        children: [
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Text(domainUrl),
-                          const SizedBox(
-                            height: 15,
-                          ),
-                          Text(value.records[index].tags),
-                        ],
-                      ),
-                      trailing: const Row(
-                        children: [
-                          Icon(Icons.delete),
-                          SizedBox(
-                            width: 15,
-                          ),
-                        ],
+                        title: Center(
+                          child: Text(value.records[index].name),
+                        ),
+                        subtitle: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            GestureDetector(
+                              onTap: () async {
+                                await Clipboard.setData(
+                                  ClipboardData(text: value.records[index].url),
+                                );
+                                if (context.mounted) {
+                                  toastification.show(
+                                    context: context,
+                                    type: ToastificationType.success,
+                                    style: ToastificationStyle.flatColored,
+                                    title: const Text('Success'),
+                                    description:
+                                        const Text('URL copied to Clipboard!'),
+                                    alignment: Alignment.bottomCenter,
+                                    autoCloseDuration:
+                                        const Duration(seconds: 5),
+                                    animationBuilder: (
+                                      context,
+                                      animation,
+                                      alignment,
+                                      child,
+                                    ) {
+                                      return ScaleTransition(
+                                        scale: animation,
+                                        child: child,
+                                      );
+                                    },
+                                    icon: const Icon(Icons.task_alt),
+                                    borderRadius: BorderRadius.circular(12.0),
+                                    boxShadow: highModeShadow,
+                                    dragToClose: true,
+                                    applyBlurEffect: true,
+                                  );
+                                }
+                              },
+                              child: Text(
+                                value.records[index].url.length > 20
+                                    ? domainUrl
+                                    : value.records[index].url,
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: getTags(value.records[index].tags),
+                            ),
+                          ],
+                        ),
+                        trailing: SizedBox(
+                          width: 100,
+                          child: Consumer<DBRecordProvider>(
+                              builder: (context, value, child) {
+                            return IconButton(
+                              onPressed: () {
+                                RecordDataModel rec = RecordDataModel(
+                                  name: value.records[index].name,
+                                  url: value.records[index].url,
+                                  tags: value.records[index].tags.split(','),
+                                );
+                                onDeleteShowAlertDialog(context, rec);
+                              },
+                              icon: const Icon(Icons.delete),
+                            );
+                          }),
+                        ),
                       ),
                     );
                   },
@@ -123,11 +200,60 @@ class _PageViewAllState extends State<PageViewAll> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const    PageAdd()));
+              MaterialPageRoute(builder: (context) => const PageAdd()));
         },
         child: const Icon(Icons.add),
       ),
     );
+  }
+
+  onDeleteShowAlertDialog(BuildContext context, RecordDataModel rec) {
+    String alertText =
+        'Do you really want to delete record with name ${rec.name}? This is permanent and cannot be undone.';
+
+    AlertDialog ad = AlertDialog(
+      title: const Text('Confirm deletion?'),
+      content: Text(alertText),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(false);
+          },
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () {
+            Provider.of<DBRecordProvider>(context, listen: false)
+                .deleteRecord(rec);
+            Navigator.of(context).pop();
+          },
+          child: const Text('OK'),
+        ),
+      ],
+    );
+
+    showDialog(context: context, builder: (BuildContext context) => ad);
+  }
+
+  List<Widget> getTags(String tags) {
+    List<Widget> tagWidget = [];
+    List<String> tagList = tags.split(',');
+
+    if (tagList.length > 1) {
+      for (int i = 0; i < tagList.length; i++) {
+        tagWidget.add(Row(
+          children: [
+            const Icon(Icons.tag),
+            Text(tagList[i]),
+            const SizedBox(
+              width: 5    ,
+            ),
+          ],
+        ));
+      }
+      return tagWidget;
+    }
+    return tagWidget;
   }
 }
 

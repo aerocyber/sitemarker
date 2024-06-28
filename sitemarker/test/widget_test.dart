@@ -18,7 +18,7 @@ void main() {
     await tester.pumpWidget(SitemarkerApp(
       showOmio: true,
       logger: logger,
-      path: null,
+      path: null, sp: null,
     ));
 
     // Verify that our counter starts at 0.

@@ -22,8 +22,12 @@ void main(List<String> args) async {
     log.log("Got command line argument: ${args[0]}", 'info', null);
     runApp(MultiProvider(
       providers: [
-        Provider<DBRecordProvider>(create: (_) => DBRecordProvider()),
-        Provider<ThemesProvider>(create: (_) => ThemesProvider()),
+        Provider<DBRecordProvider>(
+          create: (_) => DBRecordProvider(),
+        ),
+        Provider<ThemesProvider>(
+          create: (_) => ThemesProvider(),
+        ),
       ],
       child: SitemarkerApp(
         showOmio: true,
