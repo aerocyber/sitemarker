@@ -45,14 +45,26 @@ class FileLogger extends LogOutput {
   }
 }
 
+class ProdLogger extends LogFilter {
+  @override
+  bool shouldLog(LogEvent event) {
+    if (kDebugMode) {
+      if (event.level == Level.error ||
+          event.level == Level.fatal ||
+          event.level == Level.warning) {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+}
+
 class LoggerApi {
   Logger loggerObj = Logger(
     filter: null,
-    printer: PrettyPrinter(
-      methodCount: 5,
-      errorMethodCount: 10,
-      colors: true,
-      printEmojis: true,
+    printer: SimplePrinter(
+      colors: false,
       printTime: true,
     ),
     output: FileLogger(),
