@@ -21,6 +21,7 @@ class _PageSettingsState extends State<PageSettings> {
   @override
   Widget build(BuildContext context) {
     late bool isLightTheme;
+    // late bool enableShadows;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -55,9 +56,35 @@ class _PageSettingsState extends State<PageSettings> {
                     activeTrackColor: Theme.of(context).colorScheme.primary,
                   );
                 },
-              )
+              ),
             ],
-          )
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('Enable shadows'),
+              const SizedBox(
+                width: 15,
+              ),
+              Consumer<ThemesProvider>(builder: (context, value, child) {
+                // enableShadows = value.shadows; 
+                return Switch(
+                  value: value.shadows,
+                  onChanged: (bool shadows) {
+                    setState(() {
+                      // enableShadows = shadows;
+                      value.switchShadows();
+                    });
+                  },
+                  inactiveThumbColor:
+                      Theme.of(context).colorScheme.inversePrimary,
+                  inactiveTrackColor: Theme.of(context).colorScheme.primary,
+                  activeColor: Theme.of(context).colorScheme.inversePrimary,
+                  activeTrackColor: Theme.of(context).colorScheme.primary,
+                );
+              }),
+            ],
+          ),
         ],
       ),
     );
