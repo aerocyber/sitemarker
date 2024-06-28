@@ -47,10 +47,12 @@ class _PageSettingsState extends State<PageSettings> {
                         }
                       });
                     },
-                    activeColor: Theme.of(context).colorScheme.tertiary,
-                    activeTrackColor:
-                        Theme.of(context).colorScheme.inverseSurface,
+                    inactiveThumbColor:
+                        Theme.of(context).colorScheme.inversePrimary,
+                    inactiveTrackColor: Theme.of(context).colorScheme.primary,
                     thumbIcon: themeIcon,
+                    activeColor: Theme.of(context).colorScheme.inversePrimary,
+                    activeTrackColor: Theme.of(context).colorScheme.primary,
                   );
                 },
               )
