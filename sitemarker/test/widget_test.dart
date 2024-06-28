@@ -7,13 +7,19 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sitemarker/logging/logger_api.dart';
 
 import 'package:sitemarker/main.dart';
 
 void main() {
+  LoggerApi logger = LoggerApi();
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const SitemarkerApp());
+    await tester.pumpWidget(SitemarkerApp(
+      showOmio: true,
+      logger: logger,
+      path: null,
+    ));
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);
