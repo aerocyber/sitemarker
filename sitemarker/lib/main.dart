@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:sitemarker/logging/logger_api.dart';
+import 'package:sitemarker/pages/page_view_all.dart';
 import 'package:sitemarker/settings/settings.dart';
 import 'package:sitemarker/settings/themes/themes.dart';
 import 'package:universal_io/io.dart';
@@ -110,11 +111,15 @@ class _SitemarkerAppState extends State<SitemarkerApp> {
           return ChangeNotifierProvider(
             create: (context) => ThemesProvider(),
             child: Consumer<ThemesProvider>(builder: (context, state, child) {
-              return MaterialApp(
-                title: 'Sitemarker',
-                debugShowCheckedModeBanner: false,
-                theme: state.darkTheme ? dark = mt.dark() : light = mt.light(),
-                home: PageViewOmio(path: widget.path as String),
+              return ChangeNotifierProvider(
+                create: (_) => DBRecordProvider(),
+                child: MaterialApp(
+                  title: 'Sitemarker',
+                  debugShowCheckedModeBanner: false,
+                  theme:
+                      state.darkTheme ? dark = mt.dark() : light = mt.light(),
+                  home: PageViewOmio(path: widget.path as String),
+                ),
               );
             }),
           );
@@ -122,11 +127,15 @@ class _SitemarkerAppState extends State<SitemarkerApp> {
           return ChangeNotifierProvider(
             create: (context) => ThemesProvider(),
             child: Consumer<ThemesProvider>(builder: (context, state, child) {
-              return MaterialApp(
-                title: 'Sitemarker',
-                debugShowCheckedModeBanner: false,
-                theme: state.darkTheme ? dark = mt.dark() : light = mt.light(),
-                home: const SitemarkerHomePage(),
+              return ChangeNotifierProvider<DBRecordProvider>(
+                create: (_) => DBRecordProvider(),
+                child: MaterialApp(
+                  title: 'Sitemarker',
+                  debugShowCheckedModeBanner: false,
+                  theme:
+                      state.darkTheme ? dark = mt.dark() : light = mt.light(),
+                  home: const SitemarkerHomePage(),
+                ),
               );
             }),
           );
@@ -135,11 +144,14 @@ class _SitemarkerAppState extends State<SitemarkerApp> {
         return ChangeNotifierProvider(
           create: (context) => ThemesProvider(),
           child: Consumer<ThemesProvider>(builder: (context, state, child) {
-            return MaterialApp(
-              title: 'Sitemarker',
-              debugShowCheckedModeBanner: false,
-              theme: state.darkTheme ? dark = mt.dark() : light = mt.light(),
-              home: const SitemarkerHomePage(),
+            return ChangeNotifierProvider<DBRecordProvider>(
+              create: (_) => DBRecordProvider(),
+              child: MaterialApp(
+                title: 'Sitemarker',
+                debugShowCheckedModeBanner: false,
+                theme: state.darkTheme ? dark = mt.dark() : light = mt.light(),
+                home: const SitemarkerHomePage(),
+              ),
             );
           }),
         );
@@ -148,12 +160,15 @@ class _SitemarkerAppState extends State<SitemarkerApp> {
       return ChangeNotifierProvider(
         create: (context) => ThemesProvider(),
         child: Consumer<ThemesProvider>(builder: (context, state, child) {
-          return MaterialApp(
-            title: 'Sitemarker',
-            debugShowCheckedModeBanner: false,
-            theme: state.darkTheme ? dark = mt.dark() : light = mt.light(),
-            home: PageViewOmio(
-              path: sharedFiles[0].path,
+          return ChangeNotifierProvider<DBRecordProvider>(
+            create: (_) => DBRecordProvider(),
+            child: MaterialApp(
+              title: 'Sitemarker',
+              debugShowCheckedModeBanner: false,
+              theme: state.darkTheme ? dark = mt.dark() : light = mt.light(),
+              home: PageViewOmio(
+                path: sharedFiles[0].path,
+              ),
             ),
           );
         }),
@@ -181,17 +196,8 @@ class _SitemarkerHomePageState extends State<SitemarkerHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        elevation: 5.0,
-        title: const Text('Sitemarker'),
-        shape: const RoundedRectangleBorder(),
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-      ),
       body: <Widget>[
-        Center(
-          child: const Text("Hello"),
-        ),
+        const PageViewAll(),
         const PageSettings(),
       ][currentPage], // TODO: Fill in those widgets
       bottomNavigationBar: NavigationBar(
