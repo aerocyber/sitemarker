@@ -85,6 +85,14 @@ class _PageViewAllState extends State<PageViewAll> {
                                 : [],
                           ),
                           child: ListTile(
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => PageViewDetail(
+                                  record: value.records[index],
+                                ),
+                              ),
+                            ),
                             leading: CircleAvatar(
                               radius: 30,
                               backgroundColor:

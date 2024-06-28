@@ -24,9 +24,9 @@ class _PageAddState extends State<PageAdd> {
     List<String> urlList = [];
     late List<SitemarkerRecord> dbRec;
 
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
+        title: const Text('Add record'),
         elevation: 5.0,
         actions: [
           IconButton(
@@ -99,7 +99,7 @@ class _PageAddState extends State<PageAdd> {
                         return 'Enter a URL';
                       } else if (!validators.isURL(url)) {
                         return 'Enter a valid URL';
-                      } else if (nameList.contains(url)) {
+                      } else if (urlList.contains(url)) {
                         return '$url has been associated with a different record';
                       }
                       return null;
