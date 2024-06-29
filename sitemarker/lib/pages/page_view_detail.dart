@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:sitemarker/core/errors.dart';
 import 'package:sitemarker/data/database/database.dart';
 import 'package:sitemarker/pages/page_edit.dart';
+import 'package:sitemarker/settings/themes/themes.dart';
 import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -31,6 +33,7 @@ class PageViewDetail extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        elevation: 5.0,
         title: Text(
           record.name,
           style: TextStyle(color: Theme.of(context).colorScheme.primary),
@@ -122,38 +125,55 @@ class PageViewDetail extends StatelessWidget {
       body: ListView.separated(
         padding: const EdgeInsets.all(20),
         itemBuilder: (BuildContext context, int index) {
-          return Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20.0),
-              color: Theme.of(context).colorScheme.inversePrimary,
-            ),
-            height: 100,
-            child: Row(
-              children: [
-                const SizedBox(
-                  width: 20,
+          return Consumer<ThemesProvider>(
+            builder: (context, value, child) {
+              return Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20.0),
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                  boxShadow: value.shadows
+                      ? [
+                          BoxShadow(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .tertiary
+                                .withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          ),
+                        ]
+                      : [],
                 ),
-                icons[index],
-                const SizedBox(
-                  width: 20,
+                height: 100,
+                child: Row(
+                  children: [
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    icons[index],
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      entryTypes[index],
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Text(
+                      entries[index],
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                    ),
+                  ],
                 ),
-                Text(
-                  entryTypes[index],
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-                const SizedBox(
-                  width: 20,
-                ),
-                Text(
-                  entries[index],
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.secondary,
-                  ),
-                ),
-              ],
-            ),
+              );
+            },
           );
         },
         separatorBuilder: (BuildContext context, int index) {
