@@ -12,6 +12,8 @@ cd sitemarker
 flutter pub get
 
 # Build
+
+# Single APK
 flutter build apk --release \
     --no-obfuscate \
     --split-debug-info=$VERSION-android \
@@ -19,3 +21,13 @@ flutter build apk --release \
     --no-pub \
     --build-number 1 \
     --build-name $VERSION 
+
+# Multiple APKs
+flutter build apk --release \
+    --no-obfuscate \
+    --split-debug-info=$VERSION-android \
+    --tree-shake-icons \
+    --no-pub \
+    --build-number 1 \
+    --build-name $VERSION \
+    --split-per-abi
