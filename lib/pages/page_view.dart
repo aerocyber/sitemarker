@@ -468,10 +468,10 @@ class SitemarkerSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    List<String> matchQuery = [];
-    for (String name in recordNames) {
-      if (name.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(name);
+    List<SitemarkerRecord> matchQuery = [];
+    for (SitemarkerRecord rec in records) {
+      if (rec.name.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(rec);
       }
     }
 
@@ -480,13 +480,13 @@ class SitemarkerSearchDelegate extends SearchDelegate {
       itemBuilder: (context, index) {
         var result = matchQuery[index];
         return ListTile(
-          title: Text(result),
+          title: Text(result.name),
           onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => PageViewDetail(
-                          record: records[index],
+                          record: result,
                         )));
           },
         );
@@ -496,24 +496,25 @@ class SitemarkerSearchDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    List<String> matchQuery = [];
-    for (var record in recordNames) {
-      if (record.toLowerCase().contains(query.toLowerCase())) {
-        matchQuery.add(record);
+    List<SitemarkerRecord> matchQuery = [];
+    for (SitemarkerRecord rec in records) {
+      if (rec.name.toLowerCase().contains(query.toLowerCase())) {
+        matchQuery.add(rec);
       }
     }
+
     return ListView.builder(
       itemCount: matchQuery.length,
       itemBuilder: (context, index) {
         var result = matchQuery[index];
         return ListTile(
-          title: Text(result),
+          title: Text(result.name),
           onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => PageViewDetail(
-                          record: records[index],
+                          record: result,
                         )));
           },
         );
