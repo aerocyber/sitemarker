@@ -38,9 +38,9 @@ class SitemarkerRecords {
 
   void addRecord(String name, String url, List<String> tags) {
     /// Add a new SitemarkerRecord.
-    if (isValidUrl(url) == false) {
-      throw InvalidUrlError(url);
-    }
+    // if (isValidUrl(url) == false) {
+    //   throw InvalidUrlError(url);
+    // }
     SitemarkerRecord? smr = search(name, url);
     if (smr == null) {
       SitemarkerRecord smrTmp = SitemarkerRecord();

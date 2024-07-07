@@ -1,4 +1,4 @@
-import 'package:sitemarker/operations/errors.dart';
+// import 'package:sitemarker/operations/errors.dart';
 
 class SitemarkerRecord {
   /// Each record in Sitemarker is represented as a SitemarkerRecord object.
@@ -9,13 +9,16 @@ class SitemarkerRecord {
   SitemarkerRecord();
 
   void setRecord(String name, String url, List<String> tags) {
-    if (isValidUrl(url)) {
-      this.name = name;
-      this.url = url;
-      this.tags = tags;
-    } else {
-      throw InvalidUrlError(url);
-    }
+    // if (isValidUrl(url)) {
+    //   this.name = name;
+    //   this.url = url;
+    //   this.tags = tags;
+    // } else {
+    //   throw InvalidUrlError(url);
+    // }
+    this.name = name;
+    this.url = url;
+    this.tags = tags;
   }
 
   bool isValidUrl(String url) {
