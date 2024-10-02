@@ -37,9 +37,11 @@ class OmioFile {
     /// Validate .omio file.
     bool isValidJson = true;
     bool isValidOmio = true;
-    Map? data;
+    Map? json_;
+    Map<dynamic, dynamic>? data;
     try {
-      data = jsonDecode(omioString);
+      json_ = jsonDecode(omioString);
+      data = json.decode(json_!["Data"]);
     } catch (e) {
       isValidJson = false;
     }
@@ -48,8 +50,8 @@ class OmioFile {
       isValidOmio = false;
     }
 
-    if ((data != null) || (isValidOmio == true)) {
-      data?.forEach((key, value) {
+    if ((json_ != null) || (isValidOmio == true) || (data == null)) {
+      data!.forEach((key, value) {
         if (key is String) {
           if (value is Map) {
             if (value.containsKey("URL")) {
@@ -94,9 +96,27 @@ class OmioFile {
 
   void writeToOmioFile(SitemarkerRecords smrsToWrite) {
     /// Write SitemarkerRecords to .omio file.
-    String dat = smrsToWrite.toJson();
+    Map<String, dynamic> head = {
+      "Header": {
+        "Omio Version": "3.0",
+      }
+    };
+    Map<String, dynamic> footer = {
+      "End of DB": true,
+    };
+    Map<String, String> dat = {
+      "Data": smrsToWrite.toJson(),
+    };
 
-    File(omioFilePath).writeAsStringSync(dat);
+    Map<String, dynamic> toWrite = {};
+    toWrite.addAll(head);
+    toWrite.addAll(dat);
+    toWrite.addAll(footer);
+
+    File(omioFilePath).writeAsStringSync(
+      json.encode(toWrite),
+    );
+    print(json.decode(json.encode(toWrite))["Data"].runtimeType);
   }
 
   List<SitemarkerRecord> getSmr() {
