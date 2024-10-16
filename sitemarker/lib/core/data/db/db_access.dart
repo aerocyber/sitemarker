@@ -76,3 +76,4 @@ class SitemarkerDB extends _$SitemarkerDB {
   Future<int> deleteRecord(SitemarkerRecord record) =>
       delete(sitemarkerRecords).delete(record);
 }
+
