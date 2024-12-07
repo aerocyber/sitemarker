@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
-import 'package:sitemarker/ui/pages/page_view.dart';
 
 class PageSettings extends StatelessWidget {
   const PageSettings({super.key});
@@ -9,104 +8,9 @@ class PageSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     //? TODO: implement build
 
-    return Scaffold(
-      bottomNavigationBar: LayoutBuilder(
-        builder: (context, constraints) {
-          if (constraints.minWidth >= 880) {
-            // laptops/desktops
-            return Padding(
-              padding: const EdgeInsets.all(25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    height: 75,
-                    width: 500,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const SitemarkerPageView(),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.home),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const PageSettings(),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.settings),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          } else {
-            return Padding(
-              padding: const EdgeInsets.all(25),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      borderRadius: const BorderRadius.all(Radius.circular(15)),
-                      color: Theme.of(context).colorScheme.secondary,
-                    ),
-                    height: 75,
-                    width: 200,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    const SitemarkerPageView(),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.home),
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const PageSettings(),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.settings),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }
-        },
-      ),
-      body: Column(
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
