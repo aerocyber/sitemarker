@@ -61,7 +61,7 @@ class PageSettings extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const Text("Select Theme"),
+                  const Text("Theme"),
                   const SizedBox(height: 10, width: 10),
                   DropdownMenu<SitemarkerTheme>(
                     initialSelection: SitemarkerTheme.systemTheme,
