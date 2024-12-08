@@ -1,0 +1,102 @@
+name: Nightly Build
+
+on:
+  push: 
+    branches: 
+      - develop
+  workflow_dispatch: 
+
+jobs:
+  create_release:
+    name: Create a release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+
+      - name: Create release
+        id: create_release
+        uses: softprops/action-gh-release@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          prerelease: true
+          name: "Nightly release corresponding to the latest commit: ${{ github.ref.commit }}"
+          target_commitish: develop
+          generate_release_notes: true
+          make_latest: false
+          tag_name: nightly-develop-${{ github.ref.commit }}
+  
+  release:
+    name: Build and release
+    needs: create_release
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+          - os: ubuntu-latest
+          - os: windows-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+      
+      - name: Build
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.24.5
+      
+      - name: Windows Build
+        shell: pwsh
+        run: | 
+          flutter clean
+          flutter pub get
+          flutter build windows --release --tree-shake-icons --no-obfuscate --pub --split-debug-info=sitemarker-nightly-${{ github.ref.commit }}-debug-windows
+          Rename-Item -Path .\build\windows\x64\release\bundle -NewName "sitemarker-nightly"
+          Compress-Archive -Path .\build\windows\x64\release\sitemarker-nightly -DestinationPath .\sitemarker-nightly-${{ github.ref.commit }}-windows.zip
+          Compress-Archive -Path .\sitemarker-nightly-${{ github.ref.commit }}-debug-windows -DestinationPath .\sitemarker-nightly-${{ github.ref.commit }}-debug-windows.zip
+          # TODO: Build windows installer - exe
+          # TODO: Add to the upload assets
+      
+        if: matrix.config.os == 'windows-latest'
+      
+      - name: Upload Assets - Windows
+        uses: softprops/action-gh-release@v2
+        if: ${{ matrix.config.os }} == 'windows-latest'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            sitemarker-nightly-${{ github.ref.commit }}-debug-windows.zip
+            sitemarker-nightly-${{ github.ref.commit }}-windows.zip
+        
+
+      - name: Linux and Android builds
+        shell: bash
+        run: |
+          sudo apt update
+          sudo apt upgrade -y
+          sudo apt install -y curl git unzip xz-utils zip libglu1-mesa clang cmake ninja-build pkg-config libgtk-3-dev liblzma-dev libstdc++-12-dev
+          flutter clean
+          flutter pub get
+          flutter build linux --release --tree-shake-icons --no-obfuscate --pub --split-debug-info=sitemarker-nightly-${{ github.ref.commit }}-debug-linux
+          mv build/linux/x64/release/bundle/ build/linux/x64/release/sitemarker-nightly-${{ github.ref.commit }}
+          tar -cJf sitemarker-nightly-${{ github.ref.commit }}-linux.tar.xz build/linux/x64/release/sitemarker-nightly-${{ github.ref.commit }}
+          tar -cJf sitemarker-nightly-${{ github.ref.commit }}-debug-linux.tar.xz sitemarker-nightly-${{ github.ref.commit }}-nightly
+
+        if: matrix.config.os == 'ubuntu-latest'
+      
+      - name: Upload Assets - Linux
+        uses: softprops/action-gh-release@v2
+        if: ${{ matrix.config.os }} == 'ubuntu-latest'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          files: |
+            sitemarker-nightly-${{ github.ref.commit }}-debug-linux.tar.xz
+            sitemarker-nightly-${{ github.ref.commit }}-linux.tar.xz
