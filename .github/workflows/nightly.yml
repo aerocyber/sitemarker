@@ -1,6 +1,7 @@
 name: Nightly Build
 
-
+permissions: 
+  contents: write
 
 on:
   push: 
