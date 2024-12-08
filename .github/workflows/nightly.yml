@@ -27,7 +27,7 @@ jobs:
         with:
           prerelease: true
           name: "Nightly release corresponding to the latest commit: ${{ github.ref.commit }}"
-          target_commitish: develop
+          target_commitish: ${{ github.sha }}
           generate_release_notes: true
           make_latest: false
           tag_name: nightly-develop-${{ github.ref.commit }}
