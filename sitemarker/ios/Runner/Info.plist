@@ -45,5 +45,16 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!--
+		I have no idea about this either. Apple folks, if you know this is wrong, please open a PR.
+		I don't have an Apple device to test it out.
+	 -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
+	<key>UISupportsDocumentBrowser</key>
+<true/>
 </dict>
 </plist>
