@@ -14,7 +14,7 @@ class SmdbProvider extends ChangeNotifier {
   List<SitemarkerRecord> deletedRecords = [];
   List<SitemarkerRecord> allRecords = [];
 
-  /// Load the values from db. Not to be called from ooutside the class
+  /// Load the values from db. Not to be called from outside the class
   void init() async {
     List<SitemarkerRecord> recs = await db.allRecords;
     for (int i = 0; i < recs.length; i++) {
@@ -34,7 +34,7 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   /// Get the default id to be used. Called internally.
-  int getDefualtId() {
+  int getDefaultId() {
     if (_records.isNotEmpty) {
       return _records.last.id + 1;
     }
@@ -43,7 +43,7 @@ class SmdbProvider extends ChangeNotifier {
 
   void insertRecord(SmRecord record) async {
     final rec = SitemarkerRecord(
-      id: getDefualtId(),
+      id: getDefaultId(),
       name: record.name,
       url: record.url,
       tags: record.tags,
@@ -99,7 +99,7 @@ class SmdbProvider extends ChangeNotifier {
         continue;
       }
       SitemarkerRecord smr = SitemarkerRecord(
-        id: getDefualtId(),
+        id: getDefaultId(),
         name: recs[i].name,
         url: recs[i].url,
         tags: recs[i].tags,
@@ -113,8 +113,28 @@ class SmdbProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // TODO: Implement export to html
-  exportToHTML(String htmlFileLocation) {}
+  // Export to html
+  exportToHTML(List<SmRecord> exportingRecords) async {
+    String? outFile = await FilePicker.platform.saveFile(
+      allowedExtensions: ['html'],
+      dialogTitle: 'Please select an output file:',
+      fileName: 'sitemarker-html-output-${DateTime.now().toString()}.html',
+      type: FileType.custom,
+      lockParentWindow: true,
+      initialDirectory: (await getDownloadsDirectory())!.path,
+    );
+
+    if (outFile == null) {
+      // User cancelled the operation
+      throw Exception('User cancelled');
+    }
+
+    String data = HtmlFns.toHtml(exportingRecords);
+    File f = File(outFile);
+    await f.writeAsString(data);
+
+    notifyListeners();
+  }
 
   // TODO: Implement import from omio file
   importFromOmioFile(String omioFileLocation) {}

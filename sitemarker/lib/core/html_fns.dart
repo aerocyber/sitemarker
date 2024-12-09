@@ -77,8 +77,3 @@ class HtmlFns {
     return returner;
   }
 }
-
-// TODO: To remove the following driver code for testing
-int main() {
-  return 0;
-}
