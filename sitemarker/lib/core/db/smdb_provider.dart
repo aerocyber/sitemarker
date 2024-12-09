@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/sqlitedb/sm_db.dart';
+import 'package:sitemarker/core/html_fns.dart';
 
 class SmdbProvider extends ChangeNotifier {
   late SitemarkerDB db;
@@ -53,6 +56,7 @@ class SmdbProvider extends ChangeNotifier {
   void deleteRecord(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
     db.softDelete(rec.first);
+    deletedRecords.add(rec.first);
     _records.remove(rec.first);
     notifyListeners();
   }
@@ -64,7 +68,34 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   // TODO: Implement import from html
-  importFromHTML(String htmlFileLocation) {}
+  importFromHTML(String htmlFileLocation) async {
+    File f = File(htmlFileLocation);
+
+    if (!(await f.exists())) {
+      throw Exception('File not found: $htmlFileLocation');
+    }
+
+    List<SmRecord> recs = HtmlFns.fromHtml((await f.readAsString()));
+    for (int i = 0; i < recs.length; i++) {
+      if ((await db.getRecordsByName(recs[i].name)).isNotEmpty) {
+        continue;
+      } else if ((await db.getRecordsByURL(recs[i].url)).isNotEmpty) {
+        continue;
+      }
+      SitemarkerRecord smr = SitemarkerRecord(
+        id: getDefualtId(),
+        name: recs[i].name,
+        url: recs[i].url,
+        tags: recs[i].tags,
+        isDeleted: false,
+        dateAdded: recs[i].dt,
+      );
+      _records.add(smr);
+      await db.insertRecord(smr);
+    }
+
+    notifyListeners();
+  }
 
   // TODO: Implement export to html
   exportToHTML(String htmlFileLocation) {}

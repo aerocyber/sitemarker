@@ -37,6 +37,10 @@ class SitemarkerDB extends _$SitemarkerDB {
     return (select(sitemarkerRecords)..where((t) => t.name.equals(name))).get();
   }
 
+  Future<List<SitemarkerRecord>> getRecordsByURL(String url) {
+    return (select(sitemarkerRecords)..where((t) => t.url.equals(url))).get();
+  }
+
   Future<List<SitemarkerRecord>> getRecordsByRangeOfDateAdded(
       DateTime dateRangeStart, DateTime dateRangeEnd) {
     return (select(sitemarkerRecords)
