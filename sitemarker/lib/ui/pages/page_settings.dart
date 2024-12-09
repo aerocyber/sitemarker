@@ -12,10 +12,10 @@ class PageSettings extends StatelessWidget {
       color: Theme.of(context).colorScheme.surface,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               ElevatedButton(
                 style: ButtonStyle(
                   shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -25,10 +25,10 @@ class PageSettings extends StatelessWidget {
                   ),
                 ),
                 child: const Row(
-                  children: [
+                  children: <Widget>[
                     Icon(Icons.upload),
                     SizedBox(width: 15, height: 15),
-                    Text("Export"),
+                    Text('Export'),
                   ],
                 ),
                 onPressed: () {}, // TODO: Implement export
@@ -43,10 +43,10 @@ class PageSettings extends StatelessWidget {
                   ),
                 ),
                 child: const Row(
-                  children: [
+                  children: <Widget>[
                     Icon(Icons.download),
                     SizedBox(width: 15, height: 15),
-                    Text("Import"),
+                    Text('Import'),
                   ],
                 ),
                 onPressed: () {}, // TODO: Implement import
@@ -58,16 +58,16 @@ class PageSettings extends StatelessWidget {
           // TODO: Implement Themes
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               Row(
-                children: [
-                  const Text("Theme"),
+                children: <Widget>[
+                  const Text('Theme'),
                   const SizedBox(height: 10, width: 10),
                   DropdownMenu<SitemarkerTheme>(
                     initialSelection: SitemarkerTheme.systemTheme,
                     dropdownMenuEntries: SitemarkerTheme.values
                         .map<DropdownMenuEntry<SitemarkerTheme>>(
-                            (SitemarkerTheme theme) {
+                            (theme) {
                       return DropdownMenuEntry(
                         value: theme,
                         label: theme.themeName,
@@ -81,7 +81,7 @@ class PageSettings extends StatelessWidget {
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               ElevatedButton(
                 style: ButtonStyle(
                   shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -91,10 +91,10 @@ class PageSettings extends StatelessWidget {
                   ),
                 ),
                 child: const Row(
-                  children: [
+                  children: <Widget>[
                     Icon(Icons.info),
                     SizedBox(height: 10, width: 10),
-                    Text("About Sitemarker")
+                    Text('About Sitemarker')
                   ],
                 ),
                 onPressed: () {
@@ -113,9 +113,9 @@ class PageSettings extends StatelessWidget {
           const SizedBox(height: 20),
           const Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: <Widget>[
               Text(
-                "Sitemarker 3.0.0-dev",
+                'Sitemarker 3.0.0-dev',
                 style: TextStyle(
                   color: Colors.grey,
                 ),

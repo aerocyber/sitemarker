@@ -11,21 +11,21 @@ class SitemarkerPageView extends StatelessWidget {
     return Container(
       color: Theme.of(context).colorScheme.surface,
       child: ListView.separated(
-        itemBuilder: (context, index) => Padding(
+        itemBuilder: (BuildContext context, int index) => Padding(
           padding: const EdgeInsets.all(8.0),
           child: Container(
             padding: const EdgeInsets.all(8.0),
             child: CardBookmark(
               name: index.toString(),
-              url: 'URL for $index',
+              url: 'URL for $index is ${"x" * 100 * index}',
               tags: List.generate(
                 index + 1,
-                (index) => index.toString(),
+                (int index) => index.toString(),
               ).toString(),
             ),
           ),
         ),
-        separatorBuilder: (context, index) => const SizedBox(
+        separatorBuilder: (BuildContext context, int index) => const SizedBox(
           width: 10,
           height: 25,
         ),
