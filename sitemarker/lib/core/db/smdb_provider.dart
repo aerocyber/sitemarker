@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/sqlitedb/sm_db.dart';
 import 'package:sitemarker/core/html_fns.dart';
@@ -67,15 +69,29 @@ class SmdbProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // TODO: Implement import from html
-  importFromHTML(String htmlFileLocation) async {
-    File f = File(htmlFileLocation);
-
-    if (!(await f.exists())) {
-      throw Exception('File not found: $htmlFileLocation');
+  // Import from html
+  importFromHTML() async {
+    List<SmRecord> recs;
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowedExtensions: ['html', 'htm'],
+      dialogTitle: 'Select a HTML bookmarks file',
+      allowMultiple: false,
+      initialDirectory: (await getApplicationDocumentsDirectory()).path,
+      lockParentWindow: true,
+      type: FileType.custom,
+    );
+    if (result == null) {
+      // User cancelled it
+      throw Exception('User cancelled');
     }
 
-    List<SmRecord> recs = HtmlFns.fromHtml((await f.readAsString()));
+    File f = File(result.files.single.path!);
+
+    try {
+      recs = HtmlFns.fromHtml((await f.readAsString()));
+    } on Exception {
+      rethrow;
+    }
     for (int i = 0; i < recs.length; i++) {
       if ((await db.getRecordsByName(recs[i].name)).isNotEmpty) {
         continue;

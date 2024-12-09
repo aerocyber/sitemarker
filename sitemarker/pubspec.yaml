@@ -28,6 +28,7 @@ dependencies:
   persistent_bottom_nav_bar: ^6.2.1
   drift_flutter: ^0.2.2
   html: ^0.15.5
+  file_picker: ^8.1.4
 
 
 dev_dependencies:
