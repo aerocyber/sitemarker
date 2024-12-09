@@ -3,6 +3,11 @@ import 'package:html/parser.dart' show parse;
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 
 class HtmlFns {
+  static String getTitle(String htmlString) {
+    Document d = parse(htmlString);
+    return d.getElementsByTagName('title')[0].innerHtml;
+  }
+
   static List<SmRecord> fromHtml(String htmlString) {
     if (!htmlString.startsWith('''<!DOCTYPE NETSCAPE-Bookmark-file-1>
 <!-- This is an automatically generated file.
