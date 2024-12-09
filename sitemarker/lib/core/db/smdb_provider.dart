@@ -43,11 +43,7 @@ class SmdbProvider extends ChangeNotifier {
       url: record.url,
       tags: record.tags,
       isDeleted: false,
-      dateAdded: DateTime(
-        DateTime.now().year,
-        DateTime.now().month,
-        DateTime.now().day,
-      ),
+      dateAdded: record.dt,
     );
     _records.add(rec);
     db.insertRecord(rec);
@@ -66,4 +62,16 @@ class SmdbProvider extends ChangeNotifier {
     _records = await db.allRecords;
     notifyListeners();
   }
+
+  // TODO: Implement import from html
+  importFromHTML(String htmlFileLocation) {}
+
+  // TODO: Implement export to html
+  exportToHTML(String htmlFileLocation) {}
+
+  // TODO: Implement import from omio file
+  importFromOmioFile(String omioFileLocation) {}
+
+  // TODO: Implement export to omio file
+  exportToOmioFile(String omioFileLocation) {}
 }
