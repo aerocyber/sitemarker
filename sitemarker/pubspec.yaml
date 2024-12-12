@@ -29,6 +29,7 @@ dependencies:
   drift_flutter: ^0.2.2
   html: ^0.15.5
   file_picker: ^8.1.4
+  receive_sharing_intent: ^1.8.1
 
 
 dev_dependencies:

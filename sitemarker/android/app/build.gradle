@@ -19,7 +19,7 @@ android {
     
     namespace = "io.github.aerocyber.sitemarker"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+    ndkVersion = "28.0.12674087"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -66,18 +66,30 @@ android {
 
     flavorDimensions += "default"
     productFlavors {
-        create("release") {
+        register("prod") {
             dimension = "default"
-            resValue(type = "string", name = "app_name", value = "Release Version")
+            resValue("string", "app_name", "Release Version")
         }
-        create("debug") {
+        register("develop") {
             dimension = "default"
-            resValue(type = "string", name = "app_name", value = "Debug Version")
             applicationIdSuffix = ".debug"
+            resValue("string", "app_name", "Debug Version")
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+project(':receive_sharing_intent').afterEvaluate {
+    project(':receive_sharing_intent').android {
+        compileOptions {
+            sourceCompatibility JavaVersion.VERSION_17
+            targetCompatibility JavaVersion.VERSION_17
+        }
+        kotlinOptions {
+            jvmTarget = '17'
+        }
+    }
 }

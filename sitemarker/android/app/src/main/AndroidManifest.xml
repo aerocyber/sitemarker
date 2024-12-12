@@ -24,6 +24,33 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!--  The next intent might be used in a future release for processing stuff from context menu ;)-->
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.PROCESS_TEXT" />-->
+            <!-- <data android:mimeType="text/plain" />-->
+            <!-- </intent-filter> -->
+
+            <!--  Receive share intent -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+
+            <!-- Receive click event and all... -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="ftp" />
+                <data android:scheme="ftps" />
+                
+                <data android:scheme="sm" /> <!-- Custom scheme -->
+                <!-- <data android:scheme="*" /> --> <!-- All schemes -->
+                <!-- Add custom schemes if needed -->
+            </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
