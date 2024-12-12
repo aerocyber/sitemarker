@@ -2,6 +2,11 @@
 
 An open source bookmark manager written in Flutter
 
+## :warning: UNDER MAINTENANCE. USE STABLE BRANCH FOR LATEST STABLE SOURCE CODE
+
+The main branch is now being rewritten to test workflows for Sitemarker 3 and do not reflect the source code of the latest stable code. This will be so until Sitemarker 3 is released. For the source code of the latest stable release, see the stable branch. All code for the next 2.x is no more as the upcoming release will be a major version bump (to 3.x).
+
+
 ## Support
 
 ### GitHub Sponsors and Buy Me a Coffee
