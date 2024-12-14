@@ -1,3 +1,4 @@
+/// enum used for Dropdown
 enum SitemarkerTheme {
   lightTheme('Light', 'lightTheme'),
   darkTheme('Dark', 'darkTheme'),
@@ -7,3 +8,4 @@ enum SitemarkerTheme {
   final String themeName;
   final String themeValue;
 }
+

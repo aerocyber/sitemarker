@@ -6,12 +6,19 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/sqlitedb/sm_db.dart';
 import 'package:sitemarker/core/html_fns.dart';
+import 'package:sitemarker/core/data_helper.dart';
 
+/// Provider for all database and user data related activities
 class SmdbProvider extends ChangeNotifier {
+  // The db
   late SitemarkerDB db;
+  // The records with isDeleted = false
   List<SitemarkerRecord> _records = [];
+  // Getter for records with isDeleted = false
   List<SitemarkerRecord> get records => _records;
+  // Soft deleted records
   List<SitemarkerRecord> deletedRecords = [];
+  // All records
   List<SitemarkerRecord> allRecords = [];
 
   /// Load the values from db. Not to be called from outside the class
@@ -41,6 +48,7 @@ class SmdbProvider extends ChangeNotifier {
     return 0;
   }
 
+  /// Add a new record
   void insertRecord(SmRecord record) async {
     final rec = SitemarkerRecord(
       id: getDefaultId(),
@@ -55,21 +63,23 @@ class SmdbProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Soft delete a record
   void deleteRecord(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
-    db.softDelete(rec.first);
+    db.toggleDelete(rec.first);
     deletedRecords.add(rec.first);
     _records.remove(rec.first);
     notifyListeners();
   }
 
+  /// Update a record
   void updateRecord(SitemarkerRecord record) async {
     db.updateRecord(record);
     _records = await db.allRecords;
     notifyListeners();
   }
 
-  // Import from html
+  /// Import from html
   importFromHTML() async {
     List<SmRecord> recs;
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -113,7 +123,7 @@ class SmdbProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Export to html
+  /// Export to html
   exportToHTML(List<SmRecord> exportingRecords) async {
     String? outFile = await FilePicker.platform.saveFile(
       allowedExtensions: ['html'],
@@ -136,9 +146,70 @@ class SmdbProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // TODO: Implement import from omio file
-  importFromOmioFile(String omioFileLocation) {}
+  // Implement import from omio file
+  importFromOmioFile() async {
+    List<SmRecord> recs;
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowedExtensions: ['omio'],
+      dialogTitle: 'Select an omio bookmarks file',
+      allowMultiple: false,
+      initialDirectory: (await getApplicationDocumentsDirectory()).path,
+      lockParentWindow: true,
+      type: FileType.custom,
+    );
+    if (result == null) {
+      // User cancelled it
+      throw Exception('User cancelled');
+    }
 
-  // TODO: Implement export to omio file
-  exportToOmioFile(String omioFileLocation) {}
+    File f = File(result.files.single.path!);
+
+    try {
+      recs = DataHelper.fromOmio(await f.readAsString());
+    } on Exception {
+      rethrow;
+    }
+    for (int i = 0; i < recs.length; i++) {
+      if ((await db.getRecordsByName(recs[i].name)).isNotEmpty) {
+        continue;
+      } else if ((await db.getRecordsByURL(recs[i].url)).isNotEmpty) {
+        continue;
+      }
+      SitemarkerRecord smr = SitemarkerRecord(
+        id: getDefaultId(),
+        name: recs[i].name,
+        url: recs[i].url,
+        tags: recs[i].tags,
+        isDeleted: false,
+        dateAdded: recs[i].dt,
+      );
+      _records.add(smr);
+      await db.insertRecord(smr);
+    }
+
+    notifyListeners();
+  }
+
+  // Implement export to omio file
+  exportToOmioFile(List<SmRecord> recordsToExport) async {
+    String? outFile = await FilePicker.platform.saveFile(
+      allowedExtensions: ['omio'],
+      dialogTitle: 'Please select an output file:',
+      fileName: 'sitemarker-html-output-${DateTime.now().toString()}.omio',
+      type: FileType.custom,
+      lockParentWindow: true,
+      initialDirectory: (await getDownloadsDirectory())!.path,
+    );
+
+    if (outFile == null) {
+      // User cancelled the operation
+      throw Exception('User cancelled');
+    }
+
+    String data = DataHelper.convertToOmio(recordsToExport);
+    File f = File(outFile);
+    await f.writeAsString(data);
+
+    notifyListeners();
+  }
 }

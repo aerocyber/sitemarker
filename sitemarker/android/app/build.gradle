@@ -58,8 +58,6 @@ android {
             signingConfig = signingConfigs.release
         }
         debug {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig = signingConfigs.debug
         }
     }
@@ -93,3 +91,4 @@ project(':receive_sharing_intent').afterEvaluate {
         }
     }
 }
+

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:persistent_bottom_nav_bar/persistent_bottom_nav_bar.dart';
 import 'package:sitemarker/ui/pages/page_add.dart';
 import 'package:sitemarker/ui/pages/page_settings.dart';
 import 'package:sitemarker/ui/pages/page_view.dart';
-import 'dart:async';
-import 'package:flutter/services.dart';
 
 class SMHomeScreen extends StatefulWidget {
   const SMHomeScreen({super.key, required this.url});
@@ -21,17 +18,16 @@ class _SMHomeScreenState extends State<SMHomeScreen> {
     PageSettings(),
   ];
 
-
-  final List<PersistentBottomNavBarItem> navList = <PersistentBottomNavBarItem>[
-    PersistentBottomNavBarItem(
-      icon: const Icon(Icons.view_comfy_rounded),
-      title: 'View',
-      textStyle: const TextStyle(fontSize: 40),
+  final List<BottomNavigationBarItem> navList = <BottomNavigationBarItem>[
+    const BottomNavigationBarItem(
+      icon: Icon(Icons.home),
+      label: 'Home',
+      tooltip: 'Navigate to the home page',
     ),
-    PersistentBottomNavBarItem(
-      icon: const Icon(Icons.settings),
-      title: 'Settings',
-      textStyle: const TextStyle(fontSize: 40),
+    const BottomNavigationBarItem(
+      icon: Icon(Icons.settings),
+      label: 'Settings',
+      tooltip: 'Navigate to the settings page'
     ),
   ];
 
@@ -43,20 +39,34 @@ class _SMHomeScreenState extends State<SMHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.url == null) {
-      return PersistentTabView(
-        context,
-        screens: pages,
-        items: navList,
-        navBarStyle: NavBarStyle.style1,
-      );
-    } else {
-      print(widget.url);
+
+    if (widget.url == null || widget.url!.isEmpty) {
       return Scaffold(
-        body: PageAdd(
-          receivingData: widget.url,
+        body: IndexedStack(
+          index: selectedIndex,
+          children: pages,
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: navList,
+          currentIndex: selectedIndex,
+          onTap: updatePage,
+          elevation: 0,
+          showSelectedLabels: true,
+          showUnselectedLabels: false,
+          selectedFontSize: 15,
+          selectedIconTheme: IconThemeData(color: Theme.of(context).colorScheme.primary),
+          selectedItemColor: Theme.of(context).colorScheme.primary,
+          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
+          unselectedItemColor: Theme.of(context).colorScheme.shadow,
+          unselectedIconTheme: IconThemeData(color: Theme.of(context).colorScheme.inversePrimary),
+          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
+          
         ),
       );
     }
+    return Scaffold(
+      body: PageAdd(receivingData: widget.url),
+    );
   }
 }
+

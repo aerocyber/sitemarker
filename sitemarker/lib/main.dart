@@ -4,14 +4,29 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:sitemarker/ui/pages/home_screen.dart';
+import 'package:sitemarker/core/data_types/settings/sm_theme.dart';
 
-void main() {
+late SmTheme the;
+
+/// The main file!
+void main(List<String> args) {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const SMApp());
+  the = SmTheme();
+  if (args.isNotEmpty) {
+    if (args.contains('--url')) {
+      runApp(SMApp(url: args[args.indexOf('--url') + 1]));
+    } else {
+      runApp(const SMApp());
+    }
+  } else {
+    runApp(const SMApp());
+  }
 }
 
+/// The app thing
 class SMApp extends StatefulWidget {
-  const SMApp({super.key});
+  const SMApp({super.key, this.url});
+  final String? url;
 
   @override
   State<SMApp> createState() => _SMAppState();
@@ -20,23 +35,22 @@ class SMApp extends StatefulWidget {
 class _SMAppState extends State<SMApp> {
   late StreamSubscription _intentSub;
   final _sharedItems = <SharedMediaFile>[];
+  String? url_;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
     if (Platform.isAndroid) {
       // Listen to media sharing coming from outside the app while the app is in the memory.
-      _intentSub = ReceiveSharingIntent.instance.getMediaStream().listen((value) {
+      _intentSub =
+          ReceiveSharingIntent.instance.getMediaStream().listen((value) {
         setState(() {
           _sharedItems.clear();
           _sharedItems.addAll(value);
-
-          print(_sharedItems.map((f) => f.toMap()));
         });
       }, onError: (err) {
-        print("getIntentDataStream error: $err");
+        // TODO: log error
       });
 
       // Get the media sharing coming from outside the app while the app is closed.
@@ -44,7 +58,11 @@ class _SMAppState extends State<SMApp> {
         setState(() {
           _sharedItems.clear();
           _sharedItems.addAll(value);
-          print(_sharedItems.map((f) => f.toMap()));
+
+          // If the app is closed and the user shares a URL, open the app and navigate to the PageAdd screen.
+          if (_sharedItems.isNotEmpty) {
+            url_ = _sharedItems[0].path;
+          }
 
           // Tell the library that we are done processing the intent.
           ReceiveSharingIntent.instance.reset();
@@ -59,8 +77,10 @@ class _SMAppState extends State<SMApp> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
+    if (!Platform.isAndroid) url_ = widget.url;
     return MaterialApp(
       title: 'Sitemarker',
       debugShowCheckedModeBanner: false,
@@ -68,7 +88,9 @@ class _SMAppState extends State<SMApp> {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: SMHomeScreen(url: _sharedItems.isNotEmpty ? _sharedItems[0].path : null,),
+      home: SMHomeScreen(
+        url: url_,
+      ),
     );
   }
 }

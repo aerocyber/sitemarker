@@ -1,3 +1,4 @@
+/// Assisting data structure for DB to application and application to DB data passing
 class SmRecord {
   String name;
   String url;

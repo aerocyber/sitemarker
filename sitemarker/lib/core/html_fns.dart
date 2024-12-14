@@ -2,12 +2,15 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 
+/// Various html functions
 class HtmlFns {
+  /// Get title of the html document
   static String getTitle(String htmlString) {
     Document d = parse(htmlString);
     return d.getElementsByTagName('title')[0].innerHtml;
   }
 
+  /// Get bookmark items from html string
   static List<SmRecord> fromHtml(String htmlString) {
     if (!htmlString.startsWith('''<!DOCTYPE NETSCAPE-Bookmark-file-1>
 <!-- This is an automatically generated file.
@@ -55,6 +58,7 @@ class HtmlFns {
     return ret;
   }
 
+  /// Convert a list of [SmRecord] to html string
   static String toHtml(List<SmRecord> recordsToHTMLify) {
     String returner = '''
 <!DOCTYPE NETSCAPE-Bookmark-file-1>

@@ -5,6 +5,7 @@ import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'dart:io';
 
+/// Initialize the connection to db.
 DatabaseConnection connect() {
   return DatabaseConnection.delayed(Future(() async {
     if (Platform.isAndroid) {
@@ -21,12 +22,14 @@ DatabaseConnection connect() {
   }));
 }
 
+/// Get the db file.
 Future<File> get getDatabaseFile async {
   final dbPath = await getPath();
 
   return File(dbPath);
 }
 
+/// Get the path to db file.
 Future<String> getPath() async {
   if (Platform.environment["XDG_DATA_HOME"] != null) {
     return File("${Platform.environment["XDG_DATA_HOME"]}/sitemarker.db").path;
