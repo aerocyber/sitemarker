@@ -1,36 +1,106 @@
 import 'package:flutter/material.dart';
+import 'package:sitemarker/core/data_types/size_config.dart';
 import 'package:sitemarker/ui/components/card_bookmark.dart';
+import 'package:sitemarker/ui/pages/page_add.dart';
+import 'package:sitemarker/ui/components/sitemarker_search_delegate.dart';
+import 'package:provider/provider.dart';
+import 'package:sitemarker/core/db/smdb_provider.dart';
+import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 
-class SitemarkerPageView extends StatelessWidget {
+class SitemarkerPageView extends StatefulWidget {
   const SitemarkerPageView({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    //? TODO: implement build
+  State<SitemarkerPageView> createState() => _SitemarkerPageViewState();
+}
 
-    return Container(
-      color: Theme.of(context).colorScheme.surface,
-      child: ListView.separated(
-        itemBuilder: (BuildContext context, int index) => Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            padding: const EdgeInsets.all(8.0),
-            child: CardBookmark(
-              name: index.toString(),
-              url: 'URL for $index is ${"x" * 100 * index}',
-              tags: List.generate(
-                index + 1,
-                (int index) => index.toString(),
-              ).toString(),
-            ),
+class _SitemarkerPageViewState extends State<SitemarkerPageView> {
+  @override
+  Widget build(BuildContext context) {
+    SizeConfig().initSizes(context);
+
+    return Consumer<SmdbProvider>(
+      builder: (context, value, child) {
+        List<SmRecord> recordsInDB = value.getAllRecords();
+
+        return Container(
+          color: Theme.of(context).colorScheme.surface,
+          child: CustomScrollView(
+            slivers: [
+              SliverAppBar(
+                pinned: true,
+                elevation: 10,
+                floating: false,
+                actions: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.add,
+                      size: SizeConfig.blockSizeVertical * 3,
+                    ),
+                    onPressed: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PageAdd(
+                            receivingData: null,
+                          ),
+                        ),
+                      );
+                      setState(() {
+                        recordsInDB = value.getAllRecords();
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 20),
+                  IconButton(
+                    icon: Icon(
+                      Icons.search,
+                      size: SizeConfig.blockSizeVertical * 3,
+                    ),
+                    onPressed: () {
+                      List<String> recNames = [];
+
+                      for (int i = 0; i < recordsInDB.length; i++) {
+                        recNames.add(recordsInDB[i].name);
+                      }
+
+                      showSearch(
+                        context: context,
+                        delegate: SitemarkerSearchDelegate(
+                          records: recordsInDB,
+                          recordNames: recNames,
+                        ),
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 20),
+                ],
+              ),
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: CardBookmark(
+                            name: recordsInDB[index].name,
+                            url: recordsInDB[index].url,
+                            tags: recordsInDB[index].tags,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 10,
+                        ),
+                      ],
+                    );
+                  },
+                  childCount: recordsInDB.length,
+                ),
+              ),
+            ],
           ),
-        ),
-        separatorBuilder: (BuildContext context, int index) => const SizedBox(
-          width: 10,
-          height: 25,
-        ),
-        itemCount: 5,
-      ),
+        );
+      },
     );
   }
 }

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sitemarker/core/data_types/size_config.dart';
 import 'package:sitemarker/ui/pages/page_add.dart';
 import 'package:sitemarker/ui/pages/page_settings.dart';
 import 'package:sitemarker/ui/pages/page_view.dart';
+import 'package:sitemarker/ui/components/bottom_nav_bar_btn.dart';
 
 class SMHomeScreen extends StatefulWidget {
   const SMHomeScreen({super.key, required this.url});
@@ -25,10 +27,9 @@ class _SMHomeScreenState extends State<SMHomeScreen> {
       tooltip: 'Navigate to the home page',
     ),
     const BottomNavigationBarItem(
-      icon: Icon(Icons.settings),
-      label: 'Settings',
-      tooltip: 'Navigate to the settings page'
-    ),
+        icon: Icon(Icons.settings),
+        label: 'Settings',
+        tooltip: 'Navigate to the settings page'),
   ];
 
   void updatePage(int index) {
@@ -39,28 +40,34 @@ class _SMHomeScreenState extends State<SMHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
+    SizeConfig().initSizes(context);
     if (widget.url == null || widget.url!.isEmpty) {
       return Scaffold(
         body: IndexedStack(
           index: selectedIndex,
           children: pages,
         ),
-        bottomNavigationBar: BottomNavigationBar(
-          items: navList,
-          currentIndex: selectedIndex,
-          onTap: updatePage,
-          elevation: 0,
-          showSelectedLabels: true,
-          showUnselectedLabels: false,
-          selectedFontSize: 15,
-          selectedIconTheme: IconThemeData(color: Theme.of(context).colorScheme.primary),
-          selectedItemColor: Theme.of(context).colorScheme.primary,
-          selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
-          unselectedItemColor: Theme.of(context).colorScheme.shadow,
-          unselectedIconTheme: IconThemeData(color: Theme.of(context).colorScheme.inversePrimary),
-          unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
-          
+        bottomNavigationBar: BottomAppBar(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              BottomNavBarBtn(
+                icon: Icons.home,
+                index: 0,
+                onPressed: (val) => updatePage(val),
+                currentIndex: selectedIndex,
+                toolTip: 'Navigate to the home page',
+              ),
+              BottomNavBarBtn(
+                icon: Icons.settings,
+                index: 1,
+                onPressed: (val) => updatePage(val),
+                currentIndex: selectedIndex,
+                toolTip: 'Navigate to the settings page',
+              ),
+            ],
+          ),
         ),
       );
     }
@@ -69,4 +76,3 @@ class _SMHomeScreenState extends State<SMHomeScreen> {
     );
   }
 }
-

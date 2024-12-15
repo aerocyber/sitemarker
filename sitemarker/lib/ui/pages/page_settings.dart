@@ -1,12 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
+import 'dart:io';
+import 'package:sitemarker/core/data_types/size_config.dart';
 
-class PageSettings extends StatelessWidget {
+class PageSettings extends StatefulWidget {
   const PageSettings({super.key});
+
+  @override
+  State<PageSettings> createState() => _PageSettingsState();
+}
+
+class _PageSettingsState extends State<PageSettings> {
+  final TextEditingController _controller = TextEditingController();
+
+  late SitemarkerTheme theme;
+
+  handleDropdown(SitemarkerTheme? selection) {
+    print(selection);
+    if (selection == null) {
+      _controller.text = theme.name;
+      selection = theme;
+    }
+    theme = selection;
+    print('Selected: $theme');
+  }
 
   @override
   Widget build(BuildContext context) {
     //? TODO: implement build
+    SizeConfig().initSizes(context);
 
     return Container(
       color: Theme.of(context).colorScheme.surface,
@@ -56,6 +78,7 @@ class PageSettings extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           // TODO: Implement Themes
+          
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -64,10 +87,11 @@ class PageSettings extends StatelessWidget {
                   const Text('Theme'),
                   const SizedBox(height: 10, width: 10),
                   DropdownMenu<SitemarkerTheme>(
+                    enableSearch: true,
                     initialSelection: SitemarkerTheme.systemTheme,
+                    onSelected: handleDropdown,
                     dropdownMenuEntries: SitemarkerTheme.values
-                        .map<DropdownMenuEntry<SitemarkerTheme>>(
-                            (theme) {
+                        .map<DropdownMenuEntry<SitemarkerTheme>>((theme) {
                       return DropdownMenuEntry(
                         value: theme,
                         label: theme.themeName,
@@ -122,8 +146,20 @@ class PageSettings extends StatelessWidget {
               )
             ],
           ),
+          if (Platform.isAndroid) _adBox()
         ],
       ),
+    );
+  }
+
+  Widget _adBox() {
+    return Column(
+      children: [
+        SizedBox(
+          height: SizeConfig.blockSizeVertical * 10,
+        ),
+        Container(), // TODO: Replace with the ad banner
+      ],
     );
   }
 }
