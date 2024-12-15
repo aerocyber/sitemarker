@@ -59,6 +59,7 @@ class SmdbProvider extends ChangeNotifier {
       dateAdded: record.dt,
     );
     _records.add(rec);
+    allRecords.add(rec);
     db.insertRecord(rec);
     notifyListeners();
   }
@@ -69,12 +70,24 @@ class SmdbProvider extends ChangeNotifier {
     db.toggleDelete(rec.first);
     deletedRecords.add(rec.first);
     _records.remove(rec.first);
+    allRecords.remove(rec.first);
+    allRecords.add(
+      SitemarkerRecord(
+        id: rec.first.id,
+        name: rec.first.name,
+        url: rec.first.url,
+        tags: rec.first.tags,
+        dateAdded: rec.first.dateAdded,
+        isDeleted:  rec.first.isDeleted,
+      )
+    );
     notifyListeners();
   }
 
   /// Update a record
   void updateRecord(SitemarkerRecord record) async {
     db.updateRecord(record);
+    // TODO: Update allRecords and _records
     _records = await db.allRecords;
     notifyListeners();
   }
@@ -211,5 +224,22 @@ class SmdbProvider extends ChangeNotifier {
     await f.writeAsString(data);
 
     notifyListeners();
+  }
+
+  /// Get all the records as a List of SmRecord
+  List<SmRecord> getAllRecords() {
+    List<SmRecord> recordsList = [];
+    for (int i = 0; i < allRecords.length; i++) {
+      recordsList.add(
+        SmRecord(
+          id: allRecords[i].id,
+          name: allRecords[i].name,
+          url: allRecords[i].url,
+          dt: allRecords[i].dateAdded,
+          tags: allRecords[i].tags,
+        ),
+      );
+    }
+    return recordsList;
   }
 }

@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3_flutter_libs/sqlite3_flutter_libs.dart';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 /// Initialize the connection to db.
 DatabaseConnection connect() {
@@ -31,14 +32,15 @@ Future<File> get getDatabaseFile async {
 
 /// Get the path to db file.
 Future<String> getPath() async {
+  String fileName = 'sitemarker';
+  if (!kReleaseMode) fileName = 'sitemarker-debugdb';
   if (Platform.environment["XDG_DATA_HOME"] != null) {
-    return File("${Platform.environment["XDG_DATA_HOME"]}/sitemarker.db").path;
+    return File("${Platform.environment["XDG_DATA_HOME"]}/$fileName.db").path;
   } else if (Platform.environment['SNAP_USER_COMMON'] != null) {
-    return File("${Platform.environment["SNAP_USER_COMMON"]}/sitemarker.db")
+    return File("${Platform.environment["SNAP_USER_COMMON"]}/$fileName.db")
         .path;
   } else {
-    return File(
-            "${(await getApplicationSupportDirectory()).path}/sitemarker.db")
+    return File("${(await getApplicationSupportDirectory()).path}/$fileName.db")
         .path;
   }
 }

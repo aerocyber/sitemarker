@@ -29,6 +29,11 @@ class SmTheme {
   /// on web. Note: Web is **_NOT_** supported.
   loadCustomThemes() async {
     Directory themeDir = Directory(await getThemePath());
+    if (!themeDir.existsSync()) {
+      // No themes. So, log it and return
+      // TODO: Log it
+      return;
+    }
     // Get the themes
     List<FileSystemEntity> themesInDir = await themeDir.list().toList();
     for (int i = 0; i < themesInDir.length; i++) {
@@ -83,18 +88,25 @@ class SmTheme {
   ///   - $SNAP_USER_COMMON/themes
   ///   - (Default application support directory as goven by `path_provider`)/themes
   Future<String> getThemePath() async {
-    if (Platform.environment["XDG_DATA_HOME"] != null) {
-      return File("${Platform.environment["XDG_DATA_HOME"]}/themes/")
-          .parent
-          .path;
-    } else if (Platform.environment['SNAP_USER_COMMON'] != null) {
-      return File("${Platform.environment["SNAP_USER_COMMON"]}/themes/")
-          .parent
-          .path;
-    } else {
-      return File("${(await getApplicationSupportDirectory()).path}/themes/")
-          .parent
-          .path;
+    try {
+      if (Platform.environment["XDG_DATA_HOME"] != null) {
+        return Directory("${Platform.environment["XDG_DATA_HOME"]}/themes/")
+            .path;
+      } else if (Platform.environment['SNAP_USER_COMMON'] != null) {
+        return Directory("${Platform.environment["SNAP_USER_COMMON"]}/themes/")
+            .path;
+      } else {
+        return Directory(
+                "${(await getApplicationSupportDirectory()).path}/themes/")
+            .path;
+      }
+    } on PathNotFoundException {
+      // Return an empty String if the path is not found
+      // This is to prevent the app from crashing... or throwing error
+      // Stuff like this should be handled in the UI
+      // But we log it!
+      // TODO: Log it
+      return '';
     }
   }
 }
