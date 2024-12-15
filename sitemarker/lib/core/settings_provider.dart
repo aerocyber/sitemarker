@@ -13,6 +13,7 @@ class SMSettingsProvider extends ChangeNotifier {
   final String themeModeKey = "THEME_MODE";
   String themeModeValue = "system";
   late String themeDir;
+  bool customThemeDirFound = true;
 
   /// Settings DB
   late final FlutterSecureStorage settingsStore;
@@ -39,6 +40,9 @@ class SMSettingsProvider extends ChangeNotifier {
     }
     SmTheme st = SmTheme();
     themeDir = await st.getThemePath();
+    if (themeDir == '') {
+      customThemeDirFound = false;
+    }
     notifyListeners();
   }
 
@@ -76,6 +80,15 @@ class SMSettingsProvider extends ChangeNotifier {
   /// Change the theme. The required parameter is a theme id. Theme Ids can be
   /// obtained from the `geThemes()` function
   changeTheme(String newThemeId) async {
+    if (newThemeId == themeNameValue) {
+      return;
+    }
+    if (newThemeId.isEmpty) {
+      throw Exception('Theme ID cannot be empty');
+    }
+    if (customThemeDirFound == false) {
+      throw Exception('Custom theme directory not found');
+    }
     Map<String, String> themes = getThemes();
     List<String> themeIds = themes.values as List<String>;
     if (!themeIds.contains(newThemeId)) {
@@ -86,4 +99,3 @@ class SMSettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
-
