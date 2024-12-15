@@ -5,10 +5,13 @@ import 'package:flutter/material.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:sitemarker/ui/pages/home_screen.dart';
 import 'package:sitemarker/core/data_types/settings/sm_theme.dart';
+import 'package:provider/provider.dart';
+import 'package:sitemarker/core/db/smdb_provider.dart';
+import 'package:sitemarker/core/settings_provider.dart';
 
 late SmTheme the;
 
-/// The main file!
+/// The main function!
 void main(List<String> args) {
   WidgetsFlutterBinding.ensureInitialized();
   the = SmTheme();
@@ -77,19 +80,28 @@ class _SMAppState extends State<SMApp> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     if (!Platform.isAndroid) url_ = widget.url;
-    return MaterialApp(
-      title: 'Sitemarker',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: SMHomeScreen(
-        url: url_,
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<SmdbProvider>(
+          create: (_) => SmdbProvider(),
+        ),
+        ChangeNotifierProvider<SMSettingsProvider>(
+          create: (_) => SMSettingsProvider(),
+        ),
+      ],
+      child: MaterialApp(
+        title: 'Sitemarker',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        home: SMHomeScreen(
+          url: url_,
+        ),
       ),
     );
   }

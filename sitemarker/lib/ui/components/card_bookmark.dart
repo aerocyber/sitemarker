@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sitemarker/core/data_types/size_config.dart';
 
 class CardBookmark extends StatelessWidget {
   final String name;
@@ -10,12 +11,8 @@ class CardBookmark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String domainUrl = url.split('//')[url.split('//').length - 1];
-    String domain = '${domainUrl.split('/')[0]}...';
-    if (domain.length > 50) {
-      domain = '${domainUrl.split('/')[0][50]}...';
-    }
-    // TODO: implement build
+    SizeConfig().initSizes(context);
+
     return Card(
       elevation: 25.0,
       color: Theme.of(context).colorScheme.inversePrimary,
@@ -60,18 +57,36 @@ class CardBookmark extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     const Text('Name'),
-                    Text(name),
+                    SizedBox(
+                      width: SizeConfig.blockSizeHorizontal * 15,
+                    ),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Text(name),
+                      ),
+                    ),
+                    // Text(name),
                   ],
                 ),
                 const SizedBox(height: 5),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     const Text('URL'),
-                    Text(url.length < 50 ? url : domain),
+                    SizedBox(
+                      width: SizeConfig.blockSizeHorizontal * 15,
+                    ),
+                    Flexible(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Text(url),
+                      ),
+                    ),
+                    // Text(url),
                   ],
                 ),
                 const SizedBox(height: 5),
