@@ -90,7 +90,7 @@ class CardBookmark extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(height: 5),
-                SingleChildScrollView(
+                tags.isNotEmpty ? SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: <Widget>[
@@ -105,6 +105,9 @@ class CardBookmark extends StatelessWidget {
                         )
                     ],
                   ),
+                ) : const Text(
+                  'Not tagged',
+                  style: TextStyle(fontStyle: FontStyle.italic, fontSize: 15,),
                 ),
               ],
             ), // Details
