@@ -188,7 +188,7 @@ class _PageSettingsState extends State<PageSettings> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Sitemarker 3.0.0-dev',
+                'Sitemarker 3.0.0',
                 style: TextStyle(
                   color: Colors.grey,
                 ),
