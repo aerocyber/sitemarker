@@ -71,22 +71,27 @@ class SmdbProvider extends ChangeNotifier {
     deletedRecords.add(rec.first);
     _records.remove(rec.first);
     allRecords.remove(rec.first);
-    allRecords.add(
-      SitemarkerRecord(
-        id: rec.first.id,
-        name: rec.first.name,
-        url: rec.first.url,
-        tags: rec.first.tags,
-        dateAdded: rec.first.dateAdded,
-        isDeleted:  rec.first.isDeleted,
-      )
-    );
+    allRecords.add(SitemarkerRecord(
+      id: rec.first.id,
+      name: rec.first.name,
+      url: rec.first.url,
+      tags: rec.first.tags,
+      dateAdded: rec.first.dateAdded,
+      isDeleted: rec.first.isDeleted,
+    ));
     notifyListeners();
   }
 
   /// Update a record
-  void updateRecord(SitemarkerRecord record) async {
-    db.updateRecord(record);
+  void updateRecord(SmRecord record) async {
+    db.updateRecord(SitemarkerRecord(
+      id: record.id!,
+      name: record.name,
+      url: record.url,
+      tags: record.tags,
+      isDeleted: record.isDeleted!,
+      dateAdded: record.dt,
+    ));
     // TODO: Update allRecords and _records
     _records = await db.allRecords;
     notifyListeners();
@@ -230,6 +235,26 @@ class SmdbProvider extends ChangeNotifier {
   List<SmRecord> getAllRecords() {
     List<SmRecord> recordsList = [];
     for (int i = 0; i < allRecords.length; i++) {
+      recordsList.add(
+        SmRecord(
+          id: allRecords[i].id,
+          name: allRecords[i].name,
+          url: allRecords[i].url,
+          dt: allRecords[i].dateAdded,
+          tags: allRecords[i].tags,
+        ),
+      );
+    }
+    return recordsList;
+  }
+
+  /// Get all the undeleted records as a List of SmRecord
+  List<SmRecord> getAllUndeletedRecords() {
+    List<SmRecord> recordsList = [];
+    for (int i = 0; i < allRecords.length; i++) {
+      if (allRecords[i].isDeleted == true) {
+        continue;
+      }
       recordsList.add(
         SmRecord(
           id: allRecords[i].id,

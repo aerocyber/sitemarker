@@ -27,7 +27,7 @@ dependencies:
   intl: ^0.20.1
   drift_flutter: ^0.2.2
   html: ^0.15.5
-  file_picker: 8.1.4 # Make it fetch the latest version after 8.1.4(^8.1.4) after a fix which brak Android build is merged
+  file_picker: 8.1.4 # Make it fetch the latest version after 8.1.4(^8.1.4) after a fix which break Android build is merged
   receive_sharing_intent: ^1.8.1
   toastification: ^2.3.0
   flutter_secure_storage: ^4.2.1

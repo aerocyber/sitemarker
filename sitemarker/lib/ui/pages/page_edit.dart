@@ -99,7 +99,7 @@ class _PageEditState extends State<PageEdit> {
                       dt: DateTime.now(),
                     );
                     Provider.of<SmdbProvider>(context, listen: false)
-                        .insertRecord(rec);
+                        .updateRecord(rec);
                     Navigator.of(context).pop();
                   }
                 },

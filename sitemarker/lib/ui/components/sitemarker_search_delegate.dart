@@ -71,13 +71,17 @@ class SitemarkerSearchDelegate extends SearchDelegate {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 border: Border.all(),
+                color: Theme.of(context).colorScheme.secondary,
               ),
               height: SizeConfig.blockSizeVertical * 10,
               padding: EdgeInsets.all(15),
               child: Center(
                 child: Text(
                   result.name,
-                  style: TextStyle(fontWeight: FontWeight.bold),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
                 ),
               ),
             ),
@@ -115,14 +119,20 @@ class SitemarkerSearchDelegate extends SearchDelegate {
             },
             child: Container(
               decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
                 borderRadius: BorderRadius.all(Radius.circular(10)),
                 border: Border.all(),
               ),
               height: SizeConfig.blockSizeVertical * 10,
               padding: EdgeInsets.all(15),
               child: Center(
-                child: Text(result.name,
-                    style: TextStyle(fontWeight: FontWeight.bold)),
+                child: Text(
+                  result.name,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                ),
               ),
             ),
           ),

@@ -21,7 +21,7 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
 
     return Consumer<SmdbProvider>(
       builder: (context, value, child) {
-        List<SmRecord> recordsInDB = value.getAllRecords();
+        List<SmRecord> recordsInDB = value.getAllUndeletedRecords();
 
         return CustomScrollView(
           slivers: [

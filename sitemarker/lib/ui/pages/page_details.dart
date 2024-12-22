@@ -4,6 +4,7 @@ import 'package:sitemarker/core/data_types/size_config.dart';
 import 'package:sitemarker/ui/pages/page_edit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
+import 'package:toastification/toastification.dart';
 
 class PageDetails extends StatelessWidget {
   final SmRecord record;
@@ -55,12 +56,37 @@ class PageDetails extends StatelessWidget {
               size: 30,
             ),
             onPressed: () {
-              try{
-                launchUrl(Uri.parse(record.url), mode: LaunchMode.externalApplication);
-              }on Exception catch(err) {
-                print(err);
-              }
-              // TODO: Implement the opening in new tab stuff
+              launchUrl(Uri.parse(record.url).scheme.isEmpty
+                  ? Uri.parse('https://${record.url}')
+                  : Uri.parse(record.url));
+              toastification.show(
+                icon: Icon(Icons.check),
+                context: context,
+                type: ToastificationType.success,
+                style: ToastificationStyle.flatColored,
+                title: Text("Opened in new tab!!"),
+                description:
+                    Text("${record.url} has been opened in a new browser tab!"),
+                alignment: Alignment.bottomCenter,
+                autoCloseDuration: const Duration(seconds: 3),
+                animationBuilder: (
+                  context,
+                  animation,
+                  alignment,
+                  child,
+                ) {
+                  return ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  );
+                },
+                borderRadius: BorderRadius.circular(12.0),
+                boxShadow: highModeShadow,
+                showProgressBar: true,
+                closeButtonShowType: CloseButtonShowType.onHover,
+                dragToClose: true,
+                applyBlurEffect: true,
+              );
             },
           ),
           const SizedBox(width: 20),
@@ -71,7 +97,34 @@ class PageDetails extends StatelessWidget {
             ),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: record.url));
-              // TODO: Implement the copy to clipboard stuff
+              toastification.show(
+                context: context,
+                icon: Icon(Icons.check),
+                type: ToastificationType.success,
+                style: ToastificationStyle.flatColored,
+                title: Text("Copied successfully!"),
+                description:
+                    Text("${record.url} has been copied to clipboard!"),
+                alignment: Alignment.bottomCenter,
+                autoCloseDuration: const Duration(seconds: 3),
+                animationBuilder: (
+                  context,
+                  animation,
+                  alignment,
+                  child,
+                ) {
+                  return ScaleTransition(
+                    scale: animation,
+                    child: child,
+                  );
+                },
+                borderRadius: BorderRadius.circular(12.0),
+                boxShadow: highModeShadow,
+                showProgressBar: true,
+                closeButtonShowType: CloseButtonShowType.onHover,
+                dragToClose: true,
+                applyBlurEffect: true,
+              );
             },
           ),
           const SizedBox(width: 20),

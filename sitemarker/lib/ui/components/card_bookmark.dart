@@ -5,6 +5,9 @@ import 'package:sitemarker/ui/pages/page_details.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:sitemarker/ui/pages/page_edit.dart';
+import 'package:provider/provider.dart';
+import 'package:sitemarker/core/db/smdb_provider.dart';
+import 'package:toastification/toastification.dart';
 
 class CardBookmark extends StatelessWidget {
   final SmRecord record;
@@ -27,18 +30,42 @@ class CardBookmark extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 IconButton(
+                  onPressed: () {
+                    launchUrl(Uri.parse(record.url).scheme.isEmpty
+                        ? Uri.parse('https://${record.url}')
+                        : Uri.parse(record.url));
+                    toastification.show(
+                      context: context,
+                      icon: Icon(Icons.check),
+                      type: ToastificationType.success,
+                      style: ToastificationStyle.flatColored,
+                      title: Text("Copied successfully!"),
+                      description:
+                          Text("${record.url} has been copied to clipboard!"),
+                      alignment: Alignment.bottomCenter,
+                      autoCloseDuration: const Duration(seconds: 3),
+                      animationBuilder: (
+                        context,
+                        animation,
+                        alignment,
+                        child,
+                      ) {
+                        return ScaleTransition(
+                          scale: animation,
+                          child: child,
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: highModeShadow,
+                      showProgressBar: true,
+                      closeButtonShowType: CloseButtonShowType.onHover,
+                      dragToClose: true,
+                      applyBlurEffect: true,
+                    );
+                  },
                   icon: const Icon(
                     Icons.open_in_new,
                   ),
-                  onPressed: () {
-                    try {
-                       launchUrl(Uri.parse(record.url), mode: LaunchMode.externalApplication);
-                    } on Exception catch(err) {
-                      // log this later
-                      print(err);
-                      // TODO
-                    }
-                  }, // TODO: Implement click
                 ),
                 IconButton(
                   icon: const Icon(
@@ -47,10 +74,38 @@ class CardBookmark extends StatelessWidget {
                   onPressed: () {
                     // TODO: Toast
                     Clipboard.setData(ClipboardData(text: record.url));
-                  }, // TODO: Implement click
+                    toastification.show(
+                      context: context,
+                      icon: Icon(Icons.check),
+                      type: ToastificationType.success,
+                      style: ToastificationStyle.flatColored,
+                      title: Text("Copied successfully!"),
+                      description:
+                          Text("${record.url} has been copied to clipboard!"),
+                      alignment: Alignment.bottomCenter,
+                      autoCloseDuration: const Duration(seconds: 3),
+                      animationBuilder: (
+                        context,
+                        animation,
+                        alignment,
+                        child,
+                      ) {
+                        return ScaleTransition(
+                          scale: animation,
+                          child: child,
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: highModeShadow,
+                      showProgressBar: true,
+                      closeButtonShowType: CloseButtonShowType.onHover,
+                      dragToClose: true,
+                      applyBlurEffect: true,
+                    );
+                  },
                 ),
               ],
-            ), // open in browser and copy
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -149,7 +204,38 @@ class CardBookmark extends StatelessWidget {
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete),
-                  onPressed: () {}, // TODO: Implement button
+                  onPressed: () {
+                    Provider.of<SmdbProvider>(context, listen: false)
+                        .deleteRecord(record);
+                    toastification.show(
+                      context: context,
+                      icon: Icon(Icons.close),
+                      type: ToastificationType.error,
+                      style: ToastificationStyle.flatColored,
+                      title: Text("Moved to trash"),
+                      description: Text(
+                          "The record with name ${record.name} has been moved to the trash"),
+                      alignment: Alignment.bottomCenter,
+                      autoCloseDuration: const Duration(seconds: 3),
+                      animationBuilder: (
+                        context,
+                        animation,
+                        alignment,
+                        child,
+                      ) {
+                        return ScaleTransition(
+                          scale: animation,
+                          child: child,
+                        );
+                      },
+                      borderRadius: BorderRadius.circular(12.0),
+                      boxShadow: highModeShadow,
+                      showProgressBar: true,
+                      closeButtonShowType: CloseButtonShowType.onHover,
+                      dragToClose: true,
+                      applyBlurEffect: true,
+                    );
+                  },
                 ),
                 IconButton(
                   icon: const Icon(Icons.info),
