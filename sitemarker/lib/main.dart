@@ -21,11 +21,11 @@ void main(List<String> args) {
         MultiProvider(
           providers: [
             ChangeNotifierProvider<SmdbProvider>(
-          create: (_) => SmdbProvider(),
-        ),
-        ChangeNotifierProvider<SMSettingsProvider>(
-          create: (_) => SMSettingsProvider(),
-        ),
+              create: (_) => SmdbProvider(),
+            ),
+            ChangeNotifierProvider<SMSettingsProvider>(
+              create: (_) => SMSettingsProvider(),
+            ),
           ],
           child: SMApp(url: args[args.indexOf('--url') + 1]),
         ),
@@ -35,11 +35,11 @@ void main(List<String> args) {
         MultiProvider(
           providers: [
             ChangeNotifierProvider<SmdbProvider>(
-          create: (_) => SmdbProvider(),
-        ),
-        ChangeNotifierProvider<SMSettingsProvider>(
-          create: (_) => SMSettingsProvider(),
-        ),
+              create: (_) => SmdbProvider(),
+            ),
+            ChangeNotifierProvider<SMSettingsProvider>(
+              create: (_) => SMSettingsProvider(),
+            ),
           ],
           child: const SMApp(),
         ),
@@ -47,18 +47,18 @@ void main(List<String> args) {
     }
   } else {
     runApp(
-        MultiProvider(
-          providers: [
-            ChangeNotifierProvider<SmdbProvider>(
-          create: (_) => SmdbProvider(),
-        ),
-        ChangeNotifierProvider<SMSettingsProvider>(
-          create: (_) => SMSettingsProvider(),
-        ),
-          ],
-          child: const SMApp(),
-        ),
-      );
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider<SmdbProvider>(
+            create: (_) => SmdbProvider(),
+          ),
+          ChangeNotifierProvider<SMSettingsProvider>(
+            create: (_) => SMSettingsProvider(),
+          ),
+        ],
+        child: const SMApp(),
+      ),
+    );
   }
 }
 
@@ -119,16 +119,33 @@ class _SMAppState extends State<SMApp> {
   @override
   Widget build(BuildContext context) {
     if (!Platform.isAndroid) url_ = widget.url;
-    return MaterialApp(
+    return Consumer<SMSettingsProvider>(builder: (context, value, child) {
+      ThemeMode themeMode = ThemeMode.system;
+      String theme = value.getCurrentThemeMode();
+      switch (theme) {
+        case 'system':
+          themeMode = ThemeMode.system;
+          break;
+        case 'light':
+          themeMode = ThemeMode.light;
+          break;
+        case 'dark':
+          themeMode = ThemeMode.dark;
+          break;
+      }
+      return MaterialApp(
         title: 'Sitemarker',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
         ),
+        themeMode: themeMode,
+        darkTheme: ThemeData(brightness: Brightness.dark),
         home: SMHomeScreen(
           url: url_,
         ),
       );
+    });
   }
 }

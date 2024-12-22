@@ -3,8 +3,9 @@ import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
 import 'dart:io';
 import 'package:sitemarker/core/data_types/size_config.dart';
 import 'package:provider/provider.dart';
-import 'package:sitemarker/core/db/smdb_provider.dart';
-import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
+import 'package:sitemarker/core/settings_provider.dart';
+// import 'package:sitemarker/core/db/smdb_provider.dart';
+// import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 
 class PageSettings extends StatefulWidget {
   const PageSettings({super.key});
@@ -14,16 +15,32 @@ class PageSettings extends StatefulWidget {
 }
 
 class _PageSettingsState extends State<PageSettings> {
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _DropDownThemeModeController = TextEditingController();
 
   late SitemarkerTheme theme;
 
   handleDropdown(SitemarkerTheme? selection) {
     if (selection == null) {
-      _controller.text = theme.name;
+      _DropDownThemeModeController.text = theme.name;
       selection = theme;
     }
     theme = selection;
+    String themeMode = 'system';
+    switch (theme) {
+      case SitemarkerTheme.lightTheme:
+        themeMode = 'light';
+        break;
+      case SitemarkerTheme.darkTheme:
+        themeMode = 'dark';
+        break;
+      default:
+        themeMode = 'system';
+    }
+
+    setState(() {
+      Provider.of<SMSettingsProvider>(context, listen: false)
+          .changeThemeMode(themeMode);
+    });
   }
 
   @override
@@ -120,7 +137,7 @@ class _PageSettingsState extends State<PageSettings> {
                   const SizedBox(height: 10, width: 10),
                   DropdownMenu<SitemarkerTheme>(
                     enableSearch: true,
-                    initialSelection: SitemarkerTheme.systemTheme,
+                    initialSelection: getInitialValueThemeMode(),
                     onSelected: handleDropdown,
                     dropdownMenuEntries: SitemarkerTheme.values
                         .map<DropdownMenuEntry<SitemarkerTheme>>((theme) {
@@ -193,5 +210,19 @@ class _PageSettingsState extends State<PageSettings> {
         Container(), // TODO: Replace with the ad banner
       ],
     );
+  }
+
+  SitemarkerTheme getInitialValueThemeMode() {
+    String defaultTheme =
+        Provider.of<SMSettingsProvider>(context, listen: false)
+            .getCurrentThemeMode();
+    switch (defaultTheme) {
+      case 'light':
+        return SitemarkerTheme.lightTheme;
+      case 'dark':
+        return SitemarkerTheme.darkTheme;
+      default:
+        return SitemarkerTheme.systemTheme;
+    }
   }
 }

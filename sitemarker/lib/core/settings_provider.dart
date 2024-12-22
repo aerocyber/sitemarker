@@ -50,7 +50,7 @@ class SMSettingsProvider extends ChangeNotifier {
   String getCurrentTheme() => themeNameValue;
 
   /// Get the currently set theme mode
-  String getCurrentThemeMode() => themeModeKey;
+  String getCurrentThemeMode() => themeModeValue;
 
   /// Change the theme mode. Allowed values are `system`, `light` and `dark`
   changeThemeMode(String newMode) async {
