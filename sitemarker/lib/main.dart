@@ -17,12 +17,48 @@ void main(List<String> args) {
   the = SmTheme();
   if (args.isNotEmpty) {
     if (args.contains('--url')) {
-      runApp(SMApp(url: args[args.indexOf('--url') + 1]));
+      runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<SmdbProvider>(
+          create: (_) => SmdbProvider(),
+        ),
+        ChangeNotifierProvider<SMSettingsProvider>(
+          create: (_) => SMSettingsProvider(),
+        ),
+          ],
+          child: SMApp(url: args[args.indexOf('--url') + 1]),
+        ),
+      );
     } else {
-      runApp(const SMApp());
+      runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<SmdbProvider>(
+          create: (_) => SmdbProvider(),
+        ),
+        ChangeNotifierProvider<SMSettingsProvider>(
+          create: (_) => SMSettingsProvider(),
+        ),
+          ],
+          child: const SMApp(),
+        ),
+      );
     }
   } else {
-    runApp(const SMApp());
+    runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider<SmdbProvider>(
+          create: (_) => SmdbProvider(),
+        ),
+        ChangeNotifierProvider<SMSettingsProvider>(
+          create: (_) => SMSettingsProvider(),
+        ),
+          ],
+          child: const SMApp(),
+        ),
+      );
   }
 }
 
@@ -83,16 +119,7 @@ class _SMAppState extends State<SMApp> {
   @override
   Widget build(BuildContext context) {
     if (!Platform.isAndroid) url_ = widget.url;
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<SmdbProvider>(
-          create: (_) => SmdbProvider(),
-        ),
-        ChangeNotifierProvider<SMSettingsProvider>(
-          create: (_) => SMSettingsProvider(),
-        ),
-      ],
-      child: MaterialApp(
+    return MaterialApp(
         title: 'Sitemarker',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
@@ -102,7 +129,6 @@ class _SMAppState extends State<SMApp> {
         home: SMHomeScreen(
           url: url_,
         ),
-      ),
-    );
+      );
   }
 }

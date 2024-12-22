@@ -23,82 +23,77 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
       builder: (context, value, child) {
         List<SmRecord> recordsInDB = value.getAllRecords();
 
-        return Container(
-          color: Theme.of(context).colorScheme.surface,
-          child: CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                pinned: true,
-                elevation: 10,
-                floating: false,
-                actions: [
-                  IconButton(
-                    icon: Icon(
-                      Icons.add,
-                      size: SizeConfig.blockSizeVertical * 3,
-                    ),
-                    onPressed: () async {
-                      await Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (context) => PageAdd(
-                            receivingData: null,
-                          ),
-                        ),
-                      );
-                      setState(() {
-                        recordsInDB = value.getAllRecords();
-                      });
-                    },
+        return CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              pinned: true,
+              elevation: 10,
+              floating: false,
+              actions: [
+                IconButton(
+                  icon: Icon(
+                    Icons.add,
+                    size: 30,
                   ),
-                  const SizedBox(width: 20),
-                  IconButton(
-                    icon: Icon(
-                      Icons.search,
-                      size: SizeConfig.blockSizeVertical * 3,
-                    ),
-                    onPressed: () {
-                      List<String> recNames = [];
-
-                      for (int i = 0; i < recordsInDB.length; i++) {
-                        recNames.add(recordsInDB[i].name);
-                      }
-
-                      showSearch(
-                        context: context,
-                        delegate: SitemarkerSearchDelegate(
-                          records: recordsInDB,
-                          recordNames: recNames,
+                  onPressed: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => PageAdd(
+                          receivingData: null,
                         ),
-                      );
-                    },
+                      ),
+                    );
+                    setState(() {
+                      recordsInDB = value.getAllRecords();
+                    });
+                  },
+                ),
+                const SizedBox(width: 20),
+                IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    size: 30,
                   ),
-                  const SizedBox(width: 20),
-                ],
-              ),
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: CardBookmark(
-                            name: recordsInDB[index].name,
-                            url: recordsInDB[index].url,
-                            tags: recordsInDB[index].tags,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 10,
-                        ),
-                      ],
+                  onPressed: () {
+                    List<String> recNames = [];
+
+                    for (int i = 0; i < recordsInDB.length; i++) {
+                      recNames.add(recordsInDB[i].name);
+                    }
+
+                    showSearch(
+                      context: context,
+                      delegate: SitemarkerSearchDelegate(
+                        records: recordsInDB,
+                        recordNames: recNames,
+                      ),
                     );
                   },
-                  childCount: recordsInDB.length,
                 ),
+                const SizedBox(width: 20),
+              ],
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (BuildContext context, int index) {
+                  return Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: CardBookmark(
+                          record: recordsInDB[index],
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                    ],
+                  );
+                },
+                childCount: recordsInDB.length,
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
