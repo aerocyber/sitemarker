@@ -47,4 +47,4 @@ flutter:
 
   assets:
     - assets/themes/
-  #   - assets/icons/
+    - assets/io.github.aerocyber.sitemarker.svg
