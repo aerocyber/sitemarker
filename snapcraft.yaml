@@ -49,6 +49,6 @@ parts:
       - libgtk-3-dev
       - liblzma-dev
       - libstdc++-12-dev
-    source: https://github.com/aerocyber/sitemarker.git
+    source: ./sitemarker
     plugin: flutter
-    flutter-target: sitemarker/lib/main.dart
+    flutter-target: lib/main.dart
