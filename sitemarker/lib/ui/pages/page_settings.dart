@@ -15,7 +15,8 @@ class PageSettings extends StatefulWidget {
 }
 
 class _PageSettingsState extends State<PageSettings> {
-  final TextEditingController _DropDownThemeModeController = TextEditingController();
+  final TextEditingController _DropDownThemeModeController =
+      TextEditingController();
 
   late SitemarkerTheme theme;
 
@@ -173,11 +174,15 @@ class _PageSettingsState extends State<PageSettings> {
                 onPressed: () {
                   showAboutDialog(
                     context: context,
-                    // applicationIcon: Image.asset() // TODO: Create an app icon and update assets
+                    applicationIcon: Image.asset(
+                      'assets/io.github.aerocyber.sitemarker.png',
+                      width: 150,
+                      height: 150,
+                    ),
                     applicationLegalese:
-                        '\u{a9} 2023-present Aero\nLicensed under the terms of MIT License',
+                        '\u{a9} 2023-present Aero\nLicensed under the terms of Apache-2.0 License',
                     applicationName: 'Sitemarker',
-                    applicationVersion: '3.0.0-dev',
+                    applicationVersion: '3.0.0',
                   );
                 },
               ),
@@ -188,7 +193,7 @@ class _PageSettingsState extends State<PageSettings> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                'Sitemarker 3.0.0-dev',
+                'Sitemarker 3.0.0',
                 style: TextStyle(
                   color: Colors.grey,
                 ),
