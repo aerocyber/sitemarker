@@ -175,10 +175,12 @@ class _PageSettingsState extends State<PageSettings> {
                   showAboutDialog(
                     context: context,
                     applicationIcon: Image.asset(
-                      'assets/io.github.aerocyber.sitemarker.svg',
+                      'assets/io.github.aerocyber.sitemarker.png',
+                      width: 150,
+                      height: 150,
                     ),
                     applicationLegalese:
-                        '\u{a9} 2023-present Aero\nLicensed under the terms of MIT License',
+                        '\u{a9} 2023-present Aero\nLicensed under the terms of Apache-2.0 License',
                     applicationName: 'Sitemarker',
                     applicationVersion: '3.0.0',
                   );
