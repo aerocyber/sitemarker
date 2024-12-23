@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define DistAppName "Sitemarker"
-#define DistAppVersion "2.1.2"
+#define DistAppVersion "3.0.0"
 #define DistAppPublisher "Aero"
 #define DistAppURL "https://aerocyber.github.io/sitemarker"
 #define DistAppExeName "sitemarker.exe"
@@ -28,9 +28,9 @@ LicenseFile=..\..\..\LICENSE
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
 PrivilegesRequiredOverridesAllowed=dialog
-OutputDir=..\..\..\build\windows\installer\
-OutputBaseFilename=Sitemarker-{#DistAppVersion}-installer
-SetupIconFile=..\..\..\windows\runner\resources\app_icon.ico
+OutputDir=..\..\..\sitemarker\build\windows\installer\
+OutputBaseFilename=Sitemarker-{#DistAppVersion}-windows-installer
+SetupIconFile=..\..\..\sitemarker\windows\runner\resources\app_icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -42,12 +42,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-Source: "..\..\..\build\windows\x64\runner\Release\{#DistAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\..\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\..\build\windows\x64\runner\Release\sqlite3.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\..\build\windows\x64\runner\Release\sqlite3_flutter_libs_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\..\build\windows\x64\runner\Release\url_launcher_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\..\..\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\..\..\sitemarker\build\windows\x64\runner\Release\{#DistAppExeName}"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\..\sitemarker\build\windows\x64\runner\Release\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\..\sitemarker\build\windows\x64\runner\Release\sqlite3.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\..\sitemarker\build\windows\x64\runner\Release\sqlite3_flutter_libs_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\..\sitemarker\build\windows\x64\runner\Release\url_launcher_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
+Source: "..\..\..\sitemarker\build\windows\x64\runner\Release\data\*"; DestDir: "{app}\data"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Registry]
