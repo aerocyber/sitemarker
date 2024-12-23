@@ -15,7 +15,7 @@ dependencies:
   url_launcher: ^6.3.1
   path_provider: ^2.1.2
   path: ^1.9.0
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.3.4
   provider: ^6.1.1
   drift: ^2.22.1
   sqlite3_flutter_libs: ^0.5.20
@@ -30,7 +30,6 @@ dependencies:
   file_picker: 8.1.4 # Make it fetch the latest version after 8.1.4(^8.1.4) after a fix which break Android build is merged
   receive_sharing_intent: ^1.8.1
   toastification: ^2.3.0
-  flutter_secure_storage: ^4.2.1
   crypto: ^3.0.6
 
 

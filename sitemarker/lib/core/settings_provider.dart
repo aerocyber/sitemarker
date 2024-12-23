@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sitemarker/core/data_types/settings/sm_theme.dart';
 
 /// `SMSettingsProvider` is used by provider state management system for
@@ -16,11 +16,9 @@ class SMSettingsProvider extends ChangeNotifier {
   bool customThemeDirFound = true;
 
   /// Settings DB
-  late final FlutterSecureStorage settingsStore;
+  late final SharedPreferencesAsync settingsStore;
 
   SMSettingsProvider() {
-    // Create the instance
-    settingsStore = const FlutterSecureStorage();
     init();
   }
 
@@ -28,15 +26,16 @@ class SMSettingsProvider extends ChangeNotifier {
   /// value. Also, populate the secure store with defaults if they're not populated
   /// already. This function is called from the constructor of this class.
   init() async {
+    settingsStore = SharedPreferencesAsync();
     themeNameValue =
-        (await settingsStore.read(key: themeNameKey)) ?? themeNameValue;
-    if ((await settingsStore.read(key: themeNameKey)) == null) {
-      settingsStore.write(key: themeNameKey, value: themeNameValue);
+        (await settingsStore.getString(themeNameKey)) ?? themeNameValue;
+    if ((await settingsStore.getString(themeNameKey)) == null) {
+      settingsStore.setString(themeNameKey, themeNameValue);
     }
     themeModeValue =
-        (await settingsStore.read(key: themeModeKey)) ?? themeModeValue;
-    if ((await settingsStore.read(key: themeModeKey)) == null) {
-      settingsStore.write(key: themeModeKey, value: themeModeValue);
+        (await settingsStore.getString(themeModeKey)) ?? themeModeValue;
+    if ((await settingsStore.getString(themeModeKey)) == null) {
+      settingsStore.setString(themeModeKey, themeModeValue);
     }
     SmTheme st = SmTheme();
     themeDir = await st.getThemePath();
@@ -58,7 +57,7 @@ class SMSettingsProvider extends ChangeNotifier {
     if (!['system', 'light', 'dark'].contains(newMode)) {
       throw Exception('Invalid Theme Mode');
     }
-    await settingsStore.write(key: themeModeKey, value: newMode);
+    await settingsStore.setString(themeModeKey, newMode);
     themeModeValue = newMode;
     notifyListeners();
   }
@@ -94,7 +93,7 @@ class SMSettingsProvider extends ChangeNotifier {
     if (!themeIds.contains(newThemeId)) {
       throw Exception('Theme with ID $newThemeId was not found.');
     }
-    await settingsStore.write(key: themeNameKey, value: newThemeId);
+    await settingsStore.setString(themeNameKey, newThemeId);
     themeNameValue = newThemeId;
     notifyListeners();
   }
