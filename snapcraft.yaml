@@ -51,4 +51,4 @@ parts:
       - libstdc++-12-dev
     source: https://github.com/aerocyber/sitemarker.git
     plugin: flutter
-    flutter-target: lib/main.dart
+    flutter-target: sitemarker/lib/main.dart
