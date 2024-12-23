@@ -7,10 +7,10 @@
     <name>Aero</name>
   </developer>
   <metadata_license>CC0-1.0</metadata_license>
-  <project_license>MIT</project_license>
+  <project_license>Apache-2.0</project_license>
   <update_contact>aerocyberdev@proton.me</update_contact>
   <description>
-    <p>An open source bookmark manager</p>
+    <p>Bookmarking made elegant</p>
   </description>
   <screenshots>
     <screenshot>
@@ -31,11 +31,12 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="2.0.0" date="2024-03-31" type="stable">
+    <release version="3.0.0" date="2024-12-31" type="stable">
       <description>
-        A major rewrite for Sitemarker. With updated UI, powered by a database and with support to Linux, Windows and Android!
+        A major rewrite for Sitemarker enhancing maintainability and updating the UI.
       </description>
     </release>
+    <release version="2.0.0" date="2024-03-31" type="stable" />
     <release version="1.2.3" date="2023-09-14" type="stable"/>
     <release version="1.2.2" date="2023-07-01" type="stable"/>
     <release version="1.2.1" date="2023-06-30" type="stable"/>
