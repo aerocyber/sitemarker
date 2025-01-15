@@ -4,11 +4,14 @@ import 'dart:io';
 import 'package:sitemarker/core/data_types/size_config.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/settings_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 // import 'package:sitemarker/core/db/smdb_provider.dart';
 // import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 
 class PageSettings extends StatefulWidget {
   const PageSettings({super.key});
+  final bmcUrl = 'https://buymeacoffee.com/aerocyber';
+  final ghSpUrl = 'https://github.com/sponsors/aerocyber';
 
   @override
   State<PageSettings> createState() => _PageSettingsState();
@@ -198,6 +201,66 @@ class _PageSettingsState extends State<PageSettings> {
                   color: Colors.grey,
                 ),
               )
+            ],
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                style: ButtonStyle(
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(7.0),
+                    ),
+                  ),
+                ),
+                onPressed: () async {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: Text('Support the project'),
+                      content: Text(
+                          'If you like Sitemarker, consider supporting the project by buying me a coffee or sponsoring me on GitHub.'),
+                      actions: [
+                        ElevatedButton(
+                            onPressed: () async {
+                              if (await canLaunchUrl(
+                                  Uri.parse(widget.bmcUrl))) {
+                                await launchUrl(Uri.parse(widget.bmcUrl));
+                              } else {
+                                throw 'Could not launch ${widget.bmcUrl}';
+                              }
+                            },
+                            child: const Text('Buy me a coffee')),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (await canLaunchUrl(Uri.parse(widget.ghSpUrl))) {
+                              await launchUrl(Uri.parse(widget.ghSpUrl));
+                            } else {
+                              throw 'Could not launch ${widget.ghSpUrl}';
+                            }
+                          },
+                          child: const Text('GitHub Sponsor'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Close'),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+                child: const Row(
+                  children: <Widget>[
+                    Icon(Icons.coffee),
+                    SizedBox(height: 10, width: 10),
+                    Text('Support the project'),
+                  ],
+                ),
+              ),
             ],
           ),
           if (Platform.isAndroid) _adBox()
