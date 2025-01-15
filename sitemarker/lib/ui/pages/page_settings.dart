@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
 import 'dart:io';
@@ -7,6 +10,7 @@ import 'package:sitemarker/core/settings_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 // import 'package:sitemarker/core/db/smdb_provider.dart';
 // import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
+import 'package:http/http.dart' as http;
 
 class PageSettings extends StatefulWidget {
   const PageSettings({super.key});
@@ -22,6 +26,7 @@ class _PageSettingsState extends State<PageSettings> {
       TextEditingController();
 
   late SitemarkerTheme theme;
+  final String version = '3.0.0'; // TODO: Update version
 
   handleDropdown(SitemarkerTheme? selection) {
     if (selection == null) {
@@ -185,22 +190,10 @@ class _PageSettingsState extends State<PageSettings> {
                     applicationLegalese:
                         '\u{a9} 2023-present Aero\nLicensed under the terms of Apache-2.0 License',
                     applicationName: 'Sitemarker',
-                    applicationVersion: '3.0.0',
+                    applicationVersion: version,
                   );
                 },
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Sitemarker 3.0.0',
-                style: TextStyle(
-                  color: Colors.grey,
-                ),
-              )
             ],
           ),
           const SizedBox(height: 20),
@@ -262,6 +255,74 @@ class _PageSettingsState extends State<PageSettings> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Text(
+                'Sitemarker $version',
+                style: TextStyle(
+                  color: Colors.grey,
+                ),
+              ),
+              SizedBox(
+                width: 10,
+              ),
+              IconButton(
+                onPressed: () async {
+                  Uri url = Uri.parse(
+                      'https://api.github.com/repos/aerocyber/sitemarker/releases/latest');
+                  try {
+                    http.Response r = await http.get(url);
+                    if (r.statusCode == 200) {
+                      Map<dynamic, dynamic> data = json.decode(r.body);
+                      if (version.compareTo(data["tag_name"]) == -1 &&
+                          data['prerelease'] == false) {
+                        if (context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text("Update Available"),
+                              content: Text(
+                                "A new version of Sitemarker is available.",
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    launchUrl(Uri.parse(data["html_url"]));
+                                  },
+                                  child: const Text("Visit release page"),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text("OK"),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      } else {
+                        if (!kReleaseMode) {
+                          print('Latest version is already installed');
+                          print(data["tag_name"]);
+                        }
+                      }
+                    }
+                  } catch (e) {
+                    return;
+                  }
+                },
+                icon: const Icon(Icons.refresh),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
           ),
           if (Platform.isAndroid) _adBox()
         ],
