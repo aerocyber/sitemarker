@@ -21,7 +21,7 @@ class PageDetails extends StatelessWidget {
             IconButton(
               icon: Icon(
                 Icons.arrow_back,
-                size: 30,
+                size: 25,
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -33,7 +33,7 @@ class PageDetails extends StatelessWidget {
           IconButton(
             icon: Icon(
               Icons.edit,
-              size: 30,
+              size: 22,
             ),
             onPressed: () async {
               await Navigator.of(context).push(
@@ -53,7 +53,7 @@ class PageDetails extends StatelessWidget {
           IconButton(
             icon: Icon(
               Icons.open_in_new,
-              size: 30,
+              size: 22,
             ),
             onPressed: () {
               launchUrl(Uri.parse(record.url).scheme.isEmpty
@@ -93,7 +93,7 @@ class PageDetails extends StatelessWidget {
           IconButton(
             icon: Icon(
               Icons.copy,
-              size: 30,
+              size: 22,
             ),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: record.url));
@@ -130,100 +130,159 @@ class PageDetails extends StatelessWidget {
           const SizedBox(width: 20),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: ListTile(
-                tileColor: Theme.of(context).colorScheme.primary,
-                minTileHeight: 75,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                // height: 250,
+                width: 500,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                titleAlignment: ListTileTitleAlignment.center,
-                leading: Text(
-                  "Name",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 12,
-                  ),
-                ),
-                title: Text(
-                  record.name.length >= 20
-                      ? '${record.name.substring(0, 20)}...'
-                      : record.name,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 18,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Record Name",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          fontSize: 20,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            Text(
+                              record.name,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontSize: 25,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 25),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: ListTile(
-                tileColor: Theme.of(context).colorScheme.primary,
-                minTileHeight: 75,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+            ],
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                // height: 250,
+                width: 500,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(20),
                 ),
-                titleAlignment: ListTileTitleAlignment.center,
-                leading: Text(
-                  "URL",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 12,
-                  ),
-                ),
-                title: Text(
-                  record.name.length >= 20
-                      ? '${record.url.substring(0, 20)}...'
-                      : record.url,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 18,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Record URL",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          fontSize: 20,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            Text(
+                              record.url,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
+                                fontSize: 25,
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    ],
                   ),
                 ),
               ),
-            ),
-            const SizedBox(height: 25),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: record.tags.isNotEmpty
-                  ? SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: <Widget>[
-                          for (int i = 0;
-                              i < record.tags.split(',').length;
-                              i++)
-                            record.tags.split(',')[i].trim().isNotEmpty
-                                ? Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Chip(
-                                      label: Text(
-                                        record.tags.split(',')[i].trim(),
-                                        style: TextStyle(fontSize: 18),
-                                      ),
-                                    ),
-                                  )
-                                : Container(),
-                        ],
+            ],
+          ),
+          SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                // height: 250,
+                width: 500,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.primary,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      Text(
+                        "Record Tags",
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onSecondary,
+                          fontSize: 20,
+                        ),
                       ),
-                    )
-                  : const Text(
-                      'Not tagged',
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 15,
-                      ),
-                    ),
-            ),
-          ],
-        ),
+                      SizedBox(height: 10),
+                      record.tags.isNotEmpty
+                          ? SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: <Widget>[
+                                  for (int i = 0;
+                                      i < record.tags.split(',').length;
+                                      i++)
+                                    record.tags.split(',')[i].trim().isNotEmpty
+                                        ? Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Chip(
+                                              label: Text(
+                                                record.tags
+                                                    .split(',')[i]
+                                                    .trim(),
+                                                style: TextStyle(fontSize: 18),
+                                              ),
+                                            ),
+                                          )
+                                        : Container(),
+                                ],
+                              ),
+                            )
+                          : const Text(
+                              'Not tagged',
+                              style: TextStyle(
+                                fontStyle: FontStyle.italic,
+                                fontSize: 15,
+                              ),
+                            ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

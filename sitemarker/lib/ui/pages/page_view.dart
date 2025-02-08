@@ -115,62 +115,65 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
       builder: (context, value, child) {
         List<SmRecord> recordsInDB = value.getAllUndeletedRecords();
 
-        return Scaffold(
-          appBar: AppBar(
-            elevation: 10,
-            actions: [
-              IconButton(
-                icon: Icon(
-                  Icons.add,
-                  size: 30,
-                ),
-                onPressed: () async {
-                  await Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => PageAdd(
-                        receivingData: null,
+        return SafeArea(
+          child: Scaffold(
+            appBar: AppBar(
+              elevation: 10,
+              actions: [
+                IconButton(
+                  icon: Icon(
+                    Icons.add,
+                    size: 30,
+                  ),
+                  onPressed: () async {
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => PageAdd(
+                          receivingData: null,
+                        ),
                       ),
-                    ),
-                  );
-                  setState(() {
-                    recordsInDB = value.getAllUndeletedRecords();
-                  });
-                },
-              ),
-              const SizedBox(width: 20),
-              IconButton(
-                icon: Icon(
-                  Icons.search,
-                  size: 30,
+                    );
+                    setState(() {
+                      recordsInDB = value.getAllUndeletedRecords();
+                    });
+                  },
                 ),
-                onPressed: () {
-                  List<String> recNames = [];
-
-                  for (int i = 0; i < recordsInDB.length; i++) {
-                    recNames.add(recordsInDB[i].name);
-                  }
-
-                  showSearch(
-                    context: context,
-                    delegate: SitemarkerSearchDelegate(
-                      records: recordsInDB,
-                      recordNames: recNames,
-                    ),
-                  );
-                },
+                const SizedBox(width: 20),
+                IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    size: 30,
+                  ),
+                  onPressed: () {
+                    List<String> recNames = [];
+          
+                    for (int i = 0; i < recordsInDB.length; i++) {
+                      recNames.add(recordsInDB[i].name);
+                    }
+          
+                    showSearch(
+                      context: context,
+                      delegate: SitemarkerSearchDelegate(
+                        records: recordsInDB,
+                        recordNames: recNames,
+                      ),
+                    );
+                  },
+                ),
+                const SizedBox(width: 20),
+              ],
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+              child: ListView.separated(
+                itemBuilder: (context, index) =>
+                    CardBookmark(record: recordsInDB[index]),
+                // Text(index.toString()),
+                separatorBuilder: (context, index) => SizedBox(
+                  height: 10,
+                ),
+                itemCount: recordsInDB.length,
               ),
-              const SizedBox(width: 20),
-            ],
-          ),
-          body: Container(
-            child: ListView.separated(
-              itemBuilder: (context, index) =>
-                  CardBookmark(record: recordsInDB[index]),
-              // Text(index.toString()),
-              separatorBuilder: (context, index) => SizedBox(
-                height: 10,
-              ),
-              itemCount: recordsInDB.length,
             ),
           ),
         );
