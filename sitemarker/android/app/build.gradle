@@ -66,12 +66,12 @@ android {
     productFlavors {
         register("prod") {
             dimension = "default"
-            resValue("string", "app_name", "Release Version")
+            resValue("string", "app_name", "Sitemarker")
         }
         register("develop") {
             dimension = "default"
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "Debug Version")
+            resValue("string", "app_name", "Sitemarker Dev")
         }
     }
 }
