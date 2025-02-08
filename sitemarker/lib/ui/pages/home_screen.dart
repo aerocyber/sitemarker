@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sitemarker/core/data_types/size_config.dart';
+// import 'package:sitemarker/core/data_types/size_config.dart';
 import 'package:sitemarker/ui/pages/page_add.dart';
 import 'package:sitemarker/ui/pages/page_settings.dart';
 import 'package:sitemarker/ui/pages/page_view.dart';
@@ -40,7 +40,7 @@ class _SMHomeScreenState extends State<SMHomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().initSizes(context);
+    // SizeConfig().initSizes(context);
     if (widget.url == null || widget.url!.isEmpty) {
       return Scaffold(
         body: IndexedStack(
