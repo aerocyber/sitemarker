@@ -256,75 +256,78 @@ class CardBookmark extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListTile(
+        tileColor: Theme.of(context).colorScheme.inversePrimary,
         shape: RoundedRectangleBorder(
-          side: BorderSide(
-              width: 1, color: Theme.of(context).colorScheme.primary),
           borderRadius: BorderRadius.circular(10),
         ),
         minTileHeight: 75,
         titleAlignment: ListTileTitleAlignment.center,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              radius: 50,
-              child: Text(
-                record.name[0].toUpperCase(),
-                style: TextStyle(
-                  fontSize: 45,
+        title: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              CircleAvatar(
+                radius: 50,
+                child: Text(
+                  record.name[0].toUpperCase(),
+                  style: TextStyle(
+                    fontSize: 45,
+                  ),
                 ),
               ),
-            ),
-            SizedBox(
-              width: 20,
-            ),
-            Expanded(
-              child: Column(
-                children: [
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Text(
-                      record.name,
-                    ),
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Text(
-                      record.url,
-                    ),
-                  ),
-                  record.tags.isNotEmpty
-                      ? SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: <Widget>[
-                              for (int i = 0;
-                                  i < record.tags.split(',').length;
-                                  i++)
-                                record.tags.split(',')[i].trim().isNotEmpty
-                                    ? Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Chip(
-                                          label: Text(
-                                            record.tags.split(',')[i].trim(),
-                                          ),
-                                        ),
-                                      )
-                                    : Container(),
-                            ],
-                          ),
-                        )
-                      : const Text(
-                          'Not tagged',
-                          style: TextStyle(
-                            fontStyle: FontStyle.italic,
-                            fontSize: 15,
-                          ),
-                        ),
-                ],
+              SizedBox(
+                width: 20,
               ),
-            )
-          ],
+              Expanded(
+                child: Column(
+                  children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(
+                        record.name,
+                      ),
+                    ),
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Text(
+                        record.url,
+                      ),
+                    ),
+                    record.tags.isNotEmpty
+                        ? SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: <Widget>[
+                                for (int i = 0;
+                                    i < record.tags.split(',').length;
+                                    i++)
+                                  record.tags.split(',')[i].trim().isNotEmpty
+                                      ? Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Chip(
+                                            label: Text(
+                                              record.tags.split(',')[i].trim(),
+                                            ),
+                                          ),
+                                        )
+                                      : Container(),
+                              ],
+                            ),
+                          )
+                        : const Text(
+                            'Not tagged',
+                            style: TextStyle(
+                              fontStyle: FontStyle.italic,
+                              fontSize: 15,
+                            ),
+                          ),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
         subtitle: Row(
           mainAxisAlignment: MainAxisAlignment.center,
