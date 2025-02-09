@@ -23,15 +23,14 @@ class SmdbProvider extends ChangeNotifier {
 
   /// Load the values from db. Not to be called from outside the class
   void init() async {
-    List<SitemarkerRecord> recs = await db.allRecords;
-    for (int i = 0; i < recs.length; i++) {
-      if (recs[i].isDeleted) {
-        deletedRecords.add(recs[i]);
+    allRecords = await db.allRecords;
+    for (int i = 0; i < allRecords.length; i++) {
+      if (allRecords[i].isDeleted) {
+        deletedRecords.add(allRecords[i]);
       } else {
-        _records.add(recs[i]);
+        _records.add(allRecords[i]);
       }
     }
-    allRecords = recs;
     notifyListeners();
   }
 
