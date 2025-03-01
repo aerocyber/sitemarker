@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
-import 'package:sitemarker/ui/components/card_bookmark.dart';
+import 'package:sitemarker/core/db/sqlitedb/sm_db.dart';
+import 'package:sitemarker/ui/components/card_deleted.dart';
 
 class RecycleBin extends StatelessWidget {
   const RecycleBin({super.key});
@@ -11,14 +12,28 @@ class RecycleBin extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<SmdbProvider>(
       builder: (context, value, child) {
-        List<SmRecord> deletedRecords = value.getAllDeletedRecords();
+        // List<SmRecord> deletedRecords = value.getAllDeletedRecords();
+        List<SitemarkerRecord> deletedRecordsTmp = value.deletedRecords;
+        List<SmRecord> deletedRecords = [];
+        for (int i = 0; i < deletedRecordsTmp.length; i++) {
+          deletedRecords.add(SmRecord(
+            id: deletedRecordsTmp[i].id,
+            name: deletedRecordsTmp[i].name,
+            url: deletedRecordsTmp[i].url,
+            tags: deletedRecordsTmp[i].tags,
+            dt: deletedRecordsTmp[i].dateAdded,
+          ));
+        }
+
+        print(value.deletedRecords);
 
         return Scaffold(
           appBar: AppBar(
             title: const Text('Recycle Bin'),
           ),
           body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
             child: ListView.separated(
               itemBuilder: (context, index) {
                 return Dismissible(
@@ -41,7 +56,8 @@ class RecycleBin extends StatelessWidget {
                       deletedRecords[index].isDeleted = false;
                       value.updateRecord(deletedRecords[index]);
                       return true;
-                    } else if (direction == DismissDirection.endToStart) { // TODO: CHeck this?
+                    } else if (direction == DismissDirection.endToStart) {
+                      // TODO: CHeck this?
                       // Permanently Delete
                       bool deleteConfirmation = await showDialog(
                         context: context,
@@ -52,10 +68,12 @@ class RecycleBin extends StatelessWidget {
                                 "Are you sure you want to permanently delete this record? This action cannot be undone."),
                             actions: <Widget>[
                               TextButton(
-                                  onPressed: () => Navigator.of(context).pop(false),
+                                  onPressed: () =>
+                                      Navigator.of(context).pop(false),
                                   child: const Text("Cancel")),
                               TextButton(
-                                onPressed: () => Navigator.of(context).pop(true),
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
                                 child: const Text("Delete",
                                     style: TextStyle(color: Colors.red)),
                               ),
@@ -77,13 +95,15 @@ class RecycleBin extends StatelessWidget {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('Record Restored')),
                       );
-                    } else if (direction == DismissDirection.endToStart) { // TODO: Check this?
+                    } else if (direction == DismissDirection.endToStart) {
+                      // TODO: Check this?
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Record Permanently Deleted')),
+                        const SnackBar(
+                            content: Text('Record Permanently Deleted')),
                       );
                     }
                   },
-                  child: CardBookmark(record: deletedRecords[index]),
+                  child: CardDeleteBookmark(record: deletedRecords[index]),
                 );
               },
               separatorBuilder: (context, index) => const SizedBox(

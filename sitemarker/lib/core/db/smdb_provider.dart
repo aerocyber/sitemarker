@@ -270,17 +270,17 @@ class SmdbProvider extends ChangeNotifier {
   /// Get all the undeleted records as a List of SmRecord
   List<SmRecord> getAllDeletedRecords() {
     List<SmRecord> recordsList = [];
-    for (int i = 0; i < allRecords.length; i++) {
-      if (allRecords[i].isDeleted == false) {
-        continue;
-      }
+    for (int i = 0; i < deletedRecords.length; i++) {
+      // if (allRecords[i].isDeleted == false) {
+      //   continue;
+      // }
       recordsList.add(
         SmRecord(
-          id: allRecords[i].id,
-          name: allRecords[i].name,
-          url: allRecords[i].url,
-          dt: allRecords[i].dateAdded,
-          tags: allRecords[i].tags,
+          id: deletedRecords[i].id,
+          name: deletedRecords[i].name,
+          url: deletedRecords[i].url,
+          dt: deletedRecords[i].dateAdded,
+          tags: deletedRecords[i].tags,
         ),
       );
     }
@@ -291,17 +291,9 @@ class SmdbProvider extends ChangeNotifier {
   void deleteRecordPermanently(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
     db.hardDelete(rec.first);
-    deletedRecords.add(rec.first);
+    // deletedRecords.add(rec.first);
     _records.remove(rec.first);
     allRecords.remove(rec.first);
-    allRecords.add(SitemarkerRecord(
-      id: rec.first.id,
-      name: rec.first.name,
-      url: rec.first.url,
-      tags: rec.first.tags,
-      dateAdded: rec.first.dateAdded,
-      isDeleted: rec.first.isDeleted,
-    ));
     notifyListeners();
   }
 }

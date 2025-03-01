@@ -6,6 +6,7 @@ import 'package:sitemarker/ui/components/sitemarker_search_delegate.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
+// import 'package:sitemarker/ui/pages/recycle_bin.dart';
 
 class SitemarkerPageView extends StatefulWidget {
   const SitemarkerPageView({super.key});
@@ -18,98 +19,6 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().initSizes(context);
-
-    // return Consumer<SmdbProvider>(
-    //   builder: (context, value, child) {
-    //     List<SmRecord> recordsInDB = value.getAllUndeletedRecords();
-
-    //     return CustomScrollView(
-    //       slivers: [
-    //         SliverAppBar(
-    //           pinned: true,
-    //           elevation: 10,
-    //           floating: false,
-    // actions: [
-    //   IconButton(
-    //     icon: Icon(
-    //       Icons.add,
-    //       size: 30,
-    //     ),
-    //     onPressed: () async {
-    //       await Navigator.of(context).push(
-    //         MaterialPageRoute(
-    //           builder: (context) => PageAdd(
-    //             receivingData: null,
-    //           ),
-    //         ),
-    //       );
-    //       setState(() {
-    //         recordsInDB = value.getAllUndeletedRecords();
-    //       });
-    //     },
-    //   ),
-    //   const SizedBox(width: 20),
-    //   IconButton(
-    //     icon: Icon(
-    //       Icons.search,
-    //       size: 30,
-    //     ),
-    //     onPressed: () {
-    //       List<String> recNames = [];
-
-    //       for (int i = 0; i < recordsInDB.length; i++) {
-    //         recNames.add(recordsInDB[i].name);
-    //       }
-
-    //       showSearch(
-    //         context: context,
-    //         delegate: SitemarkerSearchDelegate(
-    //           records: recordsInDB,
-    //           recordNames: recNames,
-    //         ),
-    //       );
-    //     },
-    //   ),
-    //   const SizedBox(width: 20),
-    // ],
-    //         ),
-    //         // SliverList(
-    //         //   delegate: SliverChildBuilderDelegate(
-    //         //     (BuildContext context, int index) {
-    //         //       return Container(
-    //         //         child: Column(
-    //         //           children: [
-    //         //             Padding(
-    //         //               padding: const EdgeInsets.all(10.0),
-    //         //               child: CardBookmark(
-    //         //                 record: recordsInDB[index],
-    //         //               ),
-    //         //             ),
-    //         //             const SizedBox(
-    //         //               height: 10,
-    //         //             ),
-    //         //           ],
-    //         //         ),
-    //         //       );
-    //         //     },
-    //         //     childCount: recordsInDB.length,
-    //         //   ),
-    //         // ),
-    //         SliverList.separated(
-    //           itemCount: recordsInDB.length,
-    //           itemBuilder: (context, index) {
-    //             return CardBookmark(
-    //               record: recordsInDB[index],
-    //             );
-    //           },
-    //           separatorBuilder: (context, index) => const SizedBox(
-    //             height: 10,
-    //           ),
-    //         )
-    //       ],
-    //     );
-    //   },
-    // );
 
     return Consumer<SmdbProvider>(
       builder: (context, value, child) {
@@ -146,11 +55,11 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
                   ),
                   onPressed: () {
                     List<String> recNames = [];
-          
+
                     for (int i = 0; i < recordsInDB.length; i++) {
                       recNames.add(recordsInDB[i].name);
                     }
-          
+
                     showSearch(
                       context: context,
                       delegate: SitemarkerSearchDelegate(
@@ -160,19 +69,43 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
                     );
                   },
                 ),
+                // const SizedBox(width: 20),
+                // IconButton(
+                //   onPressed: () async {
+                //     await Navigator.of(context).push(
+                //       MaterialPageRoute(
+                //         builder: (context) => RecycleBin(),
+                //       ),
+                //     );
+                //     setState(() {
+                //       recordsInDB = value.getAllUndeletedRecords();
+                //     });
+                //   },
+                //   icon: const Icon(Icons.delete, size: 30),
+                // ),
                 const SizedBox(width: 20),
               ],
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
-              child: ListView.separated(
-                itemBuilder: (context, index) =>
-                    CardBookmark(record: recordsInDB[index]),
-                // Text(index.toString()),
-                separatorBuilder: (context, index) => SizedBox(
-                  height: 10,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+              child: ListView.builder(
+                itemBuilder: (context, index) => Column(
+                  children: [
+                    CardBookmark(
+                      record: recordsInDB[index],
+                      onDelete: () {
+                        setState(() {
+                          recordsInDB = value.getAllUndeletedRecords();
+                        });
+                      },
+                    ),
+                    SizedBox(height: 10),
+                  ],
                 ),
                 itemCount: recordsInDB.length,
+                itemExtent: null,
+                // separatorBuilder: (context, index) => SizedBox(height: 10),
               ),
             ),
           ),
