@@ -16,7 +16,6 @@ class CardBookmark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ListTile(
@@ -25,7 +24,6 @@ class CardBookmark extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
         ),
         minTileHeight: 75,
-        titleAlignment: ListTileTitleAlignment.center,
         title: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Row(
@@ -41,11 +39,10 @@ class CardBookmark extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(
-                width: 20,
-              ),
               Expanded(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
@@ -53,11 +50,17 @@ class CardBookmark extends StatelessWidget {
                         record.name,
                       ),
                     ),
+                    SizedBox(
+                      height: 10,
+                    ),
                     SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Text(
                         record.url,
                       ),
+                    ),
+                    SizedBox(
+                      height: 10,
                     ),
                     record.tags.isNotEmpty
                         ? SingleChildScrollView(
@@ -95,6 +98,7 @@ class CardBookmark extends StatelessWidget {
         ),
         subtitle: Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
               onPressed: () {
