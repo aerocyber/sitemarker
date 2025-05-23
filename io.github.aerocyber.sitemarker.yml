@@ -3,7 +3,7 @@
 ---
 app-id: io.github.aerocyber.sitemarker
 runtime: org.gnome.Platform
-runtime-version: "46"
+runtime-version: "48"
 sdk: org.gnome.Sdk
 command: sitemarker
 separate-locales: false
