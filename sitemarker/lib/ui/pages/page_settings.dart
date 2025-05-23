@@ -1,15 +1,16 @@
 import 'dart:convert';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:sitemarker/core/data_helper.dart';
 import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
 import 'dart:io';
 import 'package:sitemarker/core/data_types/size_config.dart';
 import 'package:provider/provider.dart';
+import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/settings_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-// import 'package:sitemarker/core/db/smdb_provider.dart';
-// import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:http/http.dart' as http;
 
 class PageSettings extends StatefulWidget {
@@ -159,6 +160,94 @@ class _PageSettingsState extends State<PageSettings> {
                 ],
               ),
             ],
+          ),
+          const SizedBox(height: 30),
+          Divider(
+            color: Theme.of(context).disabledColor,
+            thickness: 3,
+            height: 20,
+          ),
+          const SizedBox(height: 20),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Consumer<SmdbProvider>(builder: (context, value, child) {
+                return ElevatedButton(
+                  onPressed: () async {
+                    String? fpath = await FilePicker.platform.saveFile(
+                      dialogTitle: 'Save as',
+                      fileName: 'sitemarker.omio',
+                      type: FileType.custom,
+                      allowedExtensions: ['omio'],
+                    );
+                    if (fpath == null) {
+                      // Show error dialog and return
+                      if (context.mounted) {
+                        showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Error'),
+                            content: const Text('File path is null'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return;
+                    }
+                    File file = File(fpath);
+                    file.writeAsStringSync(
+                        DataHelper.convertToOmio(
+                            value.getAllUndeletedRecords()),
+                        mode: FileMode.write);
+                    if (context.mounted) {
+                      showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Success'),
+                          content: const Text('File exported successfully'),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+                  },
+                  style: ButtonStyle(
+                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(7.0),
+                      ),
+                    ),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(Icons.upload),
+                      Text("Export records as omio file")
+                    ],
+                  ),
+                );
+              }),
+            ],
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Divider(
+            color: Theme.of(context).disabledColor,
+            thickness: 3,
+            height: 20,
           ),
           const SizedBox(height: 20),
           Row(

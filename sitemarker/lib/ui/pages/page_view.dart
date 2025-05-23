@@ -6,6 +6,7 @@ import 'package:sitemarker/ui/components/sitemarker_search_delegate.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
+import 'package:sitemarker/ui/pages/view_omio.dart';
 // import 'package:sitemarker/ui/pages/recycle_bin.dart';
 
 class SitemarkerPageView extends StatefulWidget {
@@ -47,6 +48,20 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
                     });
                   },
                 ),
+                const SizedBox(width: 20),
+                IconButton(
+                    onPressed: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => SitemarkerPageViewOmio(),
+                        ),
+                      );
+
+                      setState(() {
+                        recordsInDB = value.getAllUndeletedRecords();
+                      });
+                    },
+                    icon: const Icon(Icons.grid_view_rounded, size: 30)),
                 const SizedBox(width: 20),
                 IconButton(
                   icon: Icon(

@@ -20,6 +20,14 @@ class SmdbProvider extends ChangeNotifier {
   List<SitemarkerRecord> deletedRecords = [];
   // All records
   List<SitemarkerRecord> allRecords = [];
+  // Duplicate records as part of import
+  List<SmRecord> _importDups = [];
+  // Getter for dups
+  List<SmRecord> get importDups => _importDups;
+  // Counter for successful imports
+  int _successImport = 0;
+  // Getter for successful imports
+  int get successImport => _successImport;
 
   /// Load the values from db. Not to be called from outside the class
   void init() async {
@@ -164,34 +172,58 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   // Implement import from omio file
-  importFromOmioFile() async {
+  importFromOmioFile(File f) async {
     List<SmRecord> recs;
-    FilePickerResult? result = await FilePicker.platform.pickFiles(
-      allowedExtensions: ['omio'],
-      dialogTitle: 'Select an omio bookmarks file',
-      allowMultiple: false,
-      initialDirectory: (await getApplicationDocumentsDirectory()).path,
-      lockParentWindow: true,
-      type: FileType.custom,
-    );
-    if (result == null) {
-      // User cancelled it
-      throw Exception('User cancelled');
-    }
+    // FilePickerResult? result = await FilePicker.platform.pickFiles(
+    //   allowedExtensions: ['omio'],
+    //   dialogTitle: 'Select an omio bookmarks file',
+    //   allowMultiple: false,
+    //   initialDirectory: (await getApplicationDocumentsDirectory()).path,
+    //   lockParentWindow: true,
+    //   type: FileType.custom,
+    // );
+    // if (result == null) {
+    //   // User cancelled it
+    //   throw Exception('User cancelled');
+    // }
 
-    File f = File(result.files.single.path!);
+    // File f = File(result.files.single.path!);
 
     try {
       recs = DataHelper.fromOmio(await f.readAsString());
     } on Exception {
       rethrow;
     }
+
+    _importDups = [];
+    _successImport = 0;
+    bool dup = false;
+
     for (int i = 0; i < recs.length; i++) {
       if ((await db.getRecordsByName(recs[i].name)).isNotEmpty) {
+        dup = false;
+        for (int idps = 0; idps < _importDups.length; idps++) {
+          if (_importDups[idps].name == recs[i].name ||
+              _importDups[idps].url == recs[i].url) {
+            dup = true;
+            break;
+          }
+        }
+        if (!dup) _importDups.add(recs[i]);
         continue;
       } else if ((await db.getRecordsByURL(recs[i].url)).isNotEmpty) {
+        dup = false;
+        for (int idps = 0; idps < _importDups.length; idps++) {
+          if (_importDups[idps].name == recs[i].name ||
+              _importDups[idps].url == recs[i].url) {
+            dup = true;
+            break;
+          }
+        }
+        if (!dup) _importDups.add(recs[i]);
         continue;
       }
+      _successImport++;
       SitemarkerRecord smr = SitemarkerRecord(
         id: getDefaultId(),
         name: recs[i].name,
