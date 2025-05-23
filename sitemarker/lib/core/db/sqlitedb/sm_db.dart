@@ -7,29 +7,43 @@ part 'sm_db.g.dart';
 /// DB
 @DriftDatabase(tables: [SitemarkerRecords])
 class SitemarkerDB extends _$SitemarkerDB {
-  SitemarkerDB() : super(impl.connect());
+  // SitemarkerDB() : super(impl.connect());
+  SitemarkerDB([QueryExecutor? e]) : super(e ?? impl.connect());
 
   /// The DB Schema version
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   /// Migration code
   @override
   MigrationStrategy get migration {
-    return MigrationStrategy(onUpgrade: stepByStep(from1To2: (m, schema) async {
-      await m.addColumn(
-        schema.sitemarkerRecords,
-        schema.sitemarkerRecords.dateAdded,
-      );
-    }), beforeOpen: (details) async {
-      if (details.hadUpgrade) {
-        await update(sitemarkerRecords).write(SitemarkerRecordsCompanion(
-            dateAdded: Value(
-          DateTime(
-              DateTime.now().year, DateTime.now().month, DateTime.now().day),
-        )));
-      }
-    });
+    return MigrationStrategy(
+        onUpgrade: stepByStep(
+          from1To2: (m, schema) async {
+            await m.addColumn(
+              schema.sitemarkerRecords,
+              schema.sitemarkerRecords.dateAdded,
+            );
+          },
+          from2To3: (m, schema) async {
+            await m.addColumn(
+              schema.sitemarkerRecords,
+              schema.sitemarkerRecords.dateModified,
+            );
+          },
+        ),
+        beforeOpen: (details) async {
+          if (details.hadUpgrade) {
+            await update(sitemarkerRecords).write(
+              SitemarkerRecordsCompanion(
+                dateAdded: Value(
+                  DateTime(DateTime.now().year, DateTime.now().month,
+                      DateTime.now().day),
+                ),
+              ),
+            );
+          }
+        });
   }
 
   // SELECTs
@@ -135,5 +149,9 @@ class SitemarkerRecords extends Table {
 
   // DB v2: Added the dateAdded column
   DateTimeColumn get dateAdded => dateTime().withDefault(Constant(DateTime(
+      DateTime.now().year, DateTime.now().month, DateTime.now().day)))();
+
+  // DB v3: Added the dateModified column
+  DateTimeColumn get dateModified => dateTime().withDefault(Constant(DateTime(
       DateTime.now().year, DateTime.now().month, DateTime.now().day)))();
 }
