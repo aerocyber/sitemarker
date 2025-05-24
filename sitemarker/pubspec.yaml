@@ -40,6 +40,7 @@ dev_dependencies:
   build_runner: ^2.4.13
   drift_dev: ^2.22.1
   test: ^1.25.7
+  msix: ^3.16.9
 
 flutter:
   uses-material-design: true

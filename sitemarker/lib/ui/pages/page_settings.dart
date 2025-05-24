@@ -8,6 +8,7 @@ import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
 import 'dart:io';
 import 'package:sitemarker/core/data_types/size_config.dart';
 import 'package:provider/provider.dart';
+import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/settings_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -53,6 +54,127 @@ class _PageSettingsState extends State<PageSettings> {
     });
   }
 
+  /// Shows a confirmation dialog for soft deleting all records.
+  /// Returns true if the user confirms, false otherwise.
+  Future<bool?> confirmSoftDeleteAll(BuildContext context) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Confirm Soft Delete All'),
+          content: const Text(
+            'Are you sure you want to soft delete ALL records? '
+            'Soft deleted records can be restored later from the trash.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false); // User canceled
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber.shade700, // A warning color
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(true); // User confirmed
+              },
+              child: const Text('Soft Delete All'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Shows a confirmation dialog for permanently deleting all records.
+  /// Returns true if the user confirms, false otherwise.
+  Future<bool?> confirmPermanentDeleteAll(BuildContext context) async {
+    return await showDialog<bool>(
+      context: context,
+      barrierDismissible:
+          false, // User must choose an option, cannot tap outside
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Confirm PERMANENTLY Delete All'),
+          content: const Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'WARNING: This action is irreversible!',
+                style:
+                    TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+              ),
+              SizedBox(height: 10),
+              Text(
+                'Are you absolutely sure you want to PERMANENTLY delete ALL records? '
+                'All data will be lost and cannot be recovered.',
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false); // User canceled
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor:
+                    Colors.red, // Strong warning color for permanent delete
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(true); // User confirmed
+              },
+              child: const Text('PERMANENTLY Delete All'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  /// Shows a confirmation dialog for restoring all records from trash.
+  /// Returns true if the user confirms, false otherwise.
+  Future<bool?> confirmRestoreAllFromTrash(BuildContext context) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          title: const Text('Confirm Restore All Records'),
+          content: const Text(
+            'Are you sure you want to restore ALL records from the trash? '
+            'They will become visible in your main records list again.',
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false); // User canceled
+              },
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context)
+                    .primaryColor, // Use primary color or a suitable "positive" color
+                foregroundColor: Colors.white,
+              ),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(true); // User confirmed
+              },
+              child: const Text('Restore All'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     //? TODO: implement build
@@ -63,81 +185,6 @@ class _PageSettingsState extends State<PageSettings> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: <Widget>[
-          //     // Consumer<SmdbProvider>(
-          //     //   builder: (context, value, child) => ElevatedButton(
-          //     //     style: ButtonStyle(
-          //     //       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-          //     //         RoundedRectangleBorder(
-          //     //           borderRadius: BorderRadius.circular(7.0),
-          //     //         ),
-          //     //       ),
-          //     //     ),
-          //     //     onPressed: () {
-          //     //       for (int i = 0; i < value.allRecords.length; i++) {
-          //     //         value.deleteRecord(SmRecord(
-          //     //           id: value.allRecords[i].id,
-          //     //           name: value.allRecords[i].name,
-          //     //           url: value.allRecords[i].url,
-          //     //           tags: value.allRecords[i].tags,
-          //     //           isDeleted: value.allRecords[i].isDeleted,
-          //     //           dt: value.allRecords[i].dateAdded,
-          //     //         ));
-          //     //       }
-          //     //     },
-          //     //     child: const Row(
-          //     //       children: <Widget>[
-          //     //         Icon(Icons.delete),
-          //     //         SizedBox(width: 15, height: 15),
-          //     //         Text('Clear all records'),
-          //     //       ],
-          //     //     ),
-          //     //   ),
-          //     // ),
-          //     // const SizedBox(width: 10, height: 10),
-          //     ElevatedButton(
-          //       style: ButtonStyle(
-          //         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-          //           RoundedRectangleBorder(
-          //             borderRadius: BorderRadius.circular(7.0),
-          //           ),
-          //         ),
-          //       ),
-          //       child: const Row(
-          //         children: <Widget>[
-          //           Icon(Icons.upload),
-          //           SizedBox(width: 15, height: 15),
-          //           Text('Export'),
-          //         ],
-          //       ),
-          //       onPressed: () {}, // TODO: Implement export
-          //     ),
-          //     const SizedBox(width: 10, height: 10),
-          //     ElevatedButton(
-          //       style: ButtonStyle(
-          //         shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-          //           RoundedRectangleBorder(
-          //             borderRadius: BorderRadius.circular(7.0),
-          //           ),
-          //         ),
-          //       ),
-          //       child: const Row(
-          //         children: <Widget>[
-          //           Icon(Icons.download),
-          //           SizedBox(width: 15, height: 15),
-          //           Text('Import'),
-          //         ],
-          //       ),
-          //       onPressed: () {}, // TODO: Implement import
-          //     ),
-          //     const SizedBox(width: 10, height: 10),
-          //   ],
-          // ),
-          // const SizedBox(height: 20),
-          // TODO: Implement Themes
-
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -172,71 +219,165 @@ class _PageSettingsState extends State<PageSettings> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Consumer<SmdbProvider>(builder: (context, value, child) {
-                return ElevatedButton(
-                  onPressed: () async {
-                    String? fpath = await FilePicker.platform.saveFile(
-                      dialogTitle: 'Save as',
-                      fileName: 'sitemarker.omio',
-                      type: FileType.custom,
-                      allowedExtensions: ['omio'],
-                    );
-                    if (fpath == null) {
-                      // Show error dialog and return
-                      if (context.mounted) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Error'),
-                            content: const Text('File path is null'),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('OK'),
-                              ),
-                            ],
-                          ),
+                return Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        String? fpath = await FilePicker.platform.saveFile(
+                          dialogTitle: 'Save as',
+                          fileName: 'sitemarker.omio',
+                          type: FileType.custom,
+                          allowedExtensions: ['omio'],
                         );
-                      }
-                      return;
-                    }
-                    File file = File(fpath);
-                    file.writeAsStringSync(
-                        DataHelper.convertToOmio(
-                            value.getAllUndeletedRecords()),
-                        mode: FileMode.write);
-                    if (context.mounted) {
-                      showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Success'),
-                          content: const Text('File exported successfully'),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('OK'),
+                        if (fpath == null) {
+                          // Show error dialog and return
+                          if (context.mounted) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: const Text('Error'),
+                                content: const Text('File path is null'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: const Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                          return;
+                        }
+                        File file = File(fpath);
+                        file.writeAsStringSync(
+                            DataHelper.convertToOmio(
+                                value.getAllUndeletedRecords()),
+                            mode: FileMode.write);
+                        if (context.mounted) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Success'),
+                              content: const Text('File exported successfully'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
                             ),
-                          ],
+                          );
+                        }
+                      },
+                      style: ButtonStyle(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                          ),
                         ),
-                      );
-                    }
-                  },
-                  style: ButtonStyle(
-                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(7.0),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.upload),
+                          Text("Export records as omio file")
+                        ],
                       ),
                     ),
-                  ),
-                  child: const Row(
-                    children: [
-                      Icon(Icons.upload),
-                      Text("Export records as omio file")
-                    ],
-                  ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Performs soft delete on all records
+                        final bool? confirmed =
+                            await confirmSoftDeleteAll(context);
+                        if (confirmed == null || !confirmed) {
+                          return; // User canceled
+                        }
+                        List<SmRecord> records = value.getAllUndeletedRecords();
+                        for (int i = 0; i < records.length; i++) {
+                          value.softDeleteRecord(records[i]);
+                        }
+                      },
+                      style: ButtonStyle(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                          ),
+                        ),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.upload),
+                          Text("Clear all records")
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Performs soft delete on all records
+                        final bool? confirmed =
+                            await confirmRestoreAllFromTrash(context);
+                        if (confirmed == null || !confirmed) {
+                          return; // User canceled
+                        }
+                        List<SmRecord> records = value.getAllDeletedRecords();
+                        for (int i = 0; i < records.length; i++) {
+                          value.toggleDeleteRecord(records[i]);
+                        }
+                      },
+                      style: ButtonStyle(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                          ),
+                        ),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.upload),
+                          Text("Restore all records in trash")
+                        ],
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        // Performs soft delete on all records
+                        final bool? confirmed =
+                            await confirmPermanentDeleteAll(context);
+                        if (confirmed == null || !confirmed) {
+                          return; // User canceled
+                        }
+                        List<SmRecord> records = value.getAllRecords();
+                        for (int i = 0; i < records.length; i++) {
+                          value.deleteRecordPermanently(records[i]);
+                        }
+                      },
+                      style: ButtonStyle(
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(7.0),
+                          ),
+                        ),
+                      ),
+                      child: const Row(
+                        children: [
+                          Icon(Icons.upload),
+                          Text("Permanently delete all records")
+                        ],
+                      ),
+                    ),
+                  ],
                 );
               }),
             ],

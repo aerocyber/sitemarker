@@ -10,20 +10,59 @@ import 'package:sitemarker/ui/pages/view_omio.dart';
 // import 'package:sitemarker/ui/pages/recycle_bin.dart';
 
 class SitemarkerPageView extends StatefulWidget {
-  const SitemarkerPageView({super.key});
+  const SitemarkerPageView({super.key, this.refresh = false});
+  final bool refresh;
 
   @override
   State<SitemarkerPageView> createState() => _SitemarkerPageViewState();
 }
 
 class _SitemarkerPageViewState extends State<SitemarkerPageView> {
+  List<SmRecord> recordsInDB = [];
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().initSizes(context);
 
     return Consumer<SmdbProvider>(
       builder: (context, value, child) {
-        List<SmRecord> recordsInDB = value.getAllUndeletedRecords();
+        recordsInDB = value.getAllUndeletedRecords();
+        if (recordsInDB.isEmpty) {
+          return SafeArea(
+            child: Scaffold(
+              appBar: AppBar(
+                elevation: 10,
+                actions: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.add,
+                      size: 30,
+                    ),
+                    onPressed: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PageAdd(
+                            receivingData: null,
+                          ),
+                        ),
+                      );
+                      setState(() {
+                        recordsInDB = value.getAllUndeletedRecords();
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 20),
+                ],
+              ),
+              body: Center(
+                child: Text('No records found'),
+              ),
+            ),
+          );
+        }
+        if (recordsInDB.isNotEmpty) {
+          recordsInDB.sort((a, b) => a.name.compareTo(b.name));
+        }
 
         return SafeArea(
           child: Scaffold(

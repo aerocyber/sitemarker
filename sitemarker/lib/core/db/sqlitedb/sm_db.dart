@@ -137,6 +137,32 @@ class SitemarkerDB extends _$SitemarkerDB {
 
     return update(sitemarkerRecords).replace(rec);
   }
+
+  /// Soft delete a record
+  Future<bool> softDelete(SitemarkerRecord record) {
+    SitemarkerRecord rec = SitemarkerRecord(
+      id: record.id,
+      name: record.name,
+      url: record.url,
+      tags: record.tags,
+      isDeleted: true,
+      dateAdded: record.dateAdded,
+    );
+
+    return update(sitemarkerRecords).replace(rec);
+  }
+
+  /// Get deleted records
+  Future<List<SitemarkerRecord>> getDeletedRecords() {
+    return (select(sitemarkerRecords)..where((t) => t.isDeleted.equals(true)))
+        .get();
+  }
+
+  /// Get undeleted records
+  Future<List<SitemarkerRecord>> getUndeletedRecords() {
+    return (select(sitemarkerRecords)..where((t) => t.isDeleted.equals(false)))
+        .get();
+  }
 }
 
 /// Schema definition

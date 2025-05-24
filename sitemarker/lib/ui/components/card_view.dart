@@ -3,16 +3,12 @@ import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/ui/pages/page_details.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
-import 'package:sitemarker/ui/pages/page_edit.dart';
-import 'package:provider/provider.dart';
-import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:toastification/toastification.dart';
 
-class CardBookmark extends StatelessWidget {
+class CardBookmarkView extends StatelessWidget {
   final SmRecord record;
-  final VoidCallback? onDelete;
 
-  const CardBookmark({required this.record, this.onDelete, super.key});
+  const CardBookmarkView({required this.record, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -182,68 +178,13 @@ class CardBookmark extends StatelessWidget {
               width: 10,
             ),
             IconButton(
-              icon: const Icon(Icons.edit),
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (context) => PageEdit(record: record),
-                  ),
-                );
-              }, // TODO: Implement button
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                Provider.of<SmdbProvider>(context, listen: false)
-                    .softDeleteRecord(record);
-
-                toastification.show(
-                  context: context,
-                  icon: Icon(Icons.close),
-                  type: ToastificationType.error,
-                  style: ToastificationStyle.flatColored,
-                  title: Text("Moved to trash"),
-                  description: Text(
-                      "The record with name ${record.name} has been moved to the trash"),
-                  alignment: Alignment.bottomCenter,
-                  autoCloseDuration: const Duration(seconds: 3),
-                  animationBuilder: (
-                    context,
-                    animation,
-                    alignment,
-                    child,
-                  ) {
-                    return ScaleTransition(
-                      scale: animation,
-                      child: child,
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(12.0),
-                  boxShadow: highModeShadow,
-                  showProgressBar: true,
-                  closeButtonShowType: CloseButtonShowType.onHover,
-                  dragToClose: true,
-                  applyBlurEffect: true,
-                );
-
-                if (onDelete != null) {
-                  onDelete!();
-                }
-              },
-            ),
-            SizedBox(
-              width: 10,
-            ),
-            IconButton(
               icon: const Icon(Icons.info),
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (context) => PageDetails(
                       record: record,
+                      isEditable: false,
                     ),
                   ),
                 );

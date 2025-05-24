@@ -31,20 +31,21 @@ class SmdbProvider extends ChangeNotifier {
 
   /// Load the values from db. Not to be called from outside the class
   void init() async {
-    allRecords = await db.allRecords;
-    for (int i = 0; i < allRecords.length; i++) {
-      if (allRecords[i].isDeleted) {
-        deletedRecords.add(allRecords[i]);
-      } else {
-        _records.add(allRecords[i]);
-      }
-    }
+    populate();
     notifyListeners();
   }
 
   SmdbProvider() {
     db = SitemarkerDB();
     init();
+  }
+
+  populate() async {
+    allRecords = await db.allRecords;
+    _records =
+        allRecords.where((element) => element.isDeleted == false).toList();
+    deletedRecords =
+        allRecords.where((element) => element.isDeleted == true).toList();
   }
 
   /// Get the default id to be used. Called internally.
@@ -65,27 +66,24 @@ class SmdbProvider extends ChangeNotifier {
       isDeleted: false,
       dateAdded: record.dt,
     );
-    _records.add(rec);
-    allRecords.add(rec);
     db.insertRecord(rec);
+    populate();
+    notifyListeners();
+  }
+
+  /// toggle delete a record
+  void toggleDeleteRecord(SmRecord record) async {
+    final rec = await db.getRecordsByName(record.name);
+    db.toggleDelete(rec.first);
+    populate();
     notifyListeners();
   }
 
   /// Soft delete a record
-  void deleteRecord(SmRecord record) async {
+  void softDeleteRecord(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
-    db.toggleDelete(rec.first);
-    deletedRecords.add(rec.first);
-    _records.remove(rec.first);
-    allRecords.remove(rec.first);
-    allRecords.add(SitemarkerRecord(
-      id: rec.first.id,
-      name: rec.first.name,
-      url: rec.first.url,
-      tags: rec.first.tags,
-      dateAdded: rec.first.dateAdded,
-      isDeleted: rec.first.isDeleted,
-    ));
+    db.softDelete(rec.first);
+    populate();
     notifyListeners();
   }
 
@@ -99,8 +97,7 @@ class SmdbProvider extends ChangeNotifier {
       isDeleted: record.isDeleted!,
       dateAdded: record.dt,
     ));
-    // TODO: Update allRecords and _records
-    _records = await db.allRecords;
+    populate();
     notifyListeners();
   }
 
@@ -144,7 +141,7 @@ class SmdbProvider extends ChangeNotifier {
       _records.add(smr);
       await db.insertRecord(smr);
     }
-
+    populate();
     notifyListeners();
   }
 
@@ -172,22 +169,10 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   // Implement import from omio file
+  // THIS IS THE CORRECTED CODE FOR SmdbProvider.importFromOmioFile
+// Please use this version
   importFromOmioFile(File f) async {
     List<SmRecord> recs;
-    // FilePickerResult? result = await FilePicker.platform.pickFiles(
-    //   allowedExtensions: ['omio'],
-    //   dialogTitle: 'Select an omio bookmarks file',
-    //   allowMultiple: false,
-    //   initialDirectory: (await getApplicationDocumentsDirectory()).path,
-    //   lockParentWindow: true,
-    //   type: FileType.custom,
-    // );
-    // if (result == null) {
-    //   // User cancelled it
-    //   throw Exception('User cancelled');
-    // }
-
-    // File f = File(result.files.single.path!);
 
     try {
       recs = DataHelper.fromOmio(await f.readAsString());
@@ -197,46 +182,53 @@ class SmdbProvider extends ChangeNotifier {
 
     _importDups = [];
     _successImport = 0;
-    bool dup = false;
+
+    // Use a Set to track duplicate records encountered in the current batch
+    // This prevents adding the same conceptual duplicate multiple times to _importDups
+    Set<String> uniqueDuplicateKeys = {};
 
     for (int i = 0; i < recs.length; i++) {
-      if ((await db.getRecordsByName(recs[i].name)).isNotEmpty) {
-        dup = false;
-        for (int idps = 0; idps < _importDups.length; idps++) {
-          if (_importDups[idps].name == recs[i].name ||
-              _importDups[idps].url == recs[i].url) {
-            dup = true;
-            break;
-          }
+      final currentRecord = recs[i];
+      // A key for the current record, useful for the Set. Trim to handle whitespace.
+      final recordKey =
+          '${currentRecord.name.trim()}-${currentRecord.url.trim()}';
+
+      // Check if a record with the same name exists in the database
+      final dbRecordsByName = await db.getRecordsByName(currentRecord.name);
+      // Check if a record with the same URL exists in the database
+      final dbRecordsByURL = await db.getRecordsByURL(currentRecord.url);
+
+      // If ANY database duplicate is found (by name OR by URL)
+      if (dbRecordsByName.isNotEmpty || dbRecordsByURL.isNotEmpty) {
+        // This record is a duplicate against the database.
+        // Now, check if we've already added this *specific duplicate* to our _importDups list in this batch.
+        if (!uniqueDuplicateKeys.contains(recordKey)) {
+          _importDups.add(currentRecord);
+          uniqueDuplicateKeys
+              .add(recordKey); // Mark as added to the duplicates list
         }
-        if (!dup) _importDups.add(recs[i]);
-        continue;
-      } else if ((await db.getRecordsByURL(recs[i].url)).isNotEmpty) {
-        dup = false;
-        for (int idps = 0; idps < _importDups.length; idps++) {
-          if (_importDups[idps].name == recs[i].name ||
-              _importDups[idps].url == recs[i].url) {
-            dup = true;
-            break;
-          }
-        }
-        if (!dup) _importDups.add(recs[i]);
-        continue;
+        // Do NOT increment _successImport or insert into DB if it's a duplicate
+      } else {
+        // This record is NOT a duplicate in the database, so import it
+        _successImport++;
+        SitemarkerRecord smr = SitemarkerRecord(
+          id: getDefaultId(), // Ensure this generates a unique ID
+          name: currentRecord.name,
+          url: currentRecord.url,
+          tags: currentRecord.tags,
+          isDeleted: false,
+          dateAdded: currentRecord.dt,
+        );
+        _records.add(
+            smr); // Add to in-memory list (if _records is your main data source)
+        await db.insertRecord(smr); // Insert into the database
       }
-      _successImport++;
-      SitemarkerRecord smr = SitemarkerRecord(
-        id: getDefaultId(),
-        name: recs[i].name,
-        url: recs[i].url,
-        tags: recs[i].tags,
-        isDeleted: false,
-        dateAdded: recs[i].dt,
-      );
-      _records.add(smr);
-      await db.insertRecord(smr);
     }
 
+    populate();
     notifyListeners();
+    // print(
+    //     "ImportDups: $_importDups"); // Now this should correctly show duplicates
   }
 
   // Implement export to omio file
@@ -264,68 +256,54 @@ class SmdbProvider extends ChangeNotifier {
 
   /// Get all the records as a List of SmRecord
   List<SmRecord> getAllRecords() {
-    List<SmRecord> recordsList = [];
-    for (int i = 0; i < allRecords.length; i++) {
-      recordsList.add(
-        SmRecord(
-          id: allRecords[i].id,
-          name: allRecords[i].name,
-          url: allRecords[i].url,
-          dt: allRecords[i].dateAdded,
-          tags: allRecords[i].tags,
-        ),
-      );
-    }
-    return recordsList;
+    return allRecords
+        .map(
+          (e) => SmRecord(
+            id: e.id,
+            name: e.name,
+            url: e.url,
+            dt: e.dateAdded,
+            tags: e.tags,
+          ),
+        )
+        .toList();
   }
 
   /// Get all the undeleted records as a List of SmRecord
   List<SmRecord> getAllUndeletedRecords() {
-    List<SmRecord> recordsList = [];
-    for (int i = 0; i < allRecords.length; i++) {
-      if (allRecords[i].isDeleted == true) {
-        continue;
-      }
-      recordsList.add(
-        SmRecord(
-          id: allRecords[i].id,
-          name: allRecords[i].name,
-          url: allRecords[i].url,
-          dt: allRecords[i].dateAdded,
-          tags: allRecords[i].tags,
-        ),
-      );
-    }
-    return recordsList;
+    return _records
+        .map(
+          (e) => SmRecord(
+            id: e.id,
+            name: e.name,
+            url: e.url,
+            dt: e.dateAdded,
+            tags: e.tags,
+          ),
+        )
+        .toList();
   }
 
   /// Get all the undeleted records as a List of SmRecord
   List<SmRecord> getAllDeletedRecords() {
-    List<SmRecord> recordsList = [];
-    for (int i = 0; i < deletedRecords.length; i++) {
-      // if (allRecords[i].isDeleted == false) {
-      //   continue;
-      // }
-      recordsList.add(
-        SmRecord(
-          id: deletedRecords[i].id,
-          name: deletedRecords[i].name,
-          url: deletedRecords[i].url,
-          dt: deletedRecords[i].dateAdded,
-          tags: deletedRecords[i].tags,
-        ),
-      );
-    }
-    return recordsList;
+    return deletedRecords
+        .map(
+          (e) => SmRecord(
+            id: e.id,
+            name: e.name,
+            url: e.url,
+            dt: e.dateAdded,
+            tags: e.tags,
+          ),
+        )
+        .toList();
   }
 
   /// Perma delete record
   void deleteRecordPermanently(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
     db.hardDelete(rec.first);
-    // deletedRecords.add(rec.first);
-    _records.remove(rec.first);
-    allRecords.remove(rec.first);
+    populate();
     notifyListeners();
   }
 }

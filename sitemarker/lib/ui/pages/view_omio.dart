@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sitemarker/core/data_helper.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
-import 'package:sitemarker/ui/components/card_bookmark.dart';
+import 'package:sitemarker/ui/components/card_view.dart';
 
 class SitemarkerPageViewOmio extends StatefulWidget {
   const SitemarkerPageViewOmio({super.key});
@@ -25,17 +25,9 @@ class _SitemarkerPageViewOmioState extends State<SitemarkerPageViewOmio> {
   int _successImportCount = 0;
   String _statusMessage = ''; // To display general messages
 
-  @override
-  void initState() {
-    super.initState();
-    // Initialize data to empty on start
-    _recordsToDisplay = [];
-    _successImportCount = 0;
-    _statusMessage = '';
-  }
-
   // Unified function to process the selected file based on mode
-  Future<void> _processFile(File file, bool importMode) async {
+  Future<void> _processFile(
+      File file, bool importMode, SmdbProvider smdbProvider) async {
     setState(() {
       _isLoading = true; // Show loading indicator
       fpath = file; // Store the file path
@@ -50,13 +42,13 @@ class _SitemarkerPageViewOmioState extends State<SitemarkerPageViewOmio> {
       _recordsToDisplay = DataHelper.fromOmio(fileContent);
 
       if (importMode) {
-        final smdbProvider = Provider.of<SmdbProvider>(context, listen: false);
         // Perform the import operation
-        smdbProvider.importFromOmioFile(file); // Pass the File object
+        await smdbProvider.importFromOmioFile(file); // Pass the File object
 
         setState(() {
           _successImportCount = smdbProvider.successImport;
-          _recordsToDisplay = smdbProvider.importDups; // Duplicates are the records to display
+          _recordsToDisplay =
+              smdbProvider.importDups; // Duplicates are the records to display
           _statusMessage = "Import complete.";
           _isLoading = false;
         });
@@ -75,9 +67,11 @@ class _SitemarkerPageViewOmioState extends State<SitemarkerPageViewOmio> {
       });
       print('Error: $e');
       // Optionally show a SnackBar or AlertDialog for the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error processing file: $e')),
-      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error processing file: $e')),
+        );
+      }
     }
   }
 
@@ -92,49 +86,59 @@ class _SitemarkerPageViewOmioState extends State<SitemarkerPageViewOmio> {
             title: const Text("Sitemarker"),
             elevation: 10,
           ),
-          body: CustomScrollView( // Use CustomScrollView for full scrollability
+          body: CustomScrollView(
+            // Use CustomScrollView for full scrollability
             slivers: [
-              SliverToBoxAdapter( // For non-scrollable content above the list
+              SliverToBoxAdapter(
+                // For non-scrollable content above the list
                 child: Padding(
                   padding: const EdgeInsets.all(16.0), // Add some padding
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      if (isImporting) ...[ // Content specific to importing
+                      if (isImporting) ...[
+                        // Content specific to importing
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Icon(Icons.check),
                             const SizedBox(width: 10),
-                            Text("Imported $_successImportCount records successfully."),
+                            Text(
+                                "Imported $_successImportCount records successfully."),
                           ],
                         ),
                         const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.info_outline), // Changed icon for duplicates
+                            const Icon(Icons
+                                .info_outline), // Changed icon for duplicates
                             const SizedBox(width: 10),
-                            Text("${_recordsToDisplay.length} duplicate records found."), // _recordsToDisplay now holds duplicates
+                            Text(
+                                "${_recordsToDisplay.length} duplicate records found."), // _recordsToDisplay now holds duplicates
                           ],
                         ),
                         const SizedBox(height: 25),
-                      ] else ...[ // Content specific to viewing
+                      ] else ...[
+                        // Content specific to viewing
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             const Icon(Icons.check),
                             const SizedBox(width: 10),
-                            Text("Found ${_recordsToDisplay.length} records in the file."),
+                            Text(
+                                "Found ${_recordsToDisplay.length} records in the file."),
                           ],
                         ),
                         const SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.folder_open), // Changed icon for file location
+                            const Icon(Icons
+                                .folder_open), // Changed icon for file location
                             const SizedBox(width: 10),
-                            Text("File location: ${fpath!.absolute.path}"), // Display the file path
+                            Text(
+                                "File location: ${fpath!.absolute.path}"), // Display the file path
                           ],
                         ),
                         const SizedBox(height: 25),
@@ -144,8 +148,10 @@ class _SitemarkerPageViewOmioState extends State<SitemarkerPageViewOmio> {
                         thickness: 3,
                         color: Theme.of(context).disabledColor,
                       ),
-                      const SizedBox(height: 10), // Space before the list starts
-                      if (_recordsToDisplay.isEmpty) // Message if no records to display
+                      const SizedBox(
+                          height: 10), // Space before the list starts
+                      if (_recordsToDisplay
+                          .isEmpty) // Message if no records to display
                         Text(
                           isImporting
                               ? "All records imported successfully, no duplicates found."
@@ -160,12 +166,15 @@ class _SitemarkerPageViewOmioState extends State<SitemarkerPageViewOmio> {
               ),
               // Only show SliverList if there are records to display
               if (_recordsToDisplay.isNotEmpty)
-                SliverList( // For the scrollable list of duplicates/viewed records
+                SliverList(
+                  // For the scrollable list of duplicates/viewed records
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
-                        child: CardBookmark(record: _recordsToDisplay[index]),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 5.0),
+                        child:
+                            CardBookmarkView(record: _recordsToDisplay[index]),
                       );
                     },
                     childCount: _recordsToDisplay.length,
@@ -206,93 +215,109 @@ class _SitemarkerPageViewOmioState extends State<SitemarkerPageViewOmio> {
             elevation: 10,
           ),
           body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const SizedBox(height: 20),
-                Row(
+            child: Consumer<SmdbProvider>(
+              builder: (context, value, child) {
+                return Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        minimumSize: const WidgetStatePropertyAll(Size(100, 50)),
-                        shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      ),
-                      onPressed: () async {
-                        FilePickerResult? result =
-                            await FilePicker.platform.pickFiles(
-                          type: FileType.custom,
-                          allowedExtensions: ['omio'],
-                        );
-                        if (result != null) {
-                          await _processFile(File(result.files.single.path!), true); // true for import mode
-                        }
-                      },
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.file_download,
-                            size: 20,
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "Import from Omio File",
-                            style: TextStyle(
-                              fontSize: 18,
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            minimumSize:
+                                const WidgetStatePropertyAll(Size(100, 50)),
+                            shape:
+                                WidgetStatePropertyAll<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ElevatedButton(
-                      style: ButtonStyle(
-                        minimumSize: const WidgetStatePropertyAll(Size(100, 50)),
-                        shape: WidgetStatePropertyAll<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                          onPressed: () async {
+                            FilePickerResult? result =
+                                await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['omio'],
+                            );
+                            if (result != null) {
+                              await _processFile(
+                                File(result.files.single.path!),
+                                true,
+                                value,
+                              ); // true for import mode
+                            }
+                          },
+                          child: const Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.file_download,
+                                size: 20,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "Import from Omio File",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                      onPressed: () async {
-                        FilePickerResult? result =
-                            await FilePicker.platform.pickFiles(
-                          type: FileType.custom,
-                          allowedExtensions: ['omio'],
-                        );
-                        if (result != null) {
-                          await _processFile(File(result.files.single.path!), false); // false for view mode
-                        }
-                      },
-                      child: const Row(
-                        children: [
-                          Icon(
-                            Icons.file_present,
-                            size: 20,
-                          ),
-                          SizedBox(width: 10),
-                          Text(
-                            "View Omio File",
-                            style: TextStyle(
-                              fontSize: 18,
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            minimumSize:
+                                const WidgetStatePropertyAll(Size(100, 50)),
+                            shape:
+                                WidgetStatePropertyAll<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                             ),
                           ),
-                        ],
-                      ),
+                          onPressed: () async {
+                            FilePickerResult? result =
+                                await FilePicker.platform.pickFiles(
+                              type: FileType.custom,
+                              allowedExtensions: ['omio'],
+                            );
+                            if (result != null) {
+                              await _processFile(
+                                File(result.files.single.path!),
+                                false,
+                                value,
+                              ); // false for view mode
+                            }
+                          },
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.file_present,
+                                size: 20,
+                              ),
+                              SizedBox(width: 10),
+                              Text(
+                                "View Omio File",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                ),
-              ],
+                );
+              },
             ),
           ),
         ),

@@ -6,10 +6,20 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:toastification/toastification.dart';
 
-class PageDetails extends StatelessWidget {
+class PageDetails extends StatefulWidget {
   final SmRecord record;
-  const PageDetails({super.key, required this.record});
+  final bool isEditable;
+  const PageDetails({
+    super.key,
+    required this.record,
+    this.isEditable = true,
+  });
 
+  @override
+  State<PageDetails> createState() => _PageDetailsState();
+}
+
+class _PageDetailsState extends State<PageDetails> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().initSizes(context);
@@ -30,25 +40,26 @@ class PageDetails extends StatelessWidget {
           ],
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.edit,
-              size: 22,
-            ),
-            onPressed: () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PageEdit(
-                    record: record,
+          if (widget.isEditable)
+            IconButton(
+              icon: Icon(
+                Icons.edit,
+                size: 22,
+              ),
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PageEdit(
+                      record: widget.record,
+                    ),
                   ),
-                ),
-              );
-              if (context.mounted) {
-                Navigator.of(context).popUntil((r) => r.isFirst);
-              }
-              // TODO: Implement the editing stuff
-            },
-          ),
+                );
+                if (context.mounted) {
+                  Navigator.of(context).popUntil((r) => r.isFirst);
+                }
+                // TODO: Implement the editing stuff
+              },
+            ),
           const SizedBox(width: 20),
           IconButton(
             icon: Icon(
@@ -56,17 +67,17 @@ class PageDetails extends StatelessWidget {
               size: 22,
             ),
             onPressed: () {
-              launchUrl(Uri.parse(record.url).scheme.isEmpty
-                  ? Uri.parse('https://${record.url}')
-                  : Uri.parse(record.url));
+              launchUrl(Uri.parse(widget.record.url).scheme.isEmpty
+                  ? Uri.parse('https://${widget.record.url}')
+                  : Uri.parse(widget.record.url));
               toastification.show(
                 icon: Icon(Icons.check),
                 context: context,
                 type: ToastificationType.success,
                 style: ToastificationStyle.flatColored,
                 title: Text("Opened in new tab!!"),
-                description:
-                    Text("${record.url} has been opened in a new browser tab!"),
+                description: Text(
+                    "${widget.record.url} has been opened in a new browser tab!"),
                 alignment: Alignment.bottomCenter,
                 autoCloseDuration: const Duration(seconds: 3),
                 animationBuilder: (
@@ -96,7 +107,7 @@ class PageDetails extends StatelessWidget {
               size: 22,
             ),
             onPressed: () {
-              Clipboard.setData(ClipboardData(text: record.url));
+              Clipboard.setData(ClipboardData(text: widget.record.url));
               toastification.show(
                 context: context,
                 icon: Icon(Icons.check),
@@ -104,7 +115,7 @@ class PageDetails extends StatelessWidget {
                 style: ToastificationStyle.flatColored,
                 title: Text("Copied successfully!"),
                 description:
-                    Text("${record.url} has been copied to clipboard!"),
+                    Text("${widget.record.url} has been copied to clipboard!"),
                 alignment: Alignment.bottomCenter,
                 autoCloseDuration: const Duration(seconds: 3),
                 animationBuilder: (
@@ -162,7 +173,7 @@ class PageDetails extends StatelessWidget {
                         child: Row(
                           children: [
                             Text(
-                              record.name,
+                              widget.record.name,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.onPrimary,
                                 fontSize: 25,
@@ -206,7 +217,7 @@ class PageDetails extends StatelessWidget {
                         child: Row(
                           children: [
                             Text(
-                              record.url,
+                              widget.record.url,
                               style: TextStyle(
                                 color: Theme.of(context).colorScheme.onPrimary,
                                 fontSize: 25,
@@ -245,23 +256,31 @@ class PageDetails extends StatelessWidget {
                         ),
                       ),
                       SizedBox(height: 10),
-                      record.tags.isNotEmpty
+                      widget.record.tags.isNotEmpty
                           ? SingleChildScrollView(
                               scrollDirection: Axis.horizontal,
                               child: Row(
                                 children: <Widget>[
                                   for (int i = 0;
-                                      i < record.tags.split(',').length;
+                                      i < widget.record.tags.split(',').length;
                                       i++)
-                                    record.tags.split(',')[i].trim().isNotEmpty
+                                    widget.record.tags
+                                            .split(',')[i]
+                                            .trim()
+                                            .isNotEmpty
                                         ? Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Chip(
                                               label: Text(
-                                                record.tags
+                                                widget.record.tags
                                                     .split(',')[i]
                                                     .trim(),
-                                                style: TextStyle(fontSize: 18),
+                                                style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary,
+                                                ),
                                               ),
                                             ),
                                           )
@@ -269,11 +288,12 @@ class PageDetails extends StatelessWidget {
                                 ],
                               ),
                             )
-                          : const Text(
+                          : Text(
                               'Not tagged',
                               style: TextStyle(
                                 fontStyle: FontStyle.italic,
-                                fontSize: 15,
+                                fontSize: 18,
+                                color: Theme.of(context).colorScheme.onSecondary,
                               ),
                             ),
                     ],
