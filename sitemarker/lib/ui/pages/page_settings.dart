@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:sitemarker/core/data_helper.dart';
 import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
 import 'dart:io';
@@ -23,12 +24,126 @@ class PageSettings extends StatefulWidget {
   State<PageSettings> createState() => _PageSettingsState();
 }
 
-class _PageSettingsState extends State<PageSettings> {
+class _PageSettingsState extends State<PageSettings>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _DropDownThemeModeController =
       TextEditingController();
 
   late SitemarkerTheme theme;
-  final String version = '3.0.0'; // TODO: Update version
+  String version = '...'; // TODO: Update version
+
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+  bool _isCheckingForUpdate = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _initPackageInfo();
+
+    _animationController = AnimationController(
+      vsync: this, // 'this' refers to SingleTickerProviderStateMixin
+      duration: const Duration(seconds: 1), // Duration of one full spin
+    );
+    _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
+  }
+
+  @override
+  void dispose() {
+    _animationController
+        .dispose(); // Dispose the controller to prevent memory leaks
+    super.dispose();
+  }
+
+  Future<void> _checkForUpdates() async {
+    setState(() {
+      _isCheckingForUpdate = true;
+    });
+    _animationController.repeat(); // Start spinning indefinitely
+
+    Uri url = Uri.parse(
+        'https://api.github.com/repos/aerocyber/sitemarker/releases/latest');
+    try {
+      http.Response r = await http.get(url);
+      if (r.statusCode == 200) {
+        Map<dynamic, dynamic> data = json.decode(r.body);
+        if (version.compareTo(data["tag_name"]) == -1 &&
+            data['prerelease'] == false) {
+          if (mounted) {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("Update Available"),
+                content: const Text(
+                  "A new version of Sitemarker is available.",
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      launchUrl(Uri.parse(data["html_url"]));
+                    },
+                    child: const Text("Visit release page"),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("OK"),
+                  ),
+                ],
+              ),
+            );
+          }
+        } else {
+          if (!kReleaseMode) {
+            // print('Latest version is already installed'); // Use print for debug
+            // print(data["tag_name"]); // Use print for debug
+          }
+          if (context.mounted) {
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("No updates available"),
+                content: const Text(
+                  "Congrats! You are already using the latest version of Sitemarker.",
+                ),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text("OK"),
+                  ),
+                ],
+              ),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      // print('Error checking for updates: $e'); // Use print for debug
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content:
+                  Text('Failed to check for updates. Please try again later.')),
+        );
+      }
+    } finally {
+      _animationController.stop(); // Stop spinning
+      setState(() {
+        _isCheckingForUpdate = false;
+      });
+    }
+  }
+
+  Future<void> _initPackageInfo() async {
+    final PackageInfo info = await PackageInfo.fromPlatform();
+    setState(() {
+      version = info.version.split('-')[0];
+    });
+  }
 
   handleDropdown(SitemarkerTheme? selection) {
     if (selection == null) {
@@ -312,7 +427,10 @@ class _PageSettingsState extends State<PageSettings> {
                       ),
                       child: const Row(
                         children: [
-                          Icon(Icons.upload),
+                          Icon(Icons.clear),
+                          SizedBox(
+                            width: 10,
+                          ),
                           Text("Clear all records")
                         ],
                       ),
@@ -342,7 +460,10 @@ class _PageSettingsState extends State<PageSettings> {
                       ),
                       child: const Row(
                         children: [
-                          Icon(Icons.upload),
+                          Icon(Icons.restore),
+                          SizedBox(
+                            width: 10,
+                          ),
                           Text("Restore all records in trash")
                         ],
                       ),
@@ -372,7 +493,10 @@ class _PageSettingsState extends State<PageSettings> {
                       ),
                       child: const Row(
                         children: [
-                          Icon(Icons.upload),
+                          Icon(Icons.delete_forever),
+                          SizedBox(
+                            width: 10,
+                          ),
                           Text("Permanently delete all records")
                         ],
                       ),
@@ -501,53 +625,12 @@ class _PageSettingsState extends State<PageSettings> {
               SizedBox(
                 width: 10,
               ),
-              IconButton(
-                onPressed: () async {
-                  Uri url = Uri.parse(
-                      'https://api.github.com/repos/aerocyber/sitemarker/releases/latest');
-                  try {
-                    http.Response r = await http.get(url);
-                    if (r.statusCode == 200) {
-                      Map<dynamic, dynamic> data = json.decode(r.body);
-                      if (version.compareTo(data["tag_name"]) == -1 &&
-                          data['prerelease'] == false) {
-                        if (context.mounted) {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text("Update Available"),
-                              content: Text(
-                                "A new version of Sitemarker is available.",
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    launchUrl(Uri.parse(data["html_url"]));
-                                  },
-                                  child: const Text("Visit release page"),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text("OK"),
-                                ),
-                              ],
-                            ),
-                          );
-                        }
-                      } else {
-                        if (!kReleaseMode) {
-                          print('Latest version is already installed');
-                          print(data["tag_name"]);
-                        }
-                      }
-                    }
-                  } catch (e) {
-                    return;
-                  }
-                },
-                icon: const Icon(Icons.refresh),
+              RotationTransition(
+                turns: _animation,
+                child: IconButton(
+                  onPressed: _isCheckingForUpdate ? null : _checkForUpdates,
+                  icon: const Icon(Icons.refresh),
+                ),
               ),
             ],
           ),
