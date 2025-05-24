@@ -1,9 +1,9 @@
 name: sitemarker
 description: "An open source bookmark manager."
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none'
 
-version: 3.0.0-0
+version: 3.1.0-1 # TODO: Update version number before release. Don't forget to bump the build number as well.
 
 environment:
   sdk: '>=3.2.3 <4.0.0'
@@ -27,7 +27,7 @@ dependencies:
   intl: ^0.20.1
   drift_flutter: ^0.2.2
   html: ^0.15.5
-  file_picker: ^10.1.9 # Make it fetch the latest version after 8.1.4(^8.1.4) after a fix which break Android build is merged
+  file_picker: ^10.1.9
   receive_sharing_intent: ^1.8.1
   toastification: ^3.0.2
   crypto: ^3.0.6

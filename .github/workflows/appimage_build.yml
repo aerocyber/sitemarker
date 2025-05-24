@@ -51,7 +51,7 @@ jobs:
 
           # Install appimage-builder dependencies and UPX, including GTK3 runtime library
           apt update
-          apt install -y python3 python3-pip apt-utils libglib2.0-0 fuse libfuse2 desktop-file-utils libc-bin upx-ucl libgtk-3-0 # <<<< ADDED libgtk-3-0
+          apt install -y python3 python3-pip apt-utils libglib2.0-0 fuse libfuse2 desktop-file-utils libc-bin upx-ucl libgtk-3-0
 
           pip3 install appimage-builder
 
