@@ -15,6 +15,9 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      - name: patchelf installation
+        run: sudo apt update -y && sudo apt install -y patchelf
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -35,7 +38,12 @@ jobs:
             ${{ runner.os }}-flutter-
 
       - name: Build Flutter Linux Executable
-        run: flutter build linux --release --tree-shake-icons --split-debug-info=./build/symbols --debug-symbols=./build/symbols
+        run: |
+          flutter build linux --release --tree-shake-icons --split-debug-info=./build/symbols --debug-symbols=./build/symbols
+          cd build/linux/x64/release/bundle/lib
+          patchelf --set-rpath '$ORIGIN' libsqlite3_flutter_libs_plugin.so
+          patchelf --set-rpath '$ORIGIN' liburl_launcher_linux_plugin.so
+          cd -
 
       - name: Install UPX
         run: |

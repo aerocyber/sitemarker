@@ -1,8 +1,18 @@
 name: sitemarker
-version: 3.0.0
-summary: Bookmarking made elegant
+version: 3.1.0
+summary: Sitemarker: The Ultimate Cross-Platform Bookmark Manager
 description: |
-  Make sharing bookmarks easier using Sitemarker, the bookmark manager.
+  Take control of your digital life with Sitemarker, the intuitive and powerful bookmark manager designed for seamless cross-platform use. Whether you're on Windows, Linux, or macOS, Sitemarker keeps your favorite websites organized, accessible, and up-to-date.
+
+  Key Features:
+
+    Effortless Organization: Categorize and tag your bookmarks for quick retrieval. No more endless scrolling!
+    Smart Search: Find any saved link in an instant with powerful, keyword-based search.
+    Clean & Intuitive Interface: Enjoy a modern, clutter-free design that makes managing your bookmarks a breeze.
+    Stay Updated: Keep your online resources fresh and relevant.
+    Sitemarker simplifies how you interact with the web. Download now and redefine your Browse experience!
+
+
 contact: https://github.com/aerocyber/sitemarker/issues
 issues: https://github.com/aerocyber/sitemarker/issues
 license: Apache-2.0

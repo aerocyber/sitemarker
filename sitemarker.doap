@@ -6,9 +6,19 @@
          xmlns="http://usefulinc.com/ns/doap#">
 
   <name>sitemarker</name>
-  <shortdesc xml:lang="en">An open source bookmark manager.</shortdesc>
+  <shortdesc xml:lang="en">Sitemarker: The Ultimate Cross-Platform Bookmark Manager</shortdesc>
   <description xml:lang="en">
-SiteMarker is an open source bookmark management app for GNOME.
+    Sitemarker: The Ultimate Cross-Platform Bookmark Manager
+
+    Take control of your digital life with Sitemarker, the intuitive and powerful bookmark manager designed for seamless cross-platform use. Whether you're on Windows, Linux, or macOS, Sitemarker keeps your favorite websites organized, accessible, and up-to-date.
+
+    Key Features:
+
+    Effortless Organization: Categorize and tag your bookmarks for quick retrieval. No more endless scrolling!
+    Smart Search: Find any saved link in an instant with powerful, keyword-based search.
+    Clean and Intuitive Interface: Enjoy a modern, clutter-free design that makes managing your bookmarks a breeze.
+    Stay Updated: Keep your online resources fresh and relevant.
+    Sitemarker simplifies how you interact with the web. Download now and redefine your Browse experience!
   </description>
 
   <homepage rdf:resource="https://github.com/aerocyber/sitemarker" />
