@@ -52,6 +52,20 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
                     },
                   ),
                   const SizedBox(width: 20),
+                  IconButton(
+                      onPressed: () async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => SitemarkerPageViewOmio(),
+                          ),
+                        );
+
+                        setState(() {
+                          recordsInDB = value.getAllUndeletedRecords();
+                        });
+                      },
+                      icon: const Icon(Icons.grid_view_rounded, size: 30)),
+                  const SizedBox(width: 20),
                 ],
               ),
               body: Center(
