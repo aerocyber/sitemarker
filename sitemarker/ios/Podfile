@@ -1,0 +1,7 @@
+# Don't ask me what this is. This comes from: [here](https://github.com/miguelpruivo/flutter_file_picker/wiki/Setup#optional-permissions)
+# They're needed for iOS? I am no Apple person. Please open a PR if this is wrong. As always,
+# Sitemarker is NOT officially supported on Mac, iOS and web. 
+Pod::PICKER_MEDIA = false, resp. Pod::PICKER_AUDIO = false, resp
+target 'Runner' do
+    use_frameworks!
+  

@@ -2,7 +2,7 @@
 
 # Set up Flutter
 # Get flutter
-wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.19.6-stable.tar.xz"
+wget "https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.27.0-stable.tar.xz"
 # Decompress it
 tar xf flutter_linux_3.19.6-stable.tar.xz
 # Add it to PATH

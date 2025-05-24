@@ -1,0 +1,7 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          databases:
+            sitemarker_db: lib/core/db/sqlitedb/sm_db.dart
