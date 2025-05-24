@@ -1,0 +1,80 @@
+name: Windows Build & Packaging
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: Cache Flutter Artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Build Flutter Windows Executable
+        run: flutter build windows --release --tree-shake-icons --split-debug-info=./build/symbols --debug-symbols=./build/symbols
+
+      - name: Install UPX
+        run: choco install upx --no-progress
+
+      - name: Compress Windows Executable with UPX
+        run: |
+          $executablePath = "${{ github.workspace }}\build\windows\runner\Release\sitemarker.exe"
+          if (Test-Path $executablePath) {
+              upx --best $executablePath
+          } else {
+              Write-Host "Executable not found at $executablePath. Skipping UPX compression."
+          }
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress
+
+      - name: Create Inno Setup Installer (.exe)
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" "packaging\windows\installer\windows-installer.iss"
+        working-directory: ${{ github.workspace }}
+
+      - name: Create MSIX Package using msix package
+        run: flutter pub run msix:create
+
+      - name: Upload Inno Setup Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-windows-installer
+          path: windows/Output/*.exe
+
+      - name: Upload MSIX Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-windows-msix
+          path: build/windows/runner/MSIX/*.msix
+
+      - name: Upload Windows Debug Symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-windows-debug-symbols
+          path: build/symbols/windows
+

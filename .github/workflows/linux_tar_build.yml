@@ -1,0 +1,82 @@
+name: Linux Tar.xz Package Build
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build_tar_xz:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: Cache Flutter Artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Build Flutter Linux Executable
+        run: flutter build linux --release --tree-shake-icons --split-debug-info=./build/symbols --debug-symbols=./build/symbols
+
+      - name: Install UPX
+        run: |
+          sudo apt update
+          sudo apt install -y upx-ucl
+
+      - name: Compress Linux Executable with UPX
+        run: |
+          executable_path="${{ github.workspace }}/build/linux/x64/release/bundle/sitemarker"
+          if [ -f "$executable_path" ]; then
+              upx --best "$executable_path"
+          else
+              echo "Executable not found at $executable_path. Skipping UPX compression."
+          fi
+
+      - name: Create Linux tar.xz Package
+        run: |
+          APP_NAME="sitemarker" # Your application's executable name
+          VERSION="${{ github.ref_name }}" # Uses the release tag or branch name
+
+          # Define the directory structure for the tarball
+          # This ensures the app is extracted into a clean directory like sitemarker-1.0.0/
+          mkdir -p "$APP_NAME-$VERSION"
+
+          # Copy the Flutter build bundle into the structured directory
+          cp -r build/linux/x64/release/bundle/* "$APP_NAME-$VERSION/"
+
+          # Optional: Add a README or other files to the package root
+          # echo "This is the Sitemarker application version $VERSION." > "$APP_NAME-$VERSION/README.txt"
+
+          # Create the tar.xz archive
+          tar -cJf "$APP_NAME-$VERSION-linux-x64.tar.xz" "$APP_NAME-$VERSION/"
+
+      - name: Upload tar.xz Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-linux-tar-xz
+          path: sitemarker-*-linux-x64.tar.xz 
+
+      - name: Upload Linux Debug Symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-linux-debug-symbols
+          path: build/symbols/linux

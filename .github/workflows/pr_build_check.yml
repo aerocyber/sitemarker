@@ -1,0 +1,128 @@
+name: PR Build & Lint Checks for All Platforms
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+      - stable
+
+jobs:
+  android_pr_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: Cache Flutter Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-pub-cache-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-pub-cache-
+
+      - name: Run Flutter Analyze
+        run: flutter analyze
+
+      - name: Run Flutter Tests
+        run: flutter test
+
+      - name: Check Android Debug Build (Develop Flavor)
+        run: flutter build apk --debug --flavor develop
+
+  windows_pr_check:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: Cache Flutter Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-pub-cache-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-pub-cache-
+
+      - name: Check Windows Debug Build
+        run: flutter build windows --debug
+
+  linux_pr_check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: Cache Flutter Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-pub-cache-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-pub-cache-
+
+      - name: Check Linux Debug Build
+        run: flutter build linux --debug
+
+
+  macos_pr_check:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: Cache Flutter Dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-pub-cache-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-pub-cache-
+
+      - name: Check macOS Debug Build
+        run: flutter build macos --debug

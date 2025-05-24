@@ -1,0 +1,58 @@
+name: Android APK Build
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build_apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: Cache Flutter Artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Build Android APK (Release)
+        run: |
+          flutter build apk --release --flavor prod --split-per-abi --tree-shake-icons --split-debug-info=./build/symbols --debug-symbols=./build/symbols
+          flutter build apk --release --flavor prod --tree-shake-icons --split-debug-info=./build/symbols --debug-symbols=./build/symbols-universal
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-android-apks
+          path: build/app/outputs/flutter-apk/*.apk
+
+      - name: Upload Android Debug Symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-android-debug-symbols
+          path: build/symbols/android
+
+      - name: Upload Universal Debug Symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-android-debug-symbols-universal
+          path: build/symbols-universal/android-universal
