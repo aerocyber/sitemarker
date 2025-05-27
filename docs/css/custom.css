@@ -1,0 +1,437 @@
+/*
+ * Custom CSS for Sitemarker Documentation Landing Page
+ *
+ * This file contains styles to transform a standard MkDocs-Material page
+ * into a visually appealing landing page, utilizing Material Design Icons
+ * and responsive grid layouts.
+ *
+ * Ensure this file is linked in your mkdocs.yml under 'extra_css':
+ *
+ * extra_css:
+ * - css/custom.css
+ * - https://fonts.googleapis.com/icon?family=Material+Icons
+ *
+ * And ensure your index.md uses the corresponding HTML structure and classes.
+ */
+
+
+/* --- Global Resets / Base Adjustments --- */
+
+/* Ensure the main content area has some top padding to avoid content
+   sticking to the header on the header on pages without a visible navigation sidebar
+   (common with navigation.tabs feature). */
+.md-main__inner {
+    padding-top: var(--md-header-height); /* Align content below header */
+}
+
+/* --- Hide TOC & Git Information ONLY on Landing Page --- */
+
+/* When on the homepage (index.md), the <body> element gets the class 'md-page--homepage'.
+   We use this to scope our CSS rules. */
+
+/* Hide the Table of Contents (secondary sidebar) */
+.md-page--homepage .md-sidebar--secondary {
+  display: none;
+}
+
+/* Adjust the grid for the main content area to remove the TOC column on homepage.
+   This ensures the main content expands to fill the space where the TOC would be.
+   Material for MkDocs uses CSS Grid for its main layout (`.md-main__inner`).
+   The default grid typically includes a column for the TOC. By setting that
+   column's width to `0px`, we effectively hide it and let the `1fr` column
+   (your main content) expand to fill the remaining space.
+   The `!important` is used to override Material for MkDocs' default styles.
+*/
+.md-page--homepage .md-main__inner {
+  grid-template-columns: 1fr 0px !important;
+}
+
+/* Hide the Git-related information, feedback, and footer content ONLY on the homepage.
+   This targets multiple common containers for these elements to ensure coverage. */
+.md-page--homepage .md-content__footer,     /* The main footer wrapper */
+.md-page--homepage .md-content__source,     /* 'Last updated' / 'Edit this page' section */
+.md-page--homepage .md-feedback,          /* 'Was this helpful?' section */
+.md-page--homepage .md-source-file         /* Specific div for git-committers plugin output */
+{
+  display: none !important; /* Using !important to ensure override */
+}
+
+
+/* --- Landing Page Specific Styling --- */
+
+/* Main H1 on the landing page */
+.md-content h1:first-of-type {
+    text-align: center;
+    font-size: 3em; /* Larger headline */
+    margin-top: 30px;
+    margin-bottom: 10px;
+    line-height: 1.2;
+    color: var(--md-primary-fg-color); /* Uses primary theme color */
+}
+
+/* Hero Section tagline/description */
+.hero-tagline {
+    text-align: center;
+    font-size: 1.4em;
+    color: var(--md-default-fg-color--light); /* Lighter text color for contrast */
+    margin-bottom: 30px;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Hero Section Buttons Container */
+.hero-buttons {
+    display: flex;
+    justify-content: center; /* Center buttons horizontally */
+    gap: 20px; /* Space between buttons */
+    margin-bottom: 40px;
+    flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+}
+
+/* Bottom Call-to-Action Buttons Container */
+.bottom-cta-buttons {
+    margin-top: 60px;
+    margin-bottom: 60px;
+    display: flex; /* Make it a flex container */
+    justify-content: center; /* Center the buttons */
+    gap: 20px; /* Add space between buttons */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+/* Styling for all common buttons (hero and bottom CTA) */
+.hero-buttons .md-button,
+.bottom-cta-buttons .md-button {
+    font-size: 1.1em;
+    padding: 12px 25px;
+    border-radius: 8px;
+    text-transform: none; /* Prevent uppercase text */
+    font-weight: 600;
+    display: flex; /* Use flexbox for button content (icon + text) */
+    align-items: center; /* Vertically align icon and text */
+    justify-content: center; /* Center content horizontally */
+    min-width: 180px; /* Ensure minimum width for buttons */
+}
+
+/* Styling for Material Icons within these common buttons */
+.hero-buttons .md-button .material-icons,
+.bottom-cta-buttons .md-button .material-icons {
+    margin-right: 8px; /* Space between icon and text */
+    font-size: 1.2em; /* Adjust icon size within button */
+}
+
+/* Specific styling for the primary download button (colors only now) */
+.hero-download-button {
+    background-color: var(--md-accent-fg-color); /* Uses accent theme color */
+    color: var(--md-accent-fg-color--text); /* Text color for accent background */
+}
+
+.hero-download-button:hover {
+    background-color: var(--md-accent-fg-color--light); /* Slightly lighter on hover */
+}
+
+/* Specific styling for the secondary 'Learn More' button (colors only now) */
+.hero-learn-more-button {
+    background-color: var(--md-default-bg-color); /* Uses default background */
+    color: var(--md-typeset-a-color); /* Uses theme's link color */
+    border: 1px solid var(--md-typeset-a-color); /* Border matches link color */
+}
+
+.hero-learn-more-button:hover {
+    background-color: var(--md-default-bg-color--light); /* Slightly lighter on hover */
+}
+
+/* Hero Image Container */
+.hero-image {
+    margin-top: 30px;
+    text-align: center;
+}
+
+/* Hero Image itself */
+.hero-image img {
+    max-width: 90%; /* Adjust maximum width to be responsive */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 12px; /* Slightly rounded corners for aesthetic */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Subtle shadow for depth */
+    display: block; /* Remove extra space below image, treat as block element */
+    margin: 0 auto; /* Center the image horizontally */
+}
+
+/* Hero Image Caption */
+.hero-image figcaption {
+    font-size: 0.85em;
+    color: var(--md-default-fg-color--light);
+    margin-top: 10px;
+    text-align: center; /* Ensure caption is centered */
+}
+
+
+/* --- General Section Headers --- */
+
+/* Styling for H2 headings that introduce main content sections */
+.md-typeset h2 {
+    text-align: center;
+    margin-top: 60px; /* Space above section title */
+    margin-bottom: 30px; /* Space below section title */
+    font-size: 2em;
+    color: var(--md-primary-fg-color); /* Uses primary theme color */
+}
+
+
+/* --- Grid Layout for Cards (Problem, Features, Why Sitemarker sections) --- */
+
+/* Generic container for all grid-based sections */
+.grid-container {
+    display: grid;
+    /* Responsive grid: columns auto-fit, min 280px wide, 1fr for remaining space */
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px; /* Space between grid items */
+    margin-bottom: 40px;
+    max-width: 1000px; /* Max width for the grid to keep it contained */
+    margin-left: auto;
+    margin-right: auto; /* Center the grid container */
+}
+
+/* Styling for individual grid items (cards) */
+.grid-item {
+    padding: 20px;
+    border-radius: 20px; /* Increased border-radius for more circular look */
+    background-color: var(--md-default-bg-color--light); /* Lighter background for cards */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    text-align: center; /* Center content within the card */
+}
+
+/* Styling for H3 headings within cards */
+.grid-item h3 {
+    font-size: 1.5em;
+    color: var(--md-primary-fg-color);
+    margin-bottom: 15px;
+    display: flex; /* Use flexbox for icon and text alignment */
+    align-items: center;
+    justify-content: center; /* Center the icon and text horizontally */
+}
+
+/* Styling for paragraphs within cards */
+.grid-item p {
+    font-size: 1em;
+    color: var(--md-default-fg-color);
+    line-height: 1.6;
+}
+
+/* Icon styling within grid items (for the large icons above H3) */
+.grid-item .material-icons {
+    font-size: 2.5em; /* Larger icons for cards */
+    color: var(--md-accent-fg-color); /* Uses accent theme color for icons */
+    margin-bottom: 10px;
+    display: block; /* Ensure icon is on its own line for centering */
+    width: 100%; /* Take full width for text-align center to work */
+    text-align: center;
+}
+
+/* Icon styling when directly inside an H3 (for smaller icons within headings) */
+.grid-item h3 .material-icons {
+    font-size: 1.2em; /* Smaller if embedded in H3 */
+    margin-right: 8px; /* Space between icon and heading text */
+    margin-bottom: 0; /* Remove extra margin */
+    display: inline-block; /* Keep inline with text */
+    vertical-align: middle; /* Align vertically with text */
+}
+
+
+/* --- Specific Card Styles --- */
+
+/* Specific styling for 'Problem' cards */
+.problem-card {
+    border: 1px solid var(--md-default-fg-color--light); /* Subtle border */
+}
+
+/* Styling for 'Features' cards */
+.features-grid .grid-item {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Slightly more prominent shadow */
+    transition: transform 0.2s ease-in-out; /* Smooth transition for hover effect */
+}
+
+.features-grid .grid-item:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+}
+
+/* Styling for 'Why Sitemarker' cards */
+.why-sitemarker .grid-item {
+    background-color: var(--md-default-bg-color--light);
+    border: 3px solid transparent; /* Set initial border to transparent, consistent thickness */
+    transition: border-color 0.3s ease-in-out, transform 0.2s ease-in-out; /* Smooth transition for exiting hover */
+}
+
+.why-sitemarker .grid-item:hover {
+    transform: translateY(-5px); /* Keep the lift effect */
+    /* Use box-shadow to create the animated border effect */
+    box-shadow:
+        0 0 0 3px rgba(100, 149, 237, 1) inset,  /* Cornflower Blue */
+        0 0 0 3px rgba(138, 43, 226, 1) inset,  /* Blue Violet */
+        0 0 0 3px rgba(60, 179, 113, 1) inset,  /* Medium Sea Green */
+        0 0 0 3px rgba(255, 105, 180, 1) inset, /* Hot Pink */
+        0 0 0 3px rgba(0, 206, 209, 1) inset;   /* Dark Cyan */
+    animation: glowing-border 5s linear infinite; /* Apply the continuous animation */
+}
+
+/* Keyframes for the continuous glowing border animation */
+@keyframes glowing-border {
+    0% {
+        box-shadow: 0 0 0 3px rgba(100, 149, 237, 1) inset; /* Cornflower Blue */
+    }
+    20% {
+        box-shadow: 0 0 0 3px rgba(138, 43, 226, 1) inset; /* Blue Violet */
+    }
+    40% {
+        box-shadow: 0 0 0 3px rgba(60, 179, 113, 1) inset; /* Medium Sea Green */
+    }
+    60% {
+        box-shadow: 0 0 0 3px rgba(255, 105, 180, 1) inset; /* Hot Pink */
+    }
+    80% {
+        box-shadow: 0 0 0 3px rgba(0, 206, 209, 1) inset;   /* Dark Cyan */
+    }
+    100% {
+        box-shadow: 0 0 0 3px rgba(100, 149, 237, 1) inset; /* Loop back to Cornflower Blue */
+    }
+}
+
+
+/* --- Footer Badges Styling --- */
+.footer-badges {
+    text-align: center; /* Center the block of badges */
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.footer-badges p { /* Target paragraphs inside footer-badges for spacing */
+    margin: 5px 0; /* Add slight vertical space between rows of badges */
+    padding: 0;
+    line-height: 1; /* Remove extra line height from paragraphs */
+}
+
+/* Increase space after the Open Source Badge (License) paragraph */
+.footer-badges p:nth-of-type(2) { /* This targets the <p> containing the License badge */
+    margin-bottom: 20px; /* Increased space to 20px */
+}
+
+.footer-badges a {
+    display: inline-block; /* Treat links as blocks for margin and alignment */
+    margin: 0 8px; /* Horizontal space between badge links */
+    vertical-align: middle; /* Align badge images within their links */
+}
+
+.footer-badges img {
+    height: 45px; /* Standardized height for most badges */
+    max-height: 45px;
+    width: auto; /* Maintain aspect ratio */
+    display: inline-block; /* Keep them inline with each other within the paragraph */
+    box-shadow: none; /* Ensure no unwanted shadows */
+    border-radius: 0; /* Ensure no unwanted border-radius */
+    margin: 0; /* Reset default image margins */
+}
+
+/* Specific size adjustments for certain badge types to make them look more consistent */
+.footer-badges img[src*="flathub.org/api/badge"],
+.footer-badges img[src*="snapcraft.io/static/images/badges"],
+.footer-badges img[src*="buymeacoffee.com/assets/img/custom_images"] {
+    height: 50px; /* These are usually taller */
+    max-height: 50px;
+    vertical-align: middle;
+}
+
+.footer-badges img[src*="gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButton.svg"] {
+    height: 40px; /* This one is usually shorter */
+    max-height: 40px;
+    vertical-align: middle;
+}
+
+.footer-badges img[src*="img.shields.io/github/license"],
+.footer-badges img[src*="img.shields.io/badge/GitHub%20Sponsors"] {
+    height: 30px; /* Shields.io badges are typically smaller */
+    max-height: 30px;
+    transform: translateY(8px); /* Nudge down to align with taller badges */
+}
+
+
+/* --- Responsive Adjustments (Media Queries) --- */
+
+@media (max-width: 768px) {
+    /* Adjust main H1 font size on smaller screens */
+    .md-content h1:first-of-type {
+        font-size: 2.2em;
+    }
+
+    /* Adjust tagline font size on smaller screens */
+    .hero-tagline {
+        font-size: 1.1em;
+    }
+
+    /* Stack hero buttons vertically on smaller screens */
+    .hero-buttons {
+        flex-direction: column;
+        gap: 15px; /* Adjust gap when stacked */
+    }
+
+    /* Stack bottom CTA buttons vertically on smaller screens */
+    .bottom-cta-buttons {
+        flex-direction: column;
+        gap: 15px; /* Adjust gap when stacked */
+    }
+
+    /* Make hero buttons wider on smaller screens */
+    .hero-buttons .md-button,
+    .bottom-cta-buttons .md-button {
+        width: 80%;
+        margin: 0 auto; /* Center stacked buttons */
+    }
+
+    /* Stack grid containers (problem, features, why sitemarker) vertically on small screens */
+    .grid-container {
+        grid-template-columns: 1fr; /* Single column layout */
+    }
+
+    /* Adjust H2 font size on smaller screens */
+    .md-content h2 {
+        font-size: 1.8em;
+    }
+
+    /* Responsive adjustment for badges */
+    .footer-badges a {
+        margin: 5px 5px; /* Stack badges more compactly on smaller screens */
+    }
+}
+
+/* Additional smaller screen adjustments if needed */
+@media (max-width: 480px) {
+    .md-content h1:first-of-type {
+        font-size: 1.8em;
+    }
+    .hero-tagline {
+        font-size: 1em;
+    }
+    .hero-buttons .md-button,
+    .bottom-cta-buttons .md-button {
+        width: 90%;
+    }
+    .footer-badges img {
+        height: 40px; /* Smaller default height on very small screens */
+        max-height: 40px;
+    }
+    .footer-badges img[src*="flathub.org/api/badge"],
+    .footer-badges img[src*="snapcraft.io/static/images/badges"],
+    .footer-badges img[src*="buymeacoffee.com/assets/img/custom_images"] {
+        height: 45px;
+        max-height: 45px;
+    }
+    .footer-badges img[src*="gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButton.svg"] {
+        height: 35px;
+        max-height: 35px;
+    }
+    .footer-badges img[src*="img.shields.io/github/license"],
+    .footer-badges img[src*="img.shields.io/badge/GitHub%20Sponsors"] {
+        height: 25px;
+        max-height: 25px;
+        transform: translateY(7px); /* Adjust transform for smaller size */
+    }
+}

@@ -329,40 +329,41 @@ class CardDeleteBookmark extends StatelessWidget {
         subtitle: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(
-              icon: const Icon(Icons.delete_forever),
-              onPressed: () {
-                Provider.of<SmdbProvider>(context, listen: false)
-                    .deleteRecordPermanently(record);
-                toastification.show(
-                  context: context,
-                  icon: Icon(Icons.close),
-                  type: ToastificationType.error,
-                  style: ToastificationStyle.flatColored,
-                  title: Text("Moved to trash"),
-                  description: Text(
-                      "The record with name ${record.name} has been moved to the trash"),
-                  alignment: Alignment.bottomCenter,
-                  autoCloseDuration: const Duration(seconds: 3),
-                  animationBuilder: (
-                    context,
-                    animation,
-                    alignment,
-                    child,
-                  ) {
-                    return ScaleTransition(
-                      scale: animation,
-                      child: child,
-                    );
-                  },
-                  borderRadius: BorderRadius.circular(12.0),
-                  boxShadow: highModeShadow,
-                  showProgressBar: true,
-                  closeButtonShowType: CloseButtonShowType.onHover,
-                  dragToClose: true,
-                  applyBlurEffect: true,
-                );
-              },
+            Consumer<SmdbProvider>(
+              builder: (context, value, child) => IconButton(
+                icon: const Icon(Icons.delete_forever),
+                onPressed: () {
+                  value.deleteRecordPermanently(record);
+                  toastification.show(
+                    context: context,
+                    icon: Icon(Icons.close),
+                    type: ToastificationType.error,
+                    style: ToastificationStyle.flatColored,
+                    title: Text("Moved to trash"),
+                    description: Text(
+                        "The record with name ${record.name} has been moved to the trash"),
+                    alignment: Alignment.bottomCenter,
+                    autoCloseDuration: const Duration(seconds: 3),
+                    animationBuilder: (
+                      context,
+                      animation,
+                      alignment,
+                      child,
+                    ) {
+                      return ScaleTransition(
+                        scale: animation,
+                        child: child,
+                      );
+                    },
+                    borderRadius: BorderRadius.circular(12.0),
+                    boxShadow: highModeShadow,
+                    showProgressBar: true,
+                    closeButtonShowType: CloseButtonShowType.onHover,
+                    dragToClose: true,
+                    applyBlurEffect: true,
+                  );
+                },
+              ),
             ),
             SizedBox(
               width: 10,

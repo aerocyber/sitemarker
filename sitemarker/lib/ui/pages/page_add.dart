@@ -136,35 +136,36 @@ class _PageAddState extends State<PageAdd> {
               ],
             ),
             actions: [
-              IconButton(
-                icon: Icon(
-                  Icons.save,
-                  size: 25,
-                ),
-                onPressed: () {
-                  // TODO: Implement the saving stuff
-                  if (_addItemKey.currentState!.validate()) {
-                    _addItemKey.currentState!.save();
-                    SmRecord rec = SmRecord(
-                      name: recName!,
-                      url: recUrl!,
-                      tags: recTag ?? '',
-                      dt: DateTime.now(),
-                    );
-                    Provider.of<SmdbProvider>(context, listen: false)
-                        .insertRecord(rec);
-
-                    if (fromIntent) {
-                      Navigator.of(context).pushReplacement(
-                        MaterialPageRoute(
-                          builder: (context) => SMHomeScreen(url: null),
-                        ),
+              Consumer<SmdbProvider>(
+                builder: (context, value, child) => IconButton(
+                  icon: Icon(
+                    Icons.save,
+                    size: 25,
+                  ),
+                  onPressed: () {
+                    // TODO: Implement the saving stuff
+                    if (_addItemKey.currentState!.validate()) {
+                      _addItemKey.currentState!.save();
+                      SmRecord rec = SmRecord(
+                        name: recName!,
+                        url: recUrl!,
+                        tags: recTag ?? '',
+                        dt: DateTime.now(),
                       );
-                    } else {
-                      Navigator.of(context).pop();
+                      value.insertRecord(rec);
+
+                      if (fromIntent) {
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) => SMHomeScreen(url: null),
+                          ),
+                        );
+                      } else {
+                        Navigator.of(context).pop();
+                      }
                     }
-                  }
-                },
+                  },
+                ),
               ),
               const SizedBox(width: 20),
             ],

@@ -18,7 +18,22 @@ class SitemarkerPageView extends StatefulWidget {
 }
 
 class _SitemarkerPageViewState extends State<SitemarkerPageView> {
-  List<SmRecord> recordsInDB = [];
+  late List<SmRecord> recordsInDB;
+
+  @override
+  void initState() {
+    super.initState();
+    recordsInDB = Provider.of<SmdbProvider>(context, listen: false)
+        .getAllUndeletedRecords();
+    if (widget.refresh) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          recordsInDB = Provider.of<SmdbProvider>(context, listen: false)
+              .getAllUndeletedRecords();
+        });
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

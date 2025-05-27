@@ -31,7 +31,7 @@ class SmdbProvider extends ChangeNotifier {
 
   /// Load the values from db. Not to be called from outside the class
   void init() async {
-    populate();
+    await populate();
     notifyListeners();
   }
 
@@ -66,7 +66,7 @@ class SmdbProvider extends ChangeNotifier {
       isDeleted: false,
       dateAdded: record.dt,
     );
-    db.insertRecord(rec);
+    await db.insertRecord(rec);
     populate();
     notifyListeners();
   }
