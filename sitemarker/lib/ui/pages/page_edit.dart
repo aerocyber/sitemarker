@@ -98,10 +98,11 @@ class _PageEditState extends State<PageEdit> {
                       _addItemKey.currentState!.save();
                       SmRecord rec = SmRecord(
                         id: widget.record.id,
-                        name: recName!,
-                        url: recUrl!,
-                        tags: recTag ?? '',
+                        name: recName ?? widget.record.name,
+                        url: recUrl ?? widget.record.url,
+                        tags: recTag ?? widget.record.tags,
                         dt: DateTime.now(),
+                        isDeleted: widget.record.isDeleted ?? false,
                       );
                       value.updateRecord(rec);
                       Navigator.of(context).pop();

@@ -82,14 +82,14 @@ class SmdbProvider extends ChangeNotifier {
   /// Soft delete a record
   void softDeleteRecord(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
-    db.softDelete(rec.first);
+    await db.softDelete(rec.first);
     populate();
     notifyListeners();
   }
 
   /// Update a record
   void updateRecord(SmRecord record) async {
-    db.updateRecord(SitemarkerRecord(
+    await db.updateRecord(SitemarkerRecord(
       id: record.id!,
       name: record.name,
       url: record.url,
