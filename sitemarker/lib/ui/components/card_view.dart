@@ -106,9 +106,9 @@ class CardBookmarkView extends StatelessWidget {
                   icon: Icon(Icons.check),
                   type: ToastificationType.success,
                   style: ToastificationStyle.flatColored,
-                  title: Text("Copied successfully!"),
+                  title: Text("Opened successfully!"),
                   description:
-                      Text("${record.url} has been copied to clipboard!"),
+                      Text("${record.url} has been opened in the default browser!"),
                   alignment: Alignment.bottomCenter,
                   autoCloseDuration: const Duration(seconds: 3),
                   animationBuilder: (

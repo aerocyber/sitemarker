@@ -6,8 +6,10 @@ An open source bookmark manager written in Flutter
 
 ### GitHub Sponsors and Buy Me a Coffee
 
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/aerocyber?style=for-the-badge&logo=Github&label=GitHub%20Sponsors)](https://github.com/sponsors/aerocyber)
-[![Buy Me a Coffee](https://img.shields.io/github/sponsors/aerocyber?style=for-the-badge&logo=Buy%20Me%20a%20Coffee&logoColor=white&label=Buy%20Me%20a%20Coffee&labelColor=yellow)](https://www.buymeacoffee.com/aerocyber)
+![GitHub Sponsors](https://img.shields.io/github/sponsors/aerocyber?style=for-the-badge&label=GitHub%20Sponsors&link=https%3A%2F%2Fgithub.com%2Fsponsors%2Faerocyber)
+
+<a href="https://www.buymeacoffee.com/aerocyber" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
 
 ### Code contributions
 

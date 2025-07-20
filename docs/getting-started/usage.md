@@ -21,6 +21,29 @@ To add a new record, click the :material-plus: icon on the app bar followed by p
 Add A New Record
 ///
 
+![Result](../images/sitemarker-add-page-result.png)
+/// caption
+Result
+///
+
 ## Edit An Existing Record
 
 To edit an existing record, click the :material-pencil: icon under the record you wish to edit. Then, perform all the required edits in the page that opens. Save the record by clicking :material-content-save: button on appbar.
+
+![Edit a record](../images/sitemarker-edit-page.png)
+/// caption
+Edit a record
+///
+
+![Result](../images/sitemarker-edit-page-result.png)
+/// caption
+Result
+///
+
+## Delete An Existing Record
+
+To soft delete a record, click the :material-delete: icon under the desired record. A toast indicating deletion will show up and the record will be soft deleted. All soft deleted records can be restored at once. At present, feature to restore or view soft deleted records are absent.
+
+??? failure "Name or URL after deleted records"
+    Records with Name or URL after deleted records **WILL** result in error.
+

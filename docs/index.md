@@ -6,7 +6,7 @@ hide:
   - toc
 ---
 
-## What Problem Does Sitemarker Solve?
+## Why Sitemarker?
 
 <div class="grid-container problem-card">
   <div class="grid-item">
