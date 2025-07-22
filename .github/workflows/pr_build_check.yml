@@ -21,7 +21,7 @@ jobs:
           channel: 'stable'
       
       - name: Change dir to project root
-        run: cd sitemarker/sitemarker
+        run: ls;cd sitemarker/sitemarker
 
       - name: Get Flutter Dependencies
         run: ls; flutter pub get
