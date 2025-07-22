@@ -24,7 +24,7 @@ jobs:
         run: cd sitemarker/
 
       - name: Get Flutter Dependencies
-        run: flutter pub get
+        run: ls; flutter pub get
 
       - name: Cache Flutter Dependencies
         uses: actions/cache@v4
@@ -56,6 +56,9 @@ jobs:
         with:
           flutter-version: '3.32.0'
           channel: 'stable'
+      
+      - name: Change dir to project root
+        run: cd sitemarker/
 
       - name: Get Flutter Dependencies
         run: flutter pub get
