@@ -33,13 +33,28 @@ Future<File> get getDatabaseFile async {
 /// Get the path to db file.
 Future<String> getPath() async {
   String fileName = 'sitemarker';
-  if (!kReleaseMode) fileName = 'sitemarker-debugdb';
+  if (!kReleaseMode) {
+    fileName = 'sitemarker-debugdb';
+    // print("Using debug database file: $fileName.db");
+  }
   if (Platform.environment["XDG_DATA_HOME"] != null) {
+    if (!kReleaseMode) {
+      print(
+          "Using debug database file: ${File("${Platform.environment["XDG_DATA_HOME"]}/$fileName.db").path}");
+    }
     return File("${Platform.environment["XDG_DATA_HOME"]}/$fileName.db").path;
   } else if (Platform.environment['SNAP_USER_COMMON'] != null) {
+    if (!kReleaseMode) {
+      print(
+          "Using debug database file: ${File("${Platform.environment["SNAP_USER_COMMON"]}/$fileName.db").path}");
+    }
     return File("${Platform.environment["SNAP_USER_COMMON"]}/$fileName.db")
         .path;
   } else {
+    if (!kReleaseMode) {
+      print(
+          "Using debug database file: ${File("${(await getApplicationSupportDirectory()).path}/$fileName.db").path}");
+    }
     return File("${(await getApplicationSupportDirectory()).path}/$fileName.db")
         .path;
   }

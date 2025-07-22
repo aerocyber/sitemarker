@@ -15,4 +15,9 @@ class SmRecord {
     required this.tags,
     required this.dt,
   });
+
+  @override
+  String toString() {
+    return 'SmRecord{id: $id, name: $name, url: $url, tags: $tags, dt: $dt, isDeleted: $isDeleted}';
+  }
 }

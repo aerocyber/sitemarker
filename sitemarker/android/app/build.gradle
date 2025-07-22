@@ -64,14 +64,16 @@ android {
 
     flavorDimensions += "default"
     productFlavors {
-        register("prod") {
+        prod {
             dimension = "default"
-            resValue("string", "app_name", "Release Version")
+            resValue("string", "app_name", "Sitemarker")
+            signingConfig signingConfigs.release
         }
-        register("develop") {
+        develop{
             dimension = "default"
             applicationIdSuffix = ".debug"
-            resValue("string", "app_name", "Debug Version")
+            resValue("string", "app_name", "Sitemarker Dev")
+            signingConfig signingConfigs.debug
         }
     }
 }

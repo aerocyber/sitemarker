@@ -1,0 +1,20 @@
+[project]
+name = "sitemarker"
+version = "0.1.0"
+description = "Backend for sitemarker"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "bcrypt>=4.3.0",
+    "cryptography>=45.0.2",
+    "flask>=3.1.0",
+    "flask-cors>=6.0.0",
+    "flask-pymongo>=3.0.1",
+    "gunicorn>=23.0.0",
+    "pycryptodome>=3.23.0",
+    "pyjwt>=2.10.1",
+    "pymongo>=4.12.1",
+    "python-dotenv>=1.1.0",
+    "tldextract>=5.3.0",
+    "validators>=0.35.0",
+]

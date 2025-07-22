@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:sitemarker/core/data_types/size_config.dart';
 import 'package:sitemarker/ui/pages/page_add.dart';
 import 'package:sitemarker/ui/pages/page_settings.dart';
 import 'package:sitemarker/ui/pages/page_view.dart';
@@ -15,10 +14,20 @@ class SMHomeScreen extends StatefulWidget {
 
 class _SMHomeScreenState extends State<SMHomeScreen> {
   int selectedIndex = 0;
-  static const pages = <Widget>[
-    SitemarkerPageView(),
-    PageSettings(),
-  ];
+  int previousIndex = 0;
+  // No longer need refreshHome flag directly here,
+  // it will be managed by recreating the page.
+
+  // The list of pages will now be a getter that can rebuild
+  List<Widget> get _pages {
+    return <Widget>[
+      // Pass refresh: true if we just came from a different tab (i.e., previousIndex was not 0)
+      SitemarkerPageView(
+        refresh: selectedIndex == 0 && previousIndex != 0, // Only refresh if navigating TO Home FROM another tab
+      ),
+      const PageSettings(),
+    ];
+  }
 
   final List<BottomNavigationBarItem> navList = <BottomNavigationBarItem>[
     const BottomNavigationBarItem(
@@ -34,18 +43,18 @@ class _SMHomeScreenState extends State<SMHomeScreen> {
 
   void updatePage(int index) {
     setState(() {
-      selectedIndex = index;
+      previousIndex = selectedIndex; // Store the current index as previous
+      selectedIndex = index; // Set the new selected index
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().initSizes(context);
     if (widget.url == null || widget.url!.isEmpty) {
       return Scaffold(
         body: IndexedStack(
           index: selectedIndex,
-          children: pages,
+          children: _pages, // Use the dynamic _pages getter here
         ),
         bottomNavigationBar: BottomAppBar(
           child: Row(

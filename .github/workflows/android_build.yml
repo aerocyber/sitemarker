@@ -1,0 +1,72 @@
+name: Android APK Build
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build_apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Android SDK environment
+        run: |
+          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
+          echo "PATH=$PATH:$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_ENV
+          yes | sdkmanager --licenses
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+        working-directory: sitemarker
+
+      - name: Cache Flutter Artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Build Android APK (Release)
+        run: |
+          flutter build apk --release --flavor prod --split-per-abi --tree-shake-icons --split-debug-info=./build/symbols 
+          flutter build apk --release --flavor prod --tree-shake-icons --split-debug-info=./build/symbols
+        working-directory: sitemarker
+
+      - name: Rename APKs With Version (No Build Number)
+        run: |
+          # Extract just the semantic version (e.g., 3.1.0 from 3.1.0-10)
+          version=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d '-' -f1)
+          cd build/app/outputs/flutter-apk/
+
+          # Rename split-per-abi APKs
+          for apk in app-*-release.apk; do
+            arch=$(echo "$apk" | sed -E 's/app-(.*)-release.apk/\1/')
+            mv "$apk" "sitemarker-$version-android-$arch.apk"
+          done
+
+          # Rename universal APK
+          mv app-release.apk "sitemarker-$version-android-universal.apk"
+        working-directory: sitemarker
+
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-android-apks
+          path: build/app/outputs/flutter-apk/*.apk

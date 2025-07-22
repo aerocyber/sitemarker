@@ -21,6 +21,5 @@ Architecture: all
 Depends: ${misc:Depends},
 	gir1.2-adw-1,
 	gir1.2-gst-plugins-bad-1.0,
-	python3
 Description: An open source bookmark manager
  Managing and sharing bookmarks has been made simpler.

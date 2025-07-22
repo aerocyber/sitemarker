@@ -1,10 +1,10 @@
 Name:           sitemarker
-Version:        1.1.0
+Version:        3.1.0
 Release:        1%{?dist}
 Summary:        An open source bookmark manager.
 License:        MIT
 URL:            https://github.com/aerocyber/sitemarker
-Source0:        %{name}-%{version}.tar.gz
+Source0:        %{name}-%{version}.tar.xz
 
 Requires:       glib2
 Requires:       gtk4

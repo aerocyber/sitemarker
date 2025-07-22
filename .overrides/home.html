@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block styles %}
+  {{ super() }}
+  <style>
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+    .hero p {
+      font-size: 1.25rem;
+      margin-bottom: 2rem;
+    }
+    .hero .md-button {
+      margin: 0 0.5rem;
+    }
+    /* Badges section styling from previous home.html is now managed by custom.css for index.md */
+  </style>
+{% endblock %}
+
+{% block content %}
+  <section class="hero">
+    <h1>Sitemarker</h1>
+    <p class="hero-tagline">Efficiently manage and organize your site bookmarks with ease.</p>
+    <div class="hero-buttons">
+      <a href="getting-started/installation/" class="md-button md-button--primary hero-download-button">
+        <span class="material-icons">download</span> Get Started
+      </a>
+      <a href="features/overview/" class="md-button hero-learn-more-button">
+        <span class="material-icons">info</span> Learn More
+      </a>
+    </div>
+  </section>
+  {# This line is crucial: it tells MkDocs to render the content of index.md here #}
+  {{ super() }}
+{% endblock %}
