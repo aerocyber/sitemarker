@@ -26,6 +26,7 @@ jobs:
 
       - name: Get Flutter Dependencies
         run: flutter pub get
+        working-directory: sitemarker
 
       - name: Cache Flutter Artifacts
         uses: actions/cache@v4
@@ -44,6 +45,7 @@ jobs:
           patchelf --set-rpath '$ORIGIN' libsqlite3_flutter_libs_plugin.so
           patchelf --set-rpath '$ORIGIN' liburl_launcher_linux_plugin.so
           cd -
+        working-directory: sitemarker
 
       - name: Install Podman
         run: |
@@ -111,6 +113,7 @@ jobs:
           mv *.AppImage /output/
           EOF
           chmod +x ./.appimage_temp/build_appimage.sh
+        working-directory: sitemarker
 
       - name: Run AppImage Build in Podman Container
         run: |
@@ -121,6 +124,7 @@ jobs:
             -e GITHUB_REF_NAME="${{ github.ref_name }}" \
             docker.io/ubuntu:18.04 \
             /app/.appimage_temp/build_appimage.sh
+        working-directory: sitemarker
 
       - name: Upload AppImage
         uses: actions/upload-artifact@v4

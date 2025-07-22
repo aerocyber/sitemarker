@@ -23,6 +23,7 @@ jobs:
 
       - name: Get Flutter Dependencies
         run: flutter pub get
+        working-directory: sitemarker
 
       - name: Cache Flutter Artifacts
         uses: actions/cache@v4
@@ -35,7 +36,13 @@ jobs:
             ${{ runner.os }}-flutter-
 
       - name: Build Flutter Linux Executable
-        run: flutter build linux --release --tree-shake-icons --split-debug-info=./build/symbols --debug-symbols=./build/symbols
+        run: |
+          flutter build linux --release --split-debug-info=./build/symbols
+          cd build/linux/x64/release/bundle/lib
+          patchelf --set-rpath '$ORIGIN' libsqlite3_flutter_libs_plugin.so
+          patchelf --set-rpath '$ORIGIN' liburl_launcher_linux_plugin.so
+          cd -
+        working-directory: sitemarker/
 
       - name: Install UPX
         run: |
@@ -50,6 +57,7 @@ jobs:
           else
               echo "Executable not found at $executable_path. Skipping UPX compression."
           fi
+        working-directory: sitemarker
 
       - name: Create Linux tar.xz Package
         run: |
@@ -68,15 +76,10 @@ jobs:
 
           # Create the tar.xz archive
           tar -cJf "$APP_NAME-$VERSION-linux-x64.tar.xz" "$APP_NAME-$VERSION/"
+        working-directory: sitemarker
 
       - name: Upload tar.xz Package
         uses: actions/upload-artifact@v4
         with:
           name: sitemarker-linux-tar-xz
           path: sitemarker-*-linux-x64.tar.xz 
-
-      - name: Upload Linux Debug Symbols
-        uses: actions/upload-artifact@v4
-        with:
-          name: sitemarker-linux-debug-symbols
-          path: build/symbols/linux
