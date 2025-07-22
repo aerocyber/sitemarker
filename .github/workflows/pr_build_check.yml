@@ -19,6 +19,9 @@ jobs:
         with:
           flutter-version: '3.32.0'
           channel: 'stable'
+      
+      - name: Change dir to project root
+        run: cd sitemarker/
 
       - name: Get Flutter Dependencies
         run: flutter pub get
@@ -82,6 +85,9 @@ jobs:
           flutter-version: '3.32.0'
           channel: 'stable'
 
+      - name: Change dir to project root
+        run: cd sitemarker/
+
       - name: Get Flutter Dependencies
         run: flutter pub get
 
@@ -110,6 +116,9 @@ jobs:
         with:
           flutter-version: '3.32.0'
           channel: 'stable'
+
+      - name: Change dir to project root
+        run: cd sitemarker/
 
       - name: Get Flutter Dependencies
         run: flutter pub get
