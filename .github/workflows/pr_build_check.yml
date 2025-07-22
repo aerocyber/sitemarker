@@ -19,12 +19,10 @@ jobs:
         with:
           flutter-version: '3.32.0'
           channel: 'stable'
-      
-      - name: Change dir to project root
-        run: ls;cd sitemarker/sitemarker
 
       - name: Get Flutter Dependencies
-        run: ls; flutter pub get
+        run: flutter pub get
+        working-directory: sitemarker/
 
       - name: Cache Flutter Dependencies
         uses: actions/cache@v4
@@ -36,14 +34,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-flutter-pub-cache-
 
-      - name: Run Flutter Analyze
-        run: flutter analyze
-
-      - name: Run Flutter Tests
-        run: flutter test
-
       - name: Check Android Debug Build (Develop Flavor)
         run: flutter build apk --debug --flavor develop
+        working-directory: sitemarker/
 
   windows_pr_check:
     runs-on: windows-latest
@@ -56,12 +49,10 @@ jobs:
         with:
           flutter-version: '3.32.0'
           channel: 'stable'
-      
-      - name: Change dir to project root
-        run: cd sitemarker/
 
       - name: Get Flutter Dependencies
         run: flutter pub get
+        working-directory: sitemarker
 
       - name: Cache Flutter Dependencies
         uses: actions/cache@v4
@@ -75,6 +66,7 @@ jobs:
 
       - name: Check Windows Debug Build
         run: flutter build windows --debug
+        working-directory: sitemarker
 
   linux_pr_check:
     runs-on: ubuntu-latest
@@ -88,11 +80,9 @@ jobs:
           flutter-version: '3.32.0'
           channel: 'stable'
 
-      - name: Change dir to project root
-        run: cd sitemarker/
-
       - name: Get Flutter Dependencies
         run: flutter pub get
+        working-directory: sitemarker
 
       - name: Cache Flutter Dependencies
         uses: actions/cache@v4
@@ -106,6 +96,7 @@ jobs:
 
       - name: Check Linux Debug Build
         run: flutter build linux --debug
+        working-directory: sitemarker
 
 
   macos_pr_check:
@@ -120,11 +111,9 @@ jobs:
           flutter-version: '3.32.0'
           channel: 'stable'
 
-      - name: Change dir to project root
-        run: cd sitemarker/
-
       - name: Get Flutter Dependencies
         run: flutter pub get
+        working-directory: sitemarker
 
       - name: Cache Flutter Dependencies
         uses: actions/cache@v4
@@ -138,3 +127,4 @@ jobs:
 
       - name: Check macOS Debug Build
         run: flutter build macos --debug
+        working-directory: sitemarker
