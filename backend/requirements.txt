@@ -21,7 +21,7 @@ pycryptodome==3.23.0
 pyjwt==2.10.1
 pymongo==4.12.1
 python-dotenv==1.1.0
-requests==2.32.3
+requests==2.32.4
 requests-file==2.1.0
 tldextract==5.3.0
 urllib3==2.4.0
