@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sitemarker/core/data_helper.dart';
 import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
 import 'dart:io';
@@ -323,7 +324,8 @@ class _PageSettingsState extends State<PageSettings>
                             initialSelection: getInitialValueThemeMode(),
                             onSelected: handleDropdown,
                             dropdownMenuEntries: SitemarkerTheme.values
-                                .map<DropdownMenuEntry<SitemarkerTheme>>((theme) {
+                                .map<DropdownMenuEntry<SitemarkerTheme>>(
+                                    (theme) {
                               return DropdownMenuEntry(
                                 value: theme,
                                 label: theme.themeName,
@@ -349,20 +351,64 @@ class _PageSettingsState extends State<PageSettings>
                           children: [
                             ElevatedButton(
                               onPressed: () async {
-                                String? fpath = await FilePicker.platform.saveFile(
-                                  dialogTitle: 'Save as',
-                                  fileName: 'sitemarker.omio',
-                                  type: FileType.custom,
-                                  allowedExtensions: ['omio'],
-                                );
-                                if (fpath == null) {
-                                  // Show error dialog and return
+                                if (Platform.isAndroid) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Not Implemented Yet'),
+                                      content: const Text(
+                                          'Exporting records on Android is not implemented yet.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                } else {
+                                  String? fpath =
+                                      await FilePicker.platform.saveFile(
+                                    dialogTitle: 'Save as',
+                                    fileName: 'sitemarker.omio',
+                                    type: FileType.custom,
+                                    allowedExtensions: ['omio'],
+                                  );
+                                  if (fpath == null) {
+                                    // Show error dialog and return
+                                    if (context.mounted) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text('Error'),
+                                          content: const Text('Save failed'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                    return;
+                                  }
+                                  File file = File(fpath);
+                                  file.writeAsStringSync(
+                                      DataHelper.convertToOmio(
+                                          value.getAllUndeletedRecords()),
+                                      mode: FileMode.write);
                                   if (context.mounted) {
                                     showDialog(
                                       context: context,
                                       builder: (context) => AlertDialog(
-                                        title: const Text('Error'),
-                                        content: const Text('File path is null'),
+                                        title: const Text('Success'),
+                                        content: const Text(
+                                            'File exported successfully'),
                                         actions: [
                                           TextButton(
                                             onPressed: () {
@@ -374,35 +420,11 @@ class _PageSettingsState extends State<PageSettings>
                                       ),
                                     );
                                   }
-                                  return;
-                                }
-                                File file = File(fpath);
-                                file.writeAsStringSync(
-                                    DataHelper.convertToOmio(
-                                        value.getAllUndeletedRecords()),
-                                    mode: FileMode.write);
-                                if (context.mounted) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: const Text('Success'),
-                                      content:
-                                          const Text('File exported successfully'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                          child: const Text('OK'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
                                 }
                               },
                               style: ButtonStyle(
-                                shape:
-                                    WidgetStateProperty.all<RoundedRectangleBorder>(
+                                shape: WidgetStateProperty.all<
+                                    RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(7.0),
                                   ),
@@ -433,8 +455,8 @@ class _PageSettingsState extends State<PageSettings>
                                 }
                               },
                               style: ButtonStyle(
-                                shape:
-                                    WidgetStateProperty.all<RoundedRectangleBorder>(
+                                shape: WidgetStateProperty.all<
+                                    RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(7.0),
                                   ),
@@ -468,8 +490,8 @@ class _PageSettingsState extends State<PageSettings>
                                 }
                               },
                               style: ButtonStyle(
-                                shape:
-                                    WidgetStateProperty.all<RoundedRectangleBorder>(
+                                shape: WidgetStateProperty.all<
+                                    RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(7.0),
                                   ),
@@ -502,8 +524,8 @@ class _PageSettingsState extends State<PageSettings>
                                 }
                               },
                               style: ButtonStyle(
-                                shape:
-                                    WidgetStateProperty.all<RoundedRectangleBorder>(
+                                shape: WidgetStateProperty.all<
+                                    RoundedRectangleBorder>(
                                   RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(7.0),
                                   ),
@@ -538,7 +560,8 @@ class _PageSettingsState extends State<PageSettings>
                     children: <Widget>[
                       ElevatedButton(
                         style: ButtonStyle(
-                          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          shape:
+                              WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
@@ -574,7 +597,8 @@ class _PageSettingsState extends State<PageSettings>
                     children: [
                       ElevatedButton(
                         style: ButtonStyle(
-                          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          shape:
+                              WidgetStateProperty.all<RoundedRectangleBorder>(
                             RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7.0),
                             ),
@@ -592,7 +616,8 @@ class _PageSettingsState extends State<PageSettings>
                                     onPressed: () async {
                                       if (await canLaunchUrl(
                                           Uri.parse(widget.bmcUrl))) {
-                                        await launchUrl(Uri.parse(widget.bmcUrl));
+                                        await launchUrl(
+                                            Uri.parse(widget.bmcUrl));
                                       } else {
                                         throw 'Could not launch ${widget.bmcUrl}';
                                       }
@@ -602,7 +627,8 @@ class _PageSettingsState extends State<PageSettings>
                                   onPressed: () async {
                                     if (await canLaunchUrl(
                                         Uri.parse(widget.ghSpUrl))) {
-                                      await launchUrl(Uri.parse(widget.ghSpUrl));
+                                      await launchUrl(
+                                          Uri.parse(widget.ghSpUrl));
                                     } else {
                                       throw 'Could not launch ${widget.ghSpUrl}';
                                     }
@@ -647,7 +673,8 @@ class _PageSettingsState extends State<PageSettings>
                       RotationTransition(
                         turns: _animation,
                         child: IconButton(
-                          onPressed: _isCheckingForUpdate ? null : _checkForUpdates,
+                          onPressed:
+                              _isCheckingForUpdate ? null : _checkForUpdates,
                           icon: const Icon(Icons.refresh),
                         ),
                       ),
