@@ -57,7 +57,7 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   /// Add a new record
-  void insertRecord(SmRecord record) async {
+  insertRecord(SmRecord record) async {
     final rec = SitemarkerRecord(
       id: getDefaultId(),
       name: record.name,
@@ -67,28 +67,28 @@ class SmdbProvider extends ChangeNotifier {
       dateAdded: record.dt,
     );
     await db.insertRecord(rec);
-    populate();
+    await populate();
     notifyListeners();
   }
 
   /// toggle delete a record
-  void toggleDeleteRecord(SmRecord record) async {
+  toggleDeleteRecord(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
     db.toggleDelete(rec.first);
-    populate();
+    await populate();
     notifyListeners();
   }
 
   /// Soft delete a record
-  void softDeleteRecord(SmRecord record) async {
+  softDeleteRecord(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
     await db.softDelete(rec.first);
-    populate();
+    await populate();
     notifyListeners();
   }
 
   /// Update a record
-  void updateRecord(SmRecord record) async {
+  updateRecord(SmRecord record) async {
     await db.updateRecord(SitemarkerRecord(
       id: record.id!,
       name: record.name,
@@ -97,7 +97,7 @@ class SmdbProvider extends ChangeNotifier {
       isDeleted: record.isDeleted!,
       dateAdded: record.dt,
     ));
-    populate();
+    await populate();
     notifyListeners();
   }
 
@@ -141,7 +141,7 @@ class SmdbProvider extends ChangeNotifier {
       _records.add(smr);
       await db.insertRecord(smr);
     }
-    populate();
+    await populate();
     notifyListeners();
   }
 
@@ -225,7 +225,7 @@ class SmdbProvider extends ChangeNotifier {
       }
     }
 
-    populate();
+    await populate();
     notifyListeners();
     // print(
     //     "ImportDups: $_importDups"); // Now this should correctly show duplicates
@@ -303,7 +303,7 @@ class SmdbProvider extends ChangeNotifier {
   void deleteRecordPermanently(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
     db.hardDelete(rec.first);
-    populate();
+    await populate();
     notifyListeners();
   }
 }

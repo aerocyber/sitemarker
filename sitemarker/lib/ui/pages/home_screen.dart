@@ -23,9 +23,11 @@ class _SMHomeScreenState extends State<SMHomeScreen> {
     return <Widget>[
       // Pass refresh: true if we just came from a different tab (i.e., previousIndex was not 0)
       SitemarkerPageView(
-        refresh: selectedIndex == 0 && previousIndex != 0, // Only refresh if navigating TO Home FROM another tab
+        refresh: selectedIndex == 0 &&
+            previousIndex !=
+                0, // Only refresh if navigating TO Home FROM another tab
       ),
-      const PageSettings(),
+      SafeArea(child: const PageSettings()),
     ];
   }
 
