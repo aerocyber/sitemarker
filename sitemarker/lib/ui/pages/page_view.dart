@@ -6,6 +6,7 @@ import 'package:sitemarker/ui/components/sitemarker_search_delegate.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
+import 'package:sitemarker/ui/pages/recycle_bin.dart';
 import 'package:sitemarker/ui/pages/view_omio.dart';
 // import 'package:sitemarker/ui/pages/recycle_bin.dart';
 
@@ -81,6 +82,19 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
                       },
                       icon: const Icon(Icons.grid_view_rounded, size: 30)),
                   const SizedBox(width: 20),
+                  IconButton(
+                      onPressed: () async {
+                        await Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => RecycleBin(),
+                        ));
+                        setState(() {
+                          recordsInDB = value.getAllUndeletedRecords();
+                        });
+                      },
+                      icon: Icon(Icons.delete)),
+                  const SizedBox(
+                    width: 20,
+                  ),
                 ],
               ),
               body: Center(
@@ -167,6 +181,19 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
                 //   icon: const Icon(Icons.delete, size: 30),
                 // ),
                 const SizedBox(width: 20),
+                IconButton(
+                    onPressed: () async {
+                      await Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => RecycleBin(),
+                      ));
+                      setState(() {
+                        recordsInDB = value.getAllUndeletedRecords();
+                      });
+                    },
+                    icon: Icon(Icons.delete)),
+                const SizedBox(
+                  width: 20,
+                ),
               ],
             ),
             body: Padding(
