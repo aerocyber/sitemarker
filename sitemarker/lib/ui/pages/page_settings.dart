@@ -556,8 +556,8 @@ class _PageSettingsState extends State<PageSettings>
                             context: context,
                             applicationIcon: Image.asset(
                               'assets/io.github.aerocyber.sitemarker.png',
-                              width: 150,
-                              height: 150,
+                              width: 64,
+                              height: 64,
                             ),
                             applicationLegalese:
                                 '\u{a9} 2023-present Aero\nLicensed under the terms of Apache-2.0 License',
