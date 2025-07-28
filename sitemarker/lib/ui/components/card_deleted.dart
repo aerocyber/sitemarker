@@ -339,9 +339,9 @@ class CardDeleteBookmark extends StatelessWidget {
                     icon: Icon(Icons.close),
                     type: ToastificationType.error,
                     style: ToastificationStyle.flatColored,
-                    title: Text("Moved to trash"),
+                    title: Text("Deleted Permanantly"),
                     description: Text(
-                        "The record with name ${record.name} has been moved to the trash"),
+                        "The record with name ${record.name} has been deleted permanantly"),
                     alignment: Alignment.bottomCenter,
                     autoCloseDuration: const Duration(seconds: 3),
                     animationBuilder: (

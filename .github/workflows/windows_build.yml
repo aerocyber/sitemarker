@@ -23,6 +23,7 @@ jobs:
 
       - name: Get Flutter Dependencies
         run: flutter pub get
+        working-directory: sitemarker
 
       - name: Cache Flutter Artifacts
         uses: actions/cache@v4
@@ -35,7 +36,8 @@ jobs:
             ${{ runner.os }}-flutter-
 
       - name: Build Flutter Windows Executable
-        run: flutter build windows --release --tree-shake-icons --split-debug-info=./build/symbols --debug-symbols=./build/symbols
+        run: flutter build windows --release --split-debug-info=./build/symbols
+        working-directory: sitemarker
 
       - name: Install UPX
         run: choco install upx --no-progress
@@ -48,6 +50,7 @@ jobs:
           } else {
               Write-Host "Executable not found at $executablePath. Skipping UPX compression."
           }
+        working-directory: sitemarker
 
       - name: Install Inno Setup
         run: choco install innosetup --no-progress
@@ -59,6 +62,7 @@ jobs:
 
       - name: Create MSIX Package using msix package
         run: flutter pub run msix:create
+        working-directory: sitemarker
 
       - name: Upload Inno Setup Installer
         uses: actions/upload-artifact@v4

@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:sitemarker/core/data_helper.dart';
 import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
 import 'dart:io';
@@ -297,348 +298,397 @@ class _PageSettingsState extends State<PageSettings>
 
     return Container(
       color: Theme.of(context).colorScheme.surface,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Row(
-                children: <Widget>[
-                  const Text('Theme'),
-                  const SizedBox(height: 10, width: 10),
-                  DropdownMenu<SitemarkerTheme>(
-                    enableSearch: true,
-                    initialSelection: getInitialValueThemeMode(),
-                    onSelected: handleDropdown,
-                    dropdownMenuEntries: SitemarkerTheme.values
-                        .map<DropdownMenuEntry<SitemarkerTheme>>((theme) {
-                      return DropdownMenuEntry(
-                        value: theme,
-                        label: theme.themeName,
-                      );
-                    }).toList(),
-                  )
-                ],
+      child: SingleChildScrollView(
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 700,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 16.0,
+                vertical: 32.0,
               ),
-            ],
-          ),
-          const SizedBox(height: 30),
-          Divider(
-            color: Theme.of(context).disabledColor,
-            thickness: 3,
-            height: 20,
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Consumer<SmdbProvider>(builder: (context, value, child) {
-                return Column(
-                  children: [
-                    ElevatedButton(
-                      onPressed: () async {
-                        String? fpath = await FilePicker.platform.saveFile(
-                          dialogTitle: 'Save as',
-                          fileName: 'sitemarker.omio',
-                          type: FileType.custom,
-                          allowedExtensions: ['omio'],
-                        );
-                        if (fpath == null) {
-                          // Show error dialog and return
-                          if (context.mounted) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: const Text('Error'),
-                                content: const Text('File path is null'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: const Text('OK'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Row(
+                        children: <Widget>[
+                          const Text('Theme'),
+                          const SizedBox(height: 10, width: 10),
+                          DropdownMenu<SitemarkerTheme>(
+                            enableSearch: true,
+                            initialSelection: getInitialValueThemeMode(),
+                            onSelected: handleDropdown,
+                            dropdownMenuEntries: SitemarkerTheme.values
+                                .map<DropdownMenuEntry<SitemarkerTheme>>(
+                                    (theme) {
+                              return DropdownMenuEntry(
+                                value: theme,
+                                label: theme.themeName,
+                              );
+                            }).toList(),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 30),
+                  Divider(
+                    color: Theme.of(context).disabledColor,
+                    thickness: 3,
+                    height: 20,
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Consumer<SmdbProvider>(builder: (context, value, child) {
+                        return Column(
+                          children: [
+                            ElevatedButton(
+                              onPressed: () async {
+                                if (Platform.isAndroid) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Not Implemented Yet'),
+                                      content: const Text(
+                                          'Exporting records on Android is not implemented yet.'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('OK'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                } else {
+                                  String? fpath =
+                                      await FilePicker.platform.saveFile(
+                                    dialogTitle: 'Save as',
+                                    fileName: 'sitemarker.omio',
+                                    type: FileType.custom,
+                                    allowedExtensions: ['omio'],
+                                  );
+                                  if (fpath == null) {
+                                    // Show error dialog and return
+                                    if (context.mounted) {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => AlertDialog(
+                                          title: const Text('Error'),
+                                          content: const Text('Save failed'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text('OK'),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    }
+                                    return;
+                                  }
+                                  File file = File(fpath);
+                                  file.writeAsStringSync(
+                                      DataHelper.convertToOmio(
+                                          value.getAllUndeletedRecords()),
+                                      mode: FileMode.write);
+                                  if (context.mounted) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Success'),
+                                        content: const Text(
+                                            'File exported successfully'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                  }
+                                }
+                              },
+                              style: ButtonStyle(
+                                shape: WidgetStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(7.0),
                                   ),
+                                ),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.upload),
+                                  Text("Export records as omio file")
                                 ],
                               ),
-                            );
-                          }
-                          return;
-                        }
-                        File file = File(fpath);
-                        file.writeAsStringSync(
-                            DataHelper.convertToOmio(
-                                value.getAllUndeletedRecords()),
-                            mode: FileMode.write);
-                        if (context.mounted) {
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                // Performs soft delete on all records
+                                final bool? confirmed =
+                                    await confirmSoftDeleteAll(context);
+                                if (confirmed == null || !confirmed) {
+                                  return; // User canceled
+                                }
+                                List<SmRecord> records =
+                                    value.getAllUndeletedRecords();
+                                for (int i = 0; i < records.length; i++) {
+                                  value.softDeleteRecord(records[i]);
+                                }
+                              },
+                              style: ButtonStyle(
+                                shape: WidgetStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                  ),
+                                ),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.clear),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text("Clear all records")
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                // Performs soft delete on all records
+                                final bool? confirmed =
+                                    await confirmRestoreAllFromTrash(context);
+                                if (confirmed == null || !confirmed) {
+                                  return; // User canceled
+                                }
+                                List<SmRecord> records =
+                                    value.getAllDeletedRecords();
+                                for (int i = 0; i < records.length; i++) {
+                                  value.toggleDeleteRecord(records[i]);
+                                }
+                              },
+                              style: ButtonStyle(
+                                shape: WidgetStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                  ),
+                                ),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.restore),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text("Restore all records in trash")
+                                ],
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            ElevatedButton(
+                              onPressed: () async {
+                                // Performs soft delete on all records
+                                final bool? confirmed =
+                                    await confirmPermanentDeleteAll(context);
+                                if (confirmed == null || !confirmed) {
+                                  return; // User canceled
+                                }
+                                List<SmRecord> records = value.getAllRecords();
+                                for (int i = 0; i < records.length; i++) {
+                                  value.deleteRecordPermanently(records[i]);
+                                }
+                              },
+                              style: ButtonStyle(
+                                shape: WidgetStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(7.0),
+                                  ),
+                                ),
+                              ),
+                              child: const Row(
+                                children: [
+                                  Icon(Icons.delete_forever),
+                                  SizedBox(
+                                    width: 10,
+                                  ),
+                                  Text("Permanently delete all records")
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Divider(
+                    color: Theme.of(context).disabledColor,
+                    thickness: 3,
+                    height: 20,
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          shape:
+                              WidgetStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7.0),
+                            ),
+                          ),
+                        ),
+                        child: const Row(
+                          children: <Widget>[
+                            Icon(Icons.info),
+                            SizedBox(height: 10, width: 10),
+                            Text('About Sitemarker')
+                          ],
+                        ),
+                        onPressed: () {
+                          showAboutDialog(
+                            context: context,
+                            applicationIcon: Image.asset(
+                              'assets/io.github.aerocyber.sitemarker.png',
+                              width: 64,
+                              height: 64,
+                            ),
+                            applicationLegalese:
+                                '\u{a9} 2023-present Aero\nLicensed under the terms of Apache-2.0 License',
+                            applicationName: 'Sitemarker',
+                            applicationVersion: version,
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          shape:
+                              WidgetStateProperty.all<RoundedRectangleBorder>(
+                            RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7.0),
+                            ),
+                          ),
+                        ),
+                        onPressed: () async {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: const Text('Success'),
-                              content: const Text('File exported successfully'),
+                              title: Text('Support the project'),
+                              content: Text(
+                                  'If you like Sitemarker, consider supporting the project by buying me a coffee or sponsoring me on GitHub.'),
                               actions: [
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
+                                ElevatedButton(
+                                    onPressed: () async {
+                                      if (await canLaunchUrl(
+                                          Uri.parse(widget.bmcUrl))) {
+                                        await launchUrl(
+                                            Uri.parse(widget.bmcUrl));
+                                      } else {
+                                        throw 'Could not launch ${widget.bmcUrl}';
+                                      }
+                                    },
+                                    child: const Text('Buy me a coffee')),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    if (await canLaunchUrl(
+                                        Uri.parse(widget.ghSpUrl))) {
+                                      await launchUrl(
+                                          Uri.parse(widget.ghSpUrl));
+                                    } else {
+                                      throw 'Could not launch ${widget.ghSpUrl}';
+                                    }
                                   },
-                                  child: const Text('OK'),
+                                  child: const Text('GitHub Sponsor'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Close'),
                                 ),
                               ],
                             ),
                           );
-                        }
-                      },
-                      style: ButtonStyle(
-                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(7.0),
-                          ),
+                        },
+                        child: const Row(
+                          children: <Widget>[
+                            Icon(Icons.coffee),
+                            SizedBox(height: 10, width: 10),
+                            Text('Support the project'),
+                          ],
                         ),
                       ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.upload),
-                          Text("Export records as omio file")
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Performs soft delete on all records
-                        final bool? confirmed =
-                            await confirmSoftDeleteAll(context);
-                        if (confirmed == null || !confirmed) {
-                          return; // User canceled
-                        }
-                        List<SmRecord> records = value.getAllUndeletedRecords();
-                        for (int i = 0; i < records.length; i++) {
-                          value.softDeleteRecord(records[i]);
-                        }
-                      },
-                      style: ButtonStyle(
-                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(7.0),
-                          ),
-                        ),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.clear),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text("Clear all records")
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Performs soft delete on all records
-                        final bool? confirmed =
-                            await confirmRestoreAllFromTrash(context);
-                        if (confirmed == null || !confirmed) {
-                          return; // User canceled
-                        }
-                        List<SmRecord> records = value.getAllDeletedRecords();
-                        for (int i = 0; i < records.length; i++) {
-                          value.toggleDeleteRecord(records[i]);
-                        }
-                      },
-                      style: ButtonStyle(
-                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(7.0),
-                          ),
-                        ),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.restore),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text("Restore all records in trash")
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                      onPressed: () async {
-                        // Performs soft delete on all records
-                        final bool? confirmed =
-                            await confirmPermanentDeleteAll(context);
-                        if (confirmed == null || !confirmed) {
-                          return; // User canceled
-                        }
-                        List<SmRecord> records = value.getAllRecords();
-                        for (int i = 0; i < records.length; i++) {
-                          value.deleteRecordPermanently(records[i]);
-                        }
-                      },
-                      style: ButtonStyle(
-                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(7.0),
-                          ),
-                        ),
-                      ),
-                      child: const Row(
-                        children: [
-                          Icon(Icons.delete_forever),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text("Permanently delete all records")
-                        ],
-                      ),
-                    ),
-                  ],
-                );
-              }),
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Divider(
-            color: Theme.of(context).disabledColor,
-            thickness: 3,
-            height: 20,
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ElevatedButton(
-                style: ButtonStyle(
-                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(7.0),
-                    ),
+                    ],
                   ),
-                ),
-                child: const Row(
-                  children: <Widget>[
-                    Icon(Icons.info),
-                    SizedBox(height: 10, width: 10),
-                    Text('About Sitemarker')
-                  ],
-                ),
-                onPressed: () {
-                  showAboutDialog(
-                    context: context,
-                    applicationIcon: Image.asset(
-                      'assets/io.github.aerocyber.sitemarker.png',
-                      width: 150,
-                      height: 150,
-                    ),
-                    applicationLegalese:
-                        '\u{a9} 2023-present Aero\nLicensed under the terms of Apache-2.0 License',
-                    applicationName: 'Sitemarker',
-                    applicationVersion: version,
-                  );
-                },
-              ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ElevatedButton(
-                style: ButtonStyle(
-                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                    RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(7.0),
-                    ),
+                  const SizedBox(
+                    height: 20,
                   ),
-                ),
-                onPressed: () async {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Support the project'),
-                      content: Text(
-                          'If you like Sitemarker, consider supporting the project by buying me a coffee or sponsoring me on GitHub.'),
-                      actions: [
-                        ElevatedButton(
-                            onPressed: () async {
-                              if (await canLaunchUrl(
-                                  Uri.parse(widget.bmcUrl))) {
-                                await launchUrl(Uri.parse(widget.bmcUrl));
-                              } else {
-                                throw 'Could not launch ${widget.bmcUrl}';
-                              }
-                            },
-                            child: const Text('Buy me a coffee')),
-                        ElevatedButton(
-                          onPressed: () async {
-                            if (await canLaunchUrl(Uri.parse(widget.ghSpUrl))) {
-                              await launchUrl(Uri.parse(widget.ghSpUrl));
-                            } else {
-                              throw 'Could not launch ${widget.ghSpUrl}';
-                            }
-                          },
-                          child: const Text('GitHub Sponsor'),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Sitemarker $version',
+                        style: TextStyle(
+                          color: Colors.grey,
                         ),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Close'),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      RotationTransition(
+                        turns: _animation,
+                        child: IconButton(
+                          onPressed:
+                              _isCheckingForUpdate ? null : _checkForUpdates,
+                          icon: const Icon(Icons.refresh),
                         ),
-                      ],
-                    ),
-                  );
-                },
-                child: const Row(
-                  children: <Widget>[
-                    Icon(Icons.coffee),
-                    SizedBox(height: 10, width: 10),
-                    Text('Support the project'),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  if (Platform.isAndroid) _adBox()
+                ],
               ),
-            ],
+            ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'Sitemarker $version',
-                style: TextStyle(
-                  color: Colors.grey,
-                ),
-              ),
-              SizedBox(
-                width: 10,
-              ),
-              RotationTransition(
-                turns: _animation,
-                child: IconButton(
-                  onPressed: _isCheckingForUpdate ? null : _checkForUpdates,
-                  icon: const Icon(Icons.refresh),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          if (Platform.isAndroid) _adBox()
-        ],
+        ),
       ),
     );
   }
