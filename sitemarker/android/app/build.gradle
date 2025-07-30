@@ -18,7 +18,7 @@ android {
     }
     
     namespace = "io.github.aerocyber.sitemarker"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = "28.0.12674087"
 
     compileOptions {
@@ -35,9 +35,14 @@ android {
         applicationId = "io.github.aerocyber.sitemarker"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
+        minSdk = 23
+        targetSdk = 35
+        def envVersionCode = System.getenv("VERSION_CODE")
+	if (!envVersionCode) {
+		throw new GradleException("VERSION_CODE environment variable is required")
+	}
+
+        versionCode envVersionCode ? envVersionCode.toInteger() : flutter.versionCode
         versionName = flutter.versionName
     }
 
