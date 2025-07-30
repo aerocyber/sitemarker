@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:docman/docman.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter/services.dart';
@@ -28,7 +27,7 @@ Future<void> saveFile(String content) async {
       });
       return;
     } on PlatformException catch (e) {
-      print("Platform error while saving: ${e.message}");
+      // print("Platform error while saving: ${e.message}");
       return;
     }
   }

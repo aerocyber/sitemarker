@@ -131,16 +131,20 @@ class _SitemarkerPageViewOmioState extends State<SitemarkerPageViewOmio> {
                           ],
                         ),
                         const SizedBox(height: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const Icon(Icons
-                                .folder_open), // Changed icon for file location
-                            const SizedBox(width: 10),
-                            Text(
-                                "File location: ${fpath!.absolute.path}"), // Display the file path
-                          ],
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: [
+                              const Icon(Icons.folder_open),
+                              const SizedBox(width: 10),
+                              Text(
+                                "File location: ${fpath!.absolute.path}",
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
+                            ],
+                          ),
                         ),
+
                         const SizedBox(height: 25),
                       ],
                       Divider(
@@ -238,10 +242,19 @@ class _SitemarkerPageViewOmioState extends State<SitemarkerPageViewOmio> {
                           onPressed: () async {
                             FilePickerResult? result =
                                 await FilePicker.platform.pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: ['omio'],
+                              type: FileType.any,
+                              // allowedExtensions: ['omio'],
                             );
                             if (result != null) {
+                              if (!result.files.single.path!
+                                  .endsWith('.omio')) {
+                                ScaffoldMessenger.of(context)
+                                    .showMaterialBanner(const MaterialBanner(
+                                        content:
+                                            Text("Please select a omio file"),
+                                        actions: []));
+                                return;
+                              }
                               await _processFile(
                                 File(result.files.single.path!),
                                 true,
@@ -286,10 +299,19 @@ class _SitemarkerPageViewOmioState extends State<SitemarkerPageViewOmio> {
                           onPressed: () async {
                             FilePickerResult? result =
                                 await FilePicker.platform.pickFiles(
-                              type: FileType.custom,
-                              allowedExtensions: ['omio'],
+                              type: FileType.any,
+                              // allowedExtensions: ['omio'],
                             );
                             if (result != null) {
+                              if (!result.files.single.path!
+                                  .endsWith('.omio')) {
+                                ScaffoldMessenger.of(context)
+                                    .showMaterialBanner(const MaterialBanner(
+                                        content:
+                                            Text("Please select a omio file"),
+                                        actions: []));
+                                return;
+                              }
                               await _processFile(
                                 File(result.files.single.path!),
                                 false,
