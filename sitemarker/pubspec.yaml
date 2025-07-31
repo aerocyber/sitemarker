@@ -3,7 +3,7 @@ description: "An open source bookmark manager."
 
 publish_to: 'none'
 
-version: 3.1.0+10 # TODO: Update version number before release. Don't forget to bump the build number as well.
+version: 3.1.1+2010 # TODO: Update version number before release. Don't forget to bump the build number as well.
 
 environment:
   sdk: '>=3.2.3 <4.0.0'

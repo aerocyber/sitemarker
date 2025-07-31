@@ -37,12 +37,8 @@ android {
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
         targetSdk = 35
-        def envVersionCode = System.getenv("VERSION_CODE")
-	    if (!envVersionCode) {
-		    throw new GradleException("VERSION_CODE environment variable is required")
-    	}
-
-        versionCode envVersionCode ? envVersionCode.toInteger() : flutter.versionCode
+        
+        versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 

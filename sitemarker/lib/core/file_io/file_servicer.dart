@@ -26,14 +26,14 @@ Future<void> saveFile(String content) async {
         'bytes': encoded,
       });
       return;
-    } on PlatformException catch (e) {
+    } on PlatformException {
       // print("Platform error while saving: ${e.message}");
       return;
     }
   }
 
   // Non-Android fallback
-  String? r = await FilePicker.platform.saveFile(
+  await FilePicker.platform.saveFile(
     allowedExtensions: ['omio'],
     bytes: encoded,
     dialogTitle: "Select export location",
@@ -56,8 +56,9 @@ Future<String?> readFile() async {
       if (result != null && result is String) {
         return result;
       }
-    } on PlatformException catch (e) {
-      print("Platform error while reading: ${e.message}");
+    } on PlatformException {
+      // print("Platform error while reading: ${e.message}");
+      // TODO: Log this
     }
     return null;
   }
