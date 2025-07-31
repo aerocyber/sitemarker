@@ -352,9 +352,29 @@ class _PageSettingsState extends State<PageSettings>
                           children: [
                             ElevatedButton(
                               onPressed: () async {
-                                await saveFile(DataHelper.convertToOmio(
-                                    value.getAllUndeletedRecords()));
+                                bool b = await saveFile(
+                                    DataHelper.convertToOmio(
+                                        value.getAllUndeletedRecords()));
                                 if (context.mounted) {
+                                  if (!b) {
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text('Not Exported'),
+                                        content: const Text(
+                                            'File exported failed or cancelled'),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('OK'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+                                    return;
+                                  }
                                   showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(

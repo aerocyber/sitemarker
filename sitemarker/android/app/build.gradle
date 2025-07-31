@@ -94,4 +94,3 @@ project(':receive_sharing_intent').afterEvaluate {
         }
     }
 }
-

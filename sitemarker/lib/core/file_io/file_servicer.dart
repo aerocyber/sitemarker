@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 const platform = MethodChannel('io.github.aerocyber.sitemarker.files');
 
-Future<void> saveFile(String content) async {
+Future<bool> saveFile(String content) async {
   final fileName =
       "Sitemarker-${DateTime.now().toIso8601String().replaceAll(RegExp(r'[:.]'), '-')}.omio";
   final encoded = utf8.encode(content);
@@ -17,7 +17,7 @@ Future<void> saveFile(String content) async {
     final androidInfo = await deviceInfo.androidInfo;
     if (androidInfo.version.sdkInt < 29) {
       final status = await Permission.storage.request();
-      if (!status.isGranted) return;
+      if (!status.isGranted) return false;
     }
 
     try {
@@ -25,15 +25,15 @@ Future<void> saveFile(String content) async {
         'name': fileName,
         'bytes': encoded,
       });
-      return;
+      return true;
     } on PlatformException {
       // print("Platform error while saving: ${e.message}");
-      return;
+      return false;
     }
   }
 
   // Non-Android fallback
-  await FilePicker.platform.saveFile(
+  String? s = await FilePicker.platform.saveFile(
     allowedExtensions: ['omio'],
     bytes: encoded,
     dialogTitle: "Select export location",
@@ -41,6 +41,8 @@ Future<void> saveFile(String content) async {
     lockParentWindow: true,
     type: FileType.custom,
   );
+  if (s == null) return false;
+  return true;
 }
 
 Future<String?> readFile() async {

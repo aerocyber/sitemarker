@@ -106,7 +106,7 @@ hide:
   <a href="getting-started/installation/" class="md-button md-button--primary hero-download-button">
     <span class="material-icons">download</span> Get Sitemarker Now
   </a>
-  <a href="features/overview/" class="md-button hero-learn-more-button">
+  <a href="getting-started/usage/" class="md-button hero-learn-more-button">
     <span class="material-icons">info</span> Explore Features
   </a>
 </p>

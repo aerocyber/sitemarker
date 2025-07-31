@@ -235,7 +235,7 @@ class SmdbProvider extends ChangeNotifier {
   // Implement export to omio file
   exportToOmioFile(List<SmRecord> recordsToExport) async {
     String data = DataHelper.convertToOmio(recordsToExport);
-    saveFile(data);
+    await saveFile(data);
 
     notifyListeners();
   }

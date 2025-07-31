@@ -2,13 +2,14 @@
 
 Sitemarker is available for Linux, Windows and Android. If the user chooses to, Sitemarker can be built to work on Mac, iOS and web, however, no official support will be given from the developer on these unofficial channels.
 
-- To download Sitemarker, go to the latest release page here: [Github Releases](https://github.com/aerocyber/sitemarker/releases/latest).
+- To download Sitemarker, go to the latest release page here: <a href="https://github.com/aerocyber/sitemarker/releases/latest" target="_blank">Github Releases</a>
 - Then, download the release suited for your platform.
 
 ## Windows
 
 There are two ways to use Sitemarker on Windows:
-- After Installing
+
+- Installing
 - Without Installing
 
 ### Installing
@@ -27,6 +28,7 @@ If you know your Android architecture, download the apk corresponding to your de
 ## Linux
 
 Sitemarker offers the following usage methods for Linux:
+
 - tarball
 - snapstore
 - flatpak (through flathub)
@@ -37,16 +39,20 @@ Get the tarball from releases. It is compressed as a `.tar.xz` file. Uncompress 
 
 ### Snapstore
 
-For platforms with snap installed - Ubuntu and most Ubuntu derivatives comes with snap by default - can install sitemarker from snap store. You can either browse to the sitemarker page on your snap store client or install through commandline:
+For platforms with snap installed - Ubuntu and most Ubuntu derivatives comes with snap by default - can install sitemarker from snap store. You can either browse to the sitemarker page on your snap store client or install through command-line:
 
 ``` bash
 sudo snap install sitemarker
 ```
 
+You can also visit the snapstore page here: <a href="https://snapstore.io/sitemarker" target="_blank">Snapstore Listing</a>
+
 ### Flatpak (Through Flathub)
 
-Sitemarker is available as flatpak from flathub. You can use a flthub client or terminal to install it provided `flatpak` is installed.
+Sitemarker is available as flatpak from flathub. You can use a flathub client or terminal to install it provided `flatpak` is installed.
 
 ``` bash
 flatpak install io.github.aerocyber.sitemarker
 ```
+
+You can also visit the flathub page here: <a href="https://flathub.org/apps/io.github.aerocyber.sitemarker" target="_blank">Flathub Listing</a>
