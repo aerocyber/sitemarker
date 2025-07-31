@@ -18,7 +18,7 @@ android {
     }
     
     namespace = "io.github.aerocyber.sitemarker"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = "28.0.12674087"
 
     compileOptions {
@@ -35,8 +35,9 @@ android {
         applicationId = "io.github.aerocyber.sitemarker"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 23
+        targetSdk = 35
+        
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
@@ -93,4 +94,3 @@ project(':receive_sharing_intent').afterEvaluate {
         }
     }
 }
-

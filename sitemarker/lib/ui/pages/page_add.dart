@@ -16,10 +16,6 @@ class PageAdd extends StatefulWidget {
   State<PageAdd> createState() => _PageAddState();
 }
 
-// FIXME: Known bug: Navigating back to SMHomeScreen from intent gives a black
-// screen and not the page. Issue not identified. Classified as a [Known Bug]
-// for Sitemarker 3.0.0
-
 class _PageAddState extends State<PageAdd> {
   final GlobalKey<FormState> _addItemKey = GlobalKey<FormState>();
   bool isErr = false;
@@ -118,13 +114,14 @@ class _PageAddState extends State<PageAdd> {
                     if (goBack == true) {
                       if (context.mounted) {
                         if (fromIntent) {
-                          Navigator.pushReplacement(
-                            context,
+                          Navigator.of(context).pushAndRemoveUntil(
                             MaterialPageRoute(
-                              builder: (context) => SMHomeScreen(url: null),
-                            ),
+                                builder: (context) =>
+                                    const SMHomeScreen(url: null)),
+                            (Route<dynamic> route) => false,
                           );
                         }
+
                         // Navigator.of(context).pop();
                         else {
                           Navigator.of(context).pop();
@@ -316,14 +313,16 @@ class _PageAddState extends State<PageAdd> {
   }
 
   Future<String?> getName() async {
-    if (!validator.isURL(widget.receivingData) &&
-        widget.receivingData != null) {
+    final data = widget.receivingData;
+    if (data == null || !validator.isURL(data)) {
       isErr = true;
       return null;
     }
-    if (widget.receivingData == null) {
+    try {
+      return await DataHelper.getPageTitleFromURL(data);
+    } catch (e) {
+      debugPrint("Error fetching page title: $e");
       return null;
     }
-    return await DataHelper.getPageTitleFromURL(widget.receivingData!);
   }
 }

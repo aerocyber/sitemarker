@@ -42,8 +42,27 @@ Result
 
 ## Delete An Existing Record
 
-To soft delete a record, click the :material-delete: icon under the desired record. A toast indicating deletion will show up and the record will be soft deleted. All soft deleted records can be restored at once. At present, feature to restore or view soft deleted records are absent.
+To soft delete a record, click the :material-delete: icon under the desired record. A toast indicating deletion will show up and the record will be soft deleted. All soft deleted records can be restored at once. To view the deleted records, click or tap the :material-delete: icon on the app bar.
 
-??? failure "Name or URL after deleted records"
-    Records with Name or URL after deleted records **WILL** result in error.
+??? failure "Records with name or URL after soft deleted records"
+    Records with name or URL after soft deleted records **WILL** result in error. This is not true for those records deleted from trash.
 
+To delete a record from trash as well (delete permanently), visit the deleted record on the recycle bin, tap/click the :material-delete: icon beneath the record to be permanently deleted. To delete all records in trash permanently, visit Settings and tap/click the `Permanently delete all records` button. There is also a button to restore all soft-deleted records as well.
+
+??? warning "Permanent Deletion"
+    Deletion through `Permanently delete all records` button AND through the recycle bin ARE permanent. Records deleted in such a way **cannot** be restored.
+
+## Importing a record
+
+To import a `.omio` file (Sitemarker export file format), visit the Import/View page by clicking/tapping :material-view-grid: on app bar and clicking/tapping `Import from Omio File` button. Import will be done and duplicate records listed.
+
+??? note "Duplicate records"
+    Duplicate records will not be imported.
+
+## Viewing content of .omio file
+
+To view a `.omio` file (Sitemarker export file format), visit the Import/View page by clicking/tapping :material-view-grid: on app bar and clicking/tapping `View Omio File` button.
+
+## Export all records
+
+To export all records, go to Settings, tap/click `Export records as omio file`. On Android, the files will be exported to Downloads directory. On desktop platforms, a file location selection dialog will pop up which decides where the file is exported to.

@@ -19,4 +19,4 @@ Click the refresh button to check for updates
 
 ## Auto Updates
 
-If you installed from any app stores ([See installation guide](./installation.md)), updates can be installed through them. On an application level, auto update notifications are NOT available as of version 3.1.0. It may be made available in a future version.
+If you installed from any app stores ([See installation guide](./installation.md)), updates can be installed through them. On an application level, auto update notifications are NOT available as of version 3.1.1. It may be made available in a future version.

@@ -54,12 +54,13 @@ nav:
       - Update to the latest version: getting-started/update.md
       - Usage: getting-started/usage.md
       - Uninstallation: getting-started/uninstallation.md
-  - Features:
-      - Overview: features/overview.md
-      - Add, Edit, Delete, View Records: features/crud.md
-      - Import/Export/View omio files: features/import_export.md
-      - Theme Settings: features/theme.md
-      - Clear/Delete All/Restore All Records: features/clear_perma_delete_restore.md
+      
+  # - Features:
+  #     - Overview: features/overview.md
+  #     - Add, Edit, Delete, View Records: features/crud.md
+  #     - Import/Export/View omio files: features/import_export.md
+  #     - Theme Settings: features/theme.md
+  #     - Clear/Delete All/Restore All Records: features/clear_perma_delete_restore.md
   - Configuration:
       - Paths: config/paths.md
   - Reporting Issues: issues.md
@@ -70,9 +71,9 @@ plugins:
   - search
   - tags
   - glightbox
-  - git-committers:
-      repository: aerocyber/sitemarker
-      branch: main
+  # - git-committers:
+  #     repository: aerocyber/sitemarker
+  #     branch: main
 
 extra:
   version:
@@ -84,6 +85,9 @@ extra:
     - icon: material/mastodon
       link: https://fosstodon.org/@aerocyber
       name: Aero on Fosstodon
+    - icon: material/github
+      link: https://github.com/aerocyber
+      name: Aero on Github
 
   generator: false
 
@@ -97,7 +101,7 @@ extra:
     actions:
       - accept
 copyright: >
-  Copyright &copy; 2025 - present Aero –
+  Copyright &copy; 2025 - present Aero <br>
   <a href="#__consent">Change cookie settings</a>
 
 markdown_extensions:

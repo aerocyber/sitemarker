@@ -7,6 +7,7 @@ import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/sqlitedb/sm_db.dart';
 import 'package:sitemarker/core/html_fns.dart';
 import 'package:sitemarker/core/data_helper.dart';
+import 'package:sitemarker/core/file_io/file_servicer.dart';
 
 /// Provider for all database and user data related activities
 class SmdbProvider extends ChangeNotifier {
@@ -233,23 +234,8 @@ class SmdbProvider extends ChangeNotifier {
 
   // Implement export to omio file
   exportToOmioFile(List<SmRecord> recordsToExport) async {
-    String? outFile = await FilePicker.platform.saveFile(
-      allowedExtensions: ['omio'],
-      dialogTitle: 'Please select an output file:',
-      fileName: 'sitemarker-html-output-${DateTime.now().toString()}.omio',
-      type: FileType.custom,
-      lockParentWindow: true,
-      initialDirectory: (await getDownloadsDirectory())!.path,
-    );
-
-    if (outFile == null) {
-      // User cancelled the operation
-      throw Exception('User cancelled');
-    }
-
     String data = DataHelper.convertToOmio(recordsToExport);
-    File f = File(outFile);
-    await f.writeAsString(data);
+    await saveFile(data);
 
     notifyListeners();
   }
