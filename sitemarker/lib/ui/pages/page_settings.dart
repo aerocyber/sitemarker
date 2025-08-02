@@ -16,6 +16,7 @@ import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/settings_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
+import 'package:pub_semver/pub_semver.dart';
 
 class PageSettings extends StatefulWidget {
   const PageSettings({super.key});
@@ -63,6 +64,7 @@ class _PageSettingsState extends State<PageSettings>
       _isCheckingForUpdate = true;
     });
     _animationController.repeat(); // Start spinning indefinitely
+    Version current = Version.parse(version);
 
     Uri url = Uri.parse(
         'https://api.github.com/repos/aerocyber/sitemarker/releases/latest');
@@ -70,8 +72,8 @@ class _PageSettingsState extends State<PageSettings>
       http.Response r = await http.get(url);
       if (r.statusCode == 200) {
         Map<dynamic, dynamic> data = json.decode(r.body);
-        if (version.compareTo(data["tag_name"]) == -1 &&
-            data['prerelease'] == false) {
+        Version latest = Version.parse(data["tag_name"]);
+        if (latest > current && data['prerelease'] == false) {
           if (mounted) {
             showDialog(
               context: context,
