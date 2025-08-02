@@ -50,6 +50,9 @@ The following packages are (or will be) available via package managers:
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/sitemarker)
 
+<!--[![Get it from IzzyOnDroid](https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroid.png)](https://apt.izzysoft.de/packages/io.github.aerocyber.sitemarker)-->
+<img src="https://gitlab.com/IzzyOnDroid/repo/-/raw/master/assets/IzzyOnDroidButtonGreyBorder_nofont.png" width="200" height="150" />
+
 ## Documentation
 
 See [docs](docs/index.md) [here](https://aerocyber.github.io/sitemarker).
