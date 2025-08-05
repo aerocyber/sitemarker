@@ -65,6 +65,8 @@ class _PageAddState extends State<PageAdd> {
             Icons.warning,
             size: SizeConfig.blockSizeVertical * 3,
           ),
+          actions: [],
+          content: Text("Error"),
         ),
       );
     }
@@ -114,12 +116,17 @@ class _PageAddState extends State<PageAdd> {
                     if (goBack == true) {
                       if (context.mounted) {
                         if (fromIntent) {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const SMHomeScreen(url: null)),
-                            (Route<dynamic> route) => false,
-                          );
+                          // Navigator.of(context).pushAndRemoveUntil(
+                          //   MaterialPageRoute(
+                          //       builder: (context) =>
+                          //           const SMHomeScreen(url: null)),
+                          //   (Route<dynamic> route) => false,
+                          // );
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      SMHomeScreen(url: null)));
                         }
 
                         // Navigator.of(context).pop();
@@ -314,7 +321,8 @@ class _PageAddState extends State<PageAdd> {
 
   Future<String?> getName() async {
     final data = widget.receivingData;
-    if (data == null || !validator.isURL(data)) {
+    if (data == null) return null;
+    if (!validator.isURL(data)) {
       isErr = true;
       return null;
     }
