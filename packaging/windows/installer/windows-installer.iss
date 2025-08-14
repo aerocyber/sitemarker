@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define DistAppName "Sitemarker"
-#define DistAppVersion "3.0.0"
+#define DistAppVersion "3.1.0"
 #define DistAppPublisher "Aero"
 #define DistAppURL "https://aerocyber.github.io/sitemarker"
 #define DistAppExeName "sitemarker.exe"

@@ -6,29 +6,111 @@ import 'package:sitemarker/ui/components/sitemarker_search_delegate.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
+import 'package:sitemarker/ui/pages/recycle_bin.dart';
+import 'package:sitemarker/ui/pages/view_omio.dart';
+// import 'package:sitemarker/ui/pages/recycle_bin.dart';
 
 class SitemarkerPageView extends StatefulWidget {
-  const SitemarkerPageView({super.key});
+  const SitemarkerPageView({super.key, this.refresh = false});
+  final bool refresh;
 
   @override
   State<SitemarkerPageView> createState() => _SitemarkerPageViewState();
 }
 
 class _SitemarkerPageViewState extends State<SitemarkerPageView> {
+  late List<SmRecord> recordsInDB;
+
+  @override
+  void initState() {
+    super.initState();
+    recordsInDB = Provider.of<SmdbProvider>(context, listen: false)
+        .getAllUndeletedRecords();
+    if (widget.refresh) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        setState(() {
+          recordsInDB = Provider.of<SmdbProvider>(context, listen: false)
+              .getAllUndeletedRecords();
+        });
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     SizeConfig().initSizes(context);
 
     return Consumer<SmdbProvider>(
       builder: (context, value, child) {
-        List<SmRecord> recordsInDB = value.getAllUndeletedRecords();
+        recordsInDB = value.getAllUndeletedRecords();
+        if (recordsInDB.isEmpty) {
+          return SafeArea(
+            child: Scaffold(
+              appBar: AppBar(
+                elevation: 10,
+                actions: [
+                  IconButton(
+                    icon: Icon(
+                      Icons.add,
+                      size: 30,
+                    ),
+                    onPressed: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => PageAdd(
+                            receivingData: null,
+                          ),
+                        ),
+                      );
+                      setState(() {
+                        recordsInDB = value.getAllUndeletedRecords();
+                      });
+                    },
+                  ),
+                  const SizedBox(width: 20),
+                  IconButton(
+                      onPressed: () async {
+                        await Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => SitemarkerPageViewOmio(),
+                          ),
+                        );
 
-        return CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              pinned: true,
+                        setState(() {
+                          recordsInDB = value.getAllUndeletedRecords();
+                        });
+                      },
+                      icon: const Icon(Icons.grid_view_rounded, size: 30)),
+                  const SizedBox(width: 20),
+                  IconButton(
+                      onPressed: () async {
+                        await Navigator.of(context).push(MaterialPageRoute(
+                          builder: (context) => RecycleBin(),
+                        ));
+                        setState(() {
+                          recordsInDB = value.getAllUndeletedRecords();
+                        });
+                      },
+                      icon: Icon(Icons.delete)),
+                  const SizedBox(
+                    width: 20,
+                  ),
+                ],
+              ),
+              body: Center(
+                child: Text('No records found'),
+              ),
+            ),
+          );
+        }
+        if (recordsInDB.isNotEmpty) {
+          recordsInDB.sort((a, b) => a.name.compareTo(b.name));
+        }
+
+        return SafeArea(
+          child: Scaffold(
+            appBar: AppBar(
               elevation: 10,
-              floating: false,
               actions: [
                 IconButton(
                   icon: Icon(
@@ -44,10 +126,24 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
                       ),
                     );
                     setState(() {
-                      recordsInDB = value.getAllRecords();
+                      recordsInDB = value.getAllUndeletedRecords();
                     });
                   },
                 ),
+                const SizedBox(width: 20),
+                IconButton(
+                    onPressed: () async {
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => SitemarkerPageViewOmio(),
+                        ),
+                      );
+
+                      setState(() {
+                        recordsInDB = value.getAllUndeletedRecords();
+                      });
+                    },
+                    icon: const Icon(Icons.grid_view_rounded, size: 30)),
                 const SizedBox(width: 20),
                 IconButton(
                   icon: Icon(
@@ -70,30 +166,59 @@ class _SitemarkerPageViewState extends State<SitemarkerPageView> {
                     );
                   },
                 ),
+                // const SizedBox(width: 20),
+                // IconButton(
+                //   onPressed: () async {
+                //     await Navigator.of(context).push(
+                //       MaterialPageRoute(
+                //         builder: (context) => RecycleBin(),
+                //       ),
+                //     );
+                //     setState(() {
+                //       recordsInDB = value.getAllUndeletedRecords();
+                //     });
+                //   },
+                //   icon: const Icon(Icons.delete, size: 30),
+                // ),
                 const SizedBox(width: 20),
+                IconButton(
+                    onPressed: () async {
+                      await Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) => RecycleBin(),
+                      ));
+                      setState(() {
+                        recordsInDB = value.getAllUndeletedRecords();
+                      });
+                    },
+                    icon: Icon(Icons.delete)),
+                const SizedBox(
+                  width: 20,
+                ),
               ],
             ),
-            SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: CardBookmark(
-                          record: recordsInDB[index],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                    ],
-                  );
-                },
-                childCount: recordsInDB.length,
+            body: Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 15.0),
+              child: ListView.builder(
+                itemBuilder: (context, index) => Column(
+                  children: [
+                    CardBookmark(
+                      record: recordsInDB[index],
+                      onDelete: () {
+                        setState(() {
+                          recordsInDB = value.getAllUndeletedRecords();
+                        });
+                      },
+                    ),
+                    SizedBox(height: 10),
+                  ],
+                ),
+                itemCount: recordsInDB.length,
+                itemExtent: null,
+                // separatorBuilder: (context, index) => SizedBox(height: 10),
               ),
             ),
-          ],
+          ),
         );
       },
     );

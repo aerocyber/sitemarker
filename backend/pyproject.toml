@@ -1,0 +1,14 @@
+[project]
+name = "sitemarker"
+version = "0.1.0"
+description = "Backend for sitemarker"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "appwrite>=11.0.0",
+    "flask>=3.1.1",
+    "flask-cors>=6.0.1",
+    "flask-wtf>=1.2.2",
+    "python-dotenv>=1.1.1",
+    "validators>=0.35.0",
+]

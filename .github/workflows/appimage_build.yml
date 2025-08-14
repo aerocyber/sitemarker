@@ -1,0 +1,139 @@
+name: Linux AppImage Build
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build_appimage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install patchelf
+        run: sudo apt update -y && sudo apt install -y patchelf
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+        working-directory: sitemarker
+
+      - name: Cache Flutter Artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Build Flutter Linux Executable
+        run: |
+          flutter build linux --release --tree-shake-icons --split-debug-info=./build/symbols --debug-symbols=./build/symbols
+          cd build/linux/x64/release/bundle/lib
+          patchelf --set-rpath '$ORIGIN' libsqlite3_flutter_libs_plugin.so
+          patchelf --set-rpath '$ORIGIN' liburl_launcher_linux_plugin.so
+          cd -
+        working-directory: sitemarker
+
+      - name: Install Podman
+        run: |
+          sudo apt update
+          sudo apt install -y podman
+
+      - name: Prepare AppImage Build Script and Config
+        run: |
+          mkdir -p ./.appimage_temp/output
+          cat <<EOF > ./.appimage_temp/build_appimage.sh
+          #!/bin/bash
+          set -euxo pipefail
+
+          # Install appimage-builder dependencies and UPX, including GTK3 runtime library
+          apt update
+          apt install -y python3 python3-pip apt-utils libglib2.0-0 fuse libfuse2 desktop-file-utils libc-bin upx-ucl libgtk-3-0
+
+          pip3 install appimage-builder
+
+          cd /app/build/linux/x64/release/bundle
+
+          upx --best sitemarker
+
+          cat <<'EOF_APPRUN' > AppRun
+          #!/bin/bash
+          HERE="\$(dirname "\$0")"
+          exec "\$HERE"/sitemarker
+          EOF_APPRUN
+          chmod +x AppRun
+
+          cat <<'EOF_DESKTOP' > sitemarker.desktop
+          [Desktop Entry]
+          Name=Sitemarker
+          Exec=sitemarker
+          Icon=sitemarker
+          Type=Application
+          Categories=Utility;
+          EOF_DESKTOP
+
+          cat <<'EOF_YML' > AppImageBuilder.yml
+          version: 1
+          AppDir:
+            path: .
+            app_info:
+              id: com.aerocyber.sitemarker
+              name: sitemarker
+              version: ${{ github.ref_name }}
+              exec: sitemarker
+              icon: sitemarker
+            files:
+              - ${{ github.workspace }}/build/linux/x64/release/bundle
+            runtime:
+              env:
+                PATH: "\$PATH:\$APPDIR/usr/bin"
+          AppImage:
+            name: Sitemarker-${{ github.ref_name }}-x86_64.AppImage
+            arch: x86_64
+            update:
+              zsync:
+                url_template: "https://github.com/${{ github.repository }}/releases/download/latest/Sitemarker-\${version}-x86_64.AppImage.zsync"
+          EOF_YML
+
+          appimage-builder --skip-tests
+
+          mv *.AppImage /output/
+          EOF
+          chmod +x ./.appimage_temp/build_appimage.sh
+        working-directory: sitemarker
+
+      - name: Run AppImage Build in Podman Container
+        run: |
+          podman pull docker.io/ubuntu:18.04
+          podman run --rm \
+            -v ${{ github.workspace }}:/app:Z \
+            -v ${{ github.workspace }}/.appimage_temp/output:/output:Z \
+            -e GITHUB_REF_NAME="${{ github.ref_name }}" \
+            docker.io/ubuntu:18.04 \
+            /app/.appimage_temp/build_appimage.sh
+        working-directory: sitemarker
+
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-appimage
+          path: ./.appimage_temp/output/*.AppImage
+
+      - name: Upload Linux Debug Symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-linux-debug-symbols
+          path: build/symbols/linux

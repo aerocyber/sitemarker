@@ -31,11 +31,20 @@
     </screenshot>
   </screenshots>
   <releases>
-    <release version="3.0.0" date="2024-12-31" type="stable">
+    <release version="3.1.0" date="" type="stable">
       <description>
-        A major rewrite for Sitemarker enhancing maintainability and updating the UI.
+        This version comes with a lot of usability improvements. Auto updates are back to Sitemarker.
+        - Importing, exporting and viewing .omio files are now possible
+        - Manually checking for updates has now been made possible
+        - UI improvements
+        - Bug fixes
+        - Performance improvements
+        - Records are now soft deleted and not permanantly deleted. This is one step closer to the complete implementation of Recycle Bin feature
+        - DB migrations for Sitemarker Sync - which will be a PAID service
+        - Dependency updates
       </description>
     </release>
+    <release version="3.0.0" date="2024-12-31" type="stable" />
     <release version="2.0.0" date="2024-03-31" type="stable" />
     <release version="1.2.3" date="2023-09-14" type="stable"/>
     <release version="1.2.2" date="2023-07-01" type="stable"/>

@@ -27,7 +27,7 @@ class BottomNavBarBtn extends StatelessWidget {
         duration: const Duration(milliseconds: 500),
         child: Icon(icon),
       ),
-      iconSize: SizeConfig.blockSizeVertical * 5,
+      iconSize: 28,
       tooltip: toolTip,
       onPressed: () {
         onPressed(index);

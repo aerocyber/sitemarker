@@ -1,0 +1,130 @@
+site_name: Sitemarker Documentation
+site_url: https://aerocyber.github.io/sitemarker/
+repo_url: https://github.com/aerocyber/sitemarker
+repo_name: aerocyber/sitemarker
+edit_uri: edit/main/docs/
+theme:
+  name: material
+  custom_dir: .overrides
+  palette:
+    - media: "(prefers-color-scheme)"
+      scheme: default
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+  features:
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.path
+    - navigation.prune
+    - toc.follow
+    - toc.integrate
+    - navigation.top
+    - search.suggest
+    - search.share
+    - navigation.footer
+    - content.action.edit
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tabs.link
+    
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting-started/installation.md
+      - Update to the latest version: getting-started/update.md
+      - Usage: getting-started/usage.md
+      - Uninstallation: getting-started/uninstallation.md
+      
+  # - Features:
+  #     - Overview: features/overview.md
+  #     - Add, Edit, Delete, View Records: features/crud.md
+  #     - Import/Export/View omio files: features/import_export.md
+  #     - Theme Settings: features/theme.md
+  #     - Clear/Delete All/Restore All Records: features/clear_perma_delete_restore.md
+  - Configuration:
+      - Paths: config/paths.md
+  - Reporting Issues: issues.md
+  - Contributing: contributing.md
+
+plugins:
+  - privacy
+  - search
+  - tags
+  - glightbox
+  # - git-committers:
+  #     repository: aerocyber/sitemarker
+  #     branch: main
+
+extra:
+  version:
+    provider: mike
+    default: stable
+    alias: true
+
+  social:
+    - icon: material/mastodon
+      link: https://fosstodon.org/@aerocyber
+      name: Aero on Fosstodon
+    - icon: material/github
+      link: https://github.com/aerocyber
+      name: Aero on Github
+
+  generator: false
+
+  consent:
+    title: Cookie consent
+    description: >- 
+      We use cookies to recognize your repeated visits and preferences, as well
+      as to measure the effectiveness of our documentation and whether users
+      find what they're searching for. With your consent, you're helping us to
+      make our documentation better.
+    actions:
+      - accept
+copyright: >
+  Copyright &copy; 2025 - present Aero <br>
+  <a href="#__consent">Change cookie settings</a>
+
+markdown_extensions:
+  - attr_list
+  - md_in_html
+  - pymdownx.blocks.caption
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.blocks.html # Allows raw HTML blocks
+  - pymdownx.blocks.definition # For definition lists (optional, but good to have)
+  - pymdownx.tasklist: # For task lists (optional, but good to have)
+      custom_checkbox: true
+
+extra_css:
+  - css/custom.css
+  - https://fonts.googleapis.com/icon?family=Material+Icons

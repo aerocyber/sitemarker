@@ -1,0 +1,113 @@
+name: Linux Deb & RPM Builds
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build_deb_rpm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: patchelf installation
+        run: sudo apt update -y && sudo apt install -y patchelf
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+        working-directory: sitemarker
+
+      - name: Cache Flutter Artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Build Flutter Linux Executable
+        run: |
+          flutter build linux --release --split-debug-info=./build/symbols
+          cd build/linux/x64/release/bundle/lib
+          patchelf --set-rpath '$ORIGIN' libsqlite3_flutter_libs_plugin.so
+          patchelf --set-rpath '$ORIGIN' liburl_launcher_linux_plugin.so
+          cd -
+        working-directory: sitemarker
+
+      - name: Install UPX
+        run: |
+          sudo apt update
+          sudo apt install -y upx-ucl
+
+      - name: Compress Linux Executable with UPX
+        run: |
+          executable_path="${{ github.workspace }}/build/linux/x64/release/bundle/sitemarker"
+          if [ -f "$executable_path" ]; then
+              upx --best "$executable_path"
+          else
+              echo "Executable not found at $executable_path. Skipping UPX compression."
+          fi
+        working-directory: sitemarker
+
+      - name: Install FPM (Effing Package Management)
+        run: |
+          sudo apt update
+          sudo apt install -y ruby ruby-dev build-essential rpm
+          sudo gem install fpm
+
+      - name: Create .deb Package
+        run: |
+          fpm -s dir -t deb \
+            -a amd64 \
+            -n sitemarker \
+            -v ${{ github.ref_name }} \
+            --deb-systemd systemd/sitemarker.service \
+            --description "Sitemarker - Cross-platform bookmark manager" \
+            --url "https://github.com/${{ github.repository }}" \
+            --license "MIT" \
+            --category "Utility" \
+            -d "libglib2.0-0" -d "libgstreamer-plugins-base1.0-0" -d "libgstreamer1.0-0" -d "libgtk-3-0" # <<<< ADDED libgtk-3-0
+            --prefix /opt/sitemarker \
+            build/linux/x64/release/bundle/=/opt/sitemarker/
+        working-directory: sitemarker
+
+      - name: Create .rpm Package
+        run: |
+          fpm -s dir -t rpm \
+            -a x86_64 \
+            -n sitemarker \
+            -v ${{ github.ref_name }} \
+            --rpm-attr 0644,root,root:/opt/sitemarker \
+            --description "Sitemarker - Cross-platform bookmark manager" \
+            --url "https://github.com/${{ github.repository }}" \
+            --license "MIT" \
+            --category "Utility" \
+            -d "glibc" -d "libgstreamer-plugins-base" -d "libgstreamer" -d "gtk3" # <<<< ADDED gtk3
+            --prefix /opt/sitemarker \
+            build/linux/x64/release/bundle/=/opt/sitemarker/
+        working-directory: sitemarker
+
+      - name: Upload .deb Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-deb
+          path: sitemarker_*.deb
+
+      - name: Upload .rpm Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-rpm
+          path: sitemarker-*.rpm

@@ -1,0 +1,50 @@
+name: macOS Build (Experimental)
+
+on:
+  push:
+    branches:
+      - main
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build_macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.0'
+          channel: 'stable'
+
+      - name: Get Flutter Dependencies
+        run: flutter pub get
+
+      - name: Cache Flutter Artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
+            ${{ env.FLUTTER_ROOT }}/.pub-cache
+          key: ${{ runner.os }}-flutter-${{ hashFiles('pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Build Flutter macOS Executable
+        run: flutter build macos --release --tree-shake-icons --split-debug-info=./build/symbols --debug-symbols=./build/symbols
+
+      - name: Upload macOS App Bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-macos-app
+          path: build/macos/Build/Products/Release/*.app
+
+      - name: Upload macOS Debug Symbols
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitemarker-macos-debug-symbols
+          path: build/symbols/macos

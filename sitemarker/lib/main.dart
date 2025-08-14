@@ -8,6 +8,13 @@ import 'package:sitemarker/core/data_types/settings/sm_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/settings_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+Future<void> requestLegacyPermissions() async {
+  if (await Permission.storage.isDenied) {
+    await Permission.storage.request();
+  }
+}
 
 late SmTheme the;
 
@@ -76,11 +83,16 @@ class _SMAppState extends State<SMApp> {
   final _sharedItems = <SharedMediaFile>[];
   String? url_;
 
+  permission_() async {
+    await requestLegacyPermissions();
+  }
+
   @override
   void initState() {
     super.initState();
 
     if (Platform.isAndroid) {
+      permission_();
       // Listen to media sharing coming from outside the app while the app is in the memory.
       _intentSub =
           ReceiveSharingIntent.instance.getMediaStream().listen((value) {

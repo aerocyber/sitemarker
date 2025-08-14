@@ -55,24 +55,27 @@ class _PageEditState extends State<PageEdit> {
                   onPressed: () async {
                     bool goBack = true;
                     goBack = await showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Record not saved'),
-                        content: const Text(
-                            'Changes will be lost if you go back now. Do you want to go back without saving the record?'),
-                        actions: [
-                          TextButton(
-                            child: const Text(
-                                'Yes, go back discarding the record'),
-                            onPressed: () => Navigator.of(context).pop(true),
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Record not saved'),
+                            content: const Text(
+                                'Changes will be lost if you go back now. Do you want to go back without saving the record?'),
+                            actions: [
+                              TextButton(
+                                child: const Text(
+                                    'Yes, go back discarding the record'),
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                              ),
+                              TextButton(
+                                child: const Text('No, stay here'),
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                              ),
+                            ],
                           ),
-                          TextButton(
-                            child: const Text('No, stay here'),
-                            onPressed: () => Navigator.of(context).pop(false),
-                          ),
-                        ],
-                      ),
-                    ) ?? false;
+                        ) ??
+                        false;
                     if (goBack == true) {
                       if (context.mounted) {
                         Navigator.of(context).pop();
@@ -83,26 +86,29 @@ class _PageEditState extends State<PageEdit> {
               ],
             ),
             actions: [
-              IconButton(
-                icon: Icon(
-                  Icons.save,
-                  size: 25,
+              Consumer<SmdbProvider>(
+                builder: (context, value, child) => IconButton(
+                  icon: Icon(
+                    Icons.save,
+                    size: 25,
+                  ),
+                  onPressed: () {
+                    // TODO: Implement the saving stuff
+                    if (_addItemKey.currentState!.validate()) {
+                      _addItemKey.currentState!.save();
+                      SmRecord rec = SmRecord(
+                        id: widget.record.id,
+                        name: recName ?? widget.record.name,
+                        url: recUrl ?? widget.record.url,
+                        tags: recTag ?? widget.record.tags,
+                        dt: DateTime.now(),
+                        isDeleted: widget.record.isDeleted ?? false,
+                      );
+                      value.updateRecord(rec);
+                      Navigator.of(context).pop();
+                    }
+                  },
                 ),
-                onPressed: () {
-                  // TODO: Implement the saving stuff
-                  if (_addItemKey.currentState!.validate()) {
-                    _addItemKey.currentState!.save();
-                    SmRecord rec = SmRecord(
-                      name: recName!,
-                      url: recUrl!,
-                      tags: recTag ?? '',
-                      dt: DateTime.now(),
-                    );
-                    Provider.of<SmdbProvider>(context, listen: false)
-                        .updateRecord(rec);
-                    Navigator.of(context).pop();
-                  }
-                },
               ),
               const SizedBox(width: 20),
             ],
@@ -143,6 +149,9 @@ class _PageEditState extends State<PageEdit> {
                                 if (name == null || name.isEmpty) {
                                   return "Please enter a name.";
                                 } else if (nameList.contains(name)) {
+                                  if (name == widget.record.name) {
+                                    return null; // Allow editing the same name
+                                  }
                                   return 'The name entered has been associated with a different record.';
                                 }
                                 return null;
@@ -177,6 +186,9 @@ class _PageEditState extends State<PageEdit> {
                                 if (url == null || url.isEmpty) {
                                   return "Please enter a url.";
                                 } else if (urlList.contains(url)) {
+                                  if (url == widget.record.url) {
+                                    return null; // Allow editing the same URL
+                                  }
                                   return 'The url entered has been associated with a different record.';
                                 } else if (!validator.isURL(url)) {
                                   return 'Enter a valid URL';

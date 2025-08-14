@@ -1,5 +1,5 @@
 pkgname="sitemarker"
-pkgver="2.0.0"
+pkgver="3.1.0"
 pkgdesc="An open source bookmark manager."
 pkgrel=1
 arch=('x86_64')

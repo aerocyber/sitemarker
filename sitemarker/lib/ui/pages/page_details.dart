@@ -6,10 +6,20 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:toastification/toastification.dart';
 
-class PageDetails extends StatelessWidget {
+class PageDetails extends StatefulWidget {
   final SmRecord record;
-  const PageDetails({super.key, required this.record});
+  final bool isEditable;
+  const PageDetails({
+    super.key,
+    required this.record,
+    this.isEditable = true,
+  });
 
+  @override
+  State<PageDetails> createState() => _PageDetailsState();
+}
+
+class _PageDetailsState extends State<PageDetails> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().initSizes(context);
@@ -21,7 +31,7 @@ class PageDetails extends StatelessWidget {
             IconButton(
               icon: Icon(
                 Icons.arrow_back,
-                size: 30,
+                size: 25,
               ),
               onPressed: () {
                 Navigator.of(context).pop();
@@ -30,43 +40,44 @@ class PageDetails extends StatelessWidget {
           ],
         ),
         actions: [
-          IconButton(
-            icon: Icon(
-              Icons.edit,
-              size: 30,
-            ),
-            onPressed: () async {
-              await Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => PageEdit(
-                    record: record,
+          if (widget.isEditable)
+            IconButton(
+              icon: Icon(
+                Icons.edit,
+                size: 22,
+              ),
+              onPressed: () async {
+                await Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => PageEdit(
+                      record: widget.record,
+                    ),
                   ),
-                ),
-              );
-              if (context.mounted) {
-                Navigator.of(context).popUntil((r) => r.isFirst);
-              }
-              // TODO: Implement the editing stuff
-            },
-          ),
+                );
+                if (context.mounted) {
+                  Navigator.of(context).popUntil((r) => r.isFirst);
+                }
+                // TODO: Implement the editing stuff
+              },
+            ),
           const SizedBox(width: 20),
           IconButton(
             icon: Icon(
               Icons.open_in_new,
-              size: 30,
+              size: 22,
             ),
             onPressed: () {
-              launchUrl(Uri.parse(record.url).scheme.isEmpty
-                  ? Uri.parse('https://${record.url}')
-                  : Uri.parse(record.url));
+              launchUrl(Uri.parse(widget.record.url).scheme.isEmpty
+                  ? Uri.parse('https://${widget.record.url}')
+                  : Uri.parse(widget.record.url));
               toastification.show(
                 icon: Icon(Icons.check),
                 context: context,
                 type: ToastificationType.success,
                 style: ToastificationStyle.flatColored,
                 title: Text("Opened in new tab!!"),
-                description:
-                    Text("${record.url} has been opened in a new browser tab!"),
+                description: Text(
+                    "${widget.record.url} has been opened in a new browser tab!"),
                 alignment: Alignment.bottomCenter,
                 autoCloseDuration: const Duration(seconds: 3),
                 animationBuilder: (
@@ -93,10 +104,10 @@ class PageDetails extends StatelessWidget {
           IconButton(
             icon: Icon(
               Icons.copy,
-              size: 30,
+              size: 22,
             ),
             onPressed: () {
-              Clipboard.setData(ClipboardData(text: record.url));
+              Clipboard.setData(ClipboardData(text: widget.record.url));
               toastification.show(
                 context: context,
                 icon: Icon(Icons.check),
@@ -104,7 +115,7 @@ class PageDetails extends StatelessWidget {
                 style: ToastificationStyle.flatColored,
                 title: Text("Copied successfully!"),
                 description:
-                    Text("${record.url} has been copied to clipboard!"),
+                    Text("${widget.record.url} has been copied to clipboard!"),
                 alignment: Alignment.bottomCenter,
                 autoCloseDuration: const Duration(seconds: 3),
                 animationBuilder: (
@@ -131,99 +142,108 @@ class PageDetails extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: ListTile(
-                tileColor: Theme.of(context).colorScheme.primary,
-                minTileHeight: 75,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-                titleAlignment: ListTileTitleAlignment.center,
-                leading: Text(
-                  "Name",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 12,
-                  ),
-                ),
-                title: Text(
-                  record.name.length >= 20
-                      ? '${record.name.substring(0, 20)}...'
-                      : record.name,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 18,
-                  ),
-                ),
-              ),
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 12),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 600, // You can adjust this to control layout width
             ),
-            const SizedBox(height: 25),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: ListTile(
-                tileColor: Theme.of(context).colorScheme.primary,
-                minTileHeight: 75,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                ),
-                titleAlignment: ListTileTitleAlignment.center,
-                leading: Text(
-                  "URL",
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSecondary,
-                    fontSize: 12,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _buildRecordCard(
+                  context,
+                  title: "Record Name",
+                  child: Text(
+                    widget.record.name,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: 25,
+                    ),
                   ),
                 ),
-                title: Text(
-                  record.name.length >= 20
-                      ? '${record.url.substring(0, 20)}...'
-                      : record.url,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
-                    fontSize: 18,
+                const SizedBox(height: 20),
+                _buildRecordCard(
+                  context,
+                  title: "Record URL",
+                  child: Text(
+                    widget.record.url,
+                    style: TextStyle(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                      fontSize: 25,
+                    ),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 25),
-            Padding(
-              padding: EdgeInsets.all(20),
-              child: record.tags.isNotEmpty
-                  ? SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: <Widget>[
-                          for (int i = 0;
-                              i < record.tags.split(',').length;
-                              i++)
-                            record.tags.split(',')[i].trim().isNotEmpty
-                                ? Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Chip(
-                                      label: Text(
-                                        record.tags.split(',')[i].trim(),
-                                        style: TextStyle(fontSize: 18),
+                const SizedBox(height: 20),
+                _buildRecordCard(
+                  context,
+                  title: "Record Tags",
+                  child: widget.record.tags.trim().isNotEmpty
+                      ? Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: widget.record.tags
+                              .split(',')
+                              .map((tag) => tag.trim())
+                              .where((tag) => tag.isNotEmpty)
+                              .map((tag) => Chip(
+                                    label: Text(
+                                      tag,
+                                      style: TextStyle(
+                                        fontSize: 18,
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary,
                                       ),
                                     ),
-                                  )
-                                : Container(),
-                        ],
-                      ),
-                    )
-                  : const Text(
-                      'Not tagged',
-                      style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontSize: 15,
-                      ),
-                    ),
+                                  ))
+                              .toList(),
+                        )
+                      : Text(
+                          'Not tagged',
+                          style: TextStyle(
+                            fontStyle: FontStyle.italic,
+                            fontSize: 18,
+                            color: Theme.of(context).colorScheme.onSecondary,
+                          ),
+                        ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildRecordCard(
+    BuildContext context, {
+    required String title,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(12.0),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: Theme.of(context).colorScheme.onSecondary,
+              fontSize: 20,
+            ),
+          ),
+          const SizedBox(height: 10),
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: child,
+          ),
+        ],
       ),
     );
   }

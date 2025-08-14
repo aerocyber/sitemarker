@@ -93,13 +93,14 @@ class DataHelper {
       throw Exception('Invalid omio file. Hash mismatched');
     }
 
+    
     for (String key in imported["Data"]!.keys) {
       records.add(
         SmRecord(
           name: key,
           url: imported["Data"]![key]!["URL"]!,
-          tags: imported["Data"]![key]!["categories"]!,
-          dt: imported["Data"]![key]!["Added On"]!,
+          tags: imported["Data"]![key]!["categories"] ?? "",
+          dt: DateTime.parse(imported["Data"]![key]!["Added On"]!),
         ),
       );
     }
