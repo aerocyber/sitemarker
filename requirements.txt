@@ -1,0 +1,8 @@
+mkdocs
+mkdocs-material
+mkdocs-glightbox
+#mkdocs-tags
+#mkdocs-privacy
+mike
+pymdown-extensions
+# mkdocs-git-committers-plugin
