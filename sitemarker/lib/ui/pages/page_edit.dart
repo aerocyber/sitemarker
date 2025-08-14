@@ -23,6 +23,7 @@ class _PageEditState extends State<PageEdit> {
   String? recName;
   String? recTag;
   String? recUrl;
+  String cname = "", curl = "", ctag = "";
 
   TextEditingController nameController = TextEditingController();
   TextEditingController urlController = TextEditingController();
@@ -30,8 +31,11 @@ class _PageEditState extends State<PageEdit> {
   @override
   Widget build(BuildContext context) {
     SizeConfig().initSizes(context);
-    nameController.text = widget.record.name;
-    urlController.text = widget.record.url;
+    cname = widget.record.name;
+    curl = widget.record.url;
+    ctag = widget.record.tags;
+    nameController.text = cname;
+    urlController.text = curl;
 
     return Consumer<SmdbProvider>(
       builder: (context, value, child) {
@@ -53,6 +57,14 @@ class _PageEditState extends State<PageEdit> {
                     size: 25,
                   ),
                   onPressed: () async {
+                    SmRecord r = widget.record;
+                    if (r.name == cname && r.url == curl && r.tags == ctag) {
+                      if (context.mounted) {
+                        Navigator.of(context).pop();
+                      }
+                      return;
+                    }
+                    ;
                     bool goBack = true;
                     goBack = await showDialog(
                           context: context,
@@ -156,6 +168,7 @@ class _PageEditState extends State<PageEdit> {
                                 }
                                 return null;
                               },
+                              onChanged: (value) => cname = value,
                               onSaved: (name) {
                                 recName = name!;
                               },
@@ -195,6 +208,7 @@ class _PageEditState extends State<PageEdit> {
                                 }
                                 return null;
                               },
+                              onChanged: (val) => curl = val,
                               onSaved: (url) {
                                 recUrl = url!;
                               },
@@ -206,7 +220,7 @@ class _PageEditState extends State<PageEdit> {
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: TextFormField(
-                              initialValue: widget.record.tags,
+                              initialValue: ctag,
                               textInputAction: TextInputAction.done,
                               decoration: const InputDecoration(
                                 icon: Icon(Icons.tag),
@@ -223,9 +237,12 @@ class _PageEditState extends State<PageEdit> {
                                 return null;
                               },
                               onSaved: (tags) {
-                                if (tags != null && tags.isNotEmpty) {
+                                if (tags != null) {
                                   recTag = tags;
                                 }
+                              },
+                              onChanged: (value) {
+                                ctag = value;
                               },
                             ),
                           )

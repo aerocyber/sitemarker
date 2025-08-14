@@ -26,6 +26,7 @@ class _PageAddState extends State<PageAdd> {
   String? recTag;
   String? recUrl;
   bool changed = false;
+  bool textChanged = true, urlChanged = true, tagChanged = true;
   bool fromIntent = false;
 
   TextEditingController nameController = TextEditingController();
@@ -92,7 +93,7 @@ class _PageAddState extends State<PageAdd> {
                   ),
                   onPressed: () async {
                     bool goBack = true;
-                    if (changed) {
+                    if (changed || textChanged || urlChanged || tagChanged) {
                       goBack = await showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -193,7 +194,11 @@ class _PageAddState extends State<PageAdd> {
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: TextFormField(
                               onChanged: (newval) {
-                                changed = true;
+                                if (newval.isEmpty) {
+                                  textChanged = false;
+                                } else {
+                                  textChanged = true;
+                                }
                               },
                               maxLines: 1,
                               controller: nameController,
@@ -235,7 +240,11 @@ class _PageAddState extends State<PageAdd> {
                               child: TextFormField(
                                 controller: urlController,
                                 onChanged: (newval) {
-                                  changed = true;
+                                  if (newval.isEmpty) {
+                                    urlChanged = false;
+                                  } else {
+                                    urlChanged = true;
+                                  }
                                 },
                                 maxLines: 1,
                                 textInputAction: TextInputAction.next,
@@ -279,7 +288,11 @@ class _PageAddState extends State<PageAdd> {
                             child: TextFormField(
                               textInputAction: TextInputAction.done,
                               onChanged: (newval) {
-                                changed = true;
+                                if (newval.isEmpty) {
+                                  tagChanged = false;
+                                } else {
+                                  tagChanged = true;
+                                }
                               },
                               decoration: const InputDecoration(
                                 contentPadding: EdgeInsets.symmetric(
