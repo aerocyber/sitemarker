@@ -74,8 +74,28 @@ class CardBookmark extends StatelessWidget {
                                       ? Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Chip(
+                                            color:
+                                                WidgetStatePropertyAll<Color>(
+                                              Theme.of(context)
+                                                  .colorScheme
+                                                  .onPrimary,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadiusGeometry.all(
+                                                        Radius.circular(5)),
+                                                side: BorderSide(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .onPrimary,
+                                                )),
                                             label: Text(
                                               record.tags.split(',')[i].trim(),
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .colorScheme
+                                                    .primary,
+                                              ),
                                             ),
                                           ),
                                         )

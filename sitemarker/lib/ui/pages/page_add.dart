@@ -26,6 +26,7 @@ class _PageAddState extends State<PageAdd> {
   String? recTag;
   String? recUrl;
   bool changed = false;
+  bool textChanged = true, urlChanged = true, tagChanged = true;
   bool fromIntent = false;
 
   TextEditingController nameController = TextEditingController();
@@ -65,6 +66,8 @@ class _PageAddState extends State<PageAdd> {
             Icons.warning,
             size: SizeConfig.blockSizeVertical * 3,
           ),
+          actions: [],
+          content: Text("Error"),
         ),
       );
     }
@@ -90,7 +93,7 @@ class _PageAddState extends State<PageAdd> {
                   ),
                   onPressed: () async {
                     bool goBack = true;
-                    if (changed) {
+                    if (changed || textChanged || urlChanged || tagChanged) {
                       goBack = await showDialog(
                         context: context,
                         builder: (context) => AlertDialog(
@@ -114,12 +117,17 @@ class _PageAddState extends State<PageAdd> {
                     if (goBack == true) {
                       if (context.mounted) {
                         if (fromIntent) {
-                          Navigator.of(context).pushAndRemoveUntil(
-                            MaterialPageRoute(
-                                builder: (context) =>
-                                    const SMHomeScreen(url: null)),
-                            (Route<dynamic> route) => false,
-                          );
+                          // Navigator.of(context).pushAndRemoveUntil(
+                          //   MaterialPageRoute(
+                          //       builder: (context) =>
+                          //           const SMHomeScreen(url: null)),
+                          //   (Route<dynamic> route) => false,
+                          // );
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      SMHomeScreen(url: null)));
                         }
 
                         // Navigator.of(context).pop();
@@ -186,7 +194,11 @@ class _PageAddState extends State<PageAdd> {
                             padding: EdgeInsets.symmetric(horizontal: 20),
                             child: TextFormField(
                               onChanged: (newval) {
-                                changed = true;
+                                if (newval.isEmpty) {
+                                  textChanged = false;
+                                } else {
+                                  textChanged = true;
+                                }
                               },
                               maxLines: 1,
                               controller: nameController,
@@ -228,7 +240,11 @@ class _PageAddState extends State<PageAdd> {
                               child: TextFormField(
                                 controller: urlController,
                                 onChanged: (newval) {
-                                  changed = true;
+                                  if (newval.isEmpty) {
+                                    urlChanged = false;
+                                  } else {
+                                    urlChanged = true;
+                                  }
                                 },
                                 maxLines: 1,
                                 textInputAction: TextInputAction.next,
@@ -272,7 +288,11 @@ class _PageAddState extends State<PageAdd> {
                             child: TextFormField(
                               textInputAction: TextInputAction.done,
                               onChanged: (newval) {
-                                changed = true;
+                                if (newval.isEmpty) {
+                                  tagChanged = false;
+                                } else {
+                                  tagChanged = true;
+                                }
                               },
                               decoration: const InputDecoration(
                                 contentPadding: EdgeInsets.symmetric(
@@ -314,7 +334,8 @@ class _PageAddState extends State<PageAdd> {
 
   Future<String?> getName() async {
     final data = widget.receivingData;
-    if (data == null || !validator.isURL(data)) {
+    if (data == null) return null;
+    if (!validator.isURL(data)) {
       isErr = true;
       return null;
     }

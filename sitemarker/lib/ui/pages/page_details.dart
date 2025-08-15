@@ -187,13 +187,25 @@ class _PageDetailsState extends State<PageDetails> {
                               .map((tag) => tag.trim())
                               .where((tag) => tag.isNotEmpty)
                               .map((tag) => Chip(
+                                    color: WidgetStatePropertyAll<Color>(
+                                        Theme.of(context)
+                                            .colorScheme
+                                            .onPrimary),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(5)),
+                                        side: BorderSide(
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .onPrimary,
+                                        )),
                                     label: Text(
                                       tag,
                                       style: TextStyle(
                                         fontSize: 18,
                                         color: Theme.of(context)
                                             .colorScheme
-                                            .onPrimary,
+                                            .primary,
                                       ),
                                     ),
                                   ))
