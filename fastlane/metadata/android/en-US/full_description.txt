@@ -1,0 +1,1 @@
+<p><i>Sitemarker</i> is an open-source bookmark manager. The main aim behind the project is to make managing bookmarks as simple as typing them.</p>
