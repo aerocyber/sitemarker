@@ -46,7 +46,7 @@ Checkout the [releases](https://github.com/aerocyber/sitemarker/releases) page a
 
 The following packages are (or will be) available via package managers:
 
-[![Get it on Flathub](https://flathub.org/api/badge?locale=en)](https://flathub.org/app/io.github.aerocyber.sitemarker)
+[![Get it on Flathub](https://flathub.org/api/badge?locale=en)](https://flathub.org/apps/io.github.aerocyber.sitemarker)
 
 [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/en/snap-store-black.svg)](https://snapcraft.io/sitemarker)
 
