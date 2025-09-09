@@ -1,12 +1,12 @@
 pkgname="sitemarker"
-pkgver="3.1.0"
+pkgver="3.1.2"
 pkgdesc="An open source bookmark manager."
 pkgrel=1
 arch=('x86_64')
 url="https://github.com/aerocyber/sitemarker"
 makedepends=('flutter')
-license=('MIT')
-sha256sums=('c628847545a41c05e3ef26f44b0a21ae7adecb11bf63196e39d71adff2d93c4c')
+license=('Apache-2.0')
+sha256sums=('sha256:80f49dc729d4d65224adf418ec9965bc06061e47501d6eff3ed43f39f2ab1c66')
 source=("https://github.com/aerocyber/$pkgname/releases/download/$pkgver/$pkgname-$pkgver-linux.tar.xz")
 
 package() {
