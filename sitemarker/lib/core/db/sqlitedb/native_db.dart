@@ -12,9 +12,7 @@ DatabaseConnection connect() {
     if (Platform.isAndroid) {
       await applyWorkaroundToOpenSqlite3OnOldAndroidVersions();
 
-      final cachebase = (await getTemporaryDirectory()).path;
-
-      sqlite3.tempDirectory = cachebase;
+      sqlite3.tempDirectory = (await getTemporaryDirectory()).path;
     }
 
     return NativeDatabase.createBackgroundConnection(
@@ -33,29 +31,25 @@ Future<File> get getDatabaseFile async {
 /// Get the path to db file.
 Future<String> getPath() async {
   String fileName = 'sitemarker';
+  String filePath;
   if (!kReleaseMode) {
-    fileName = 'sitemarker-debugdb';
+    fileName += '-debugdb';
     // print("Using debug database file: $fileName.db");
   }
   if (Platform.environment["XDG_DATA_HOME"] != null) {
-    if (!kReleaseMode) {
-      print(
-          "Using debug database file: ${File("${Platform.environment["XDG_DATA_HOME"]}/$fileName.db").path}");
-    }
-    return File("${Platform.environment["XDG_DATA_HOME"]}/$fileName.db").path;
+    filePath =
+        File("${Platform.environment["XDG_DATA_HOME"]}/$fileName.db").path;
   } else if (Platform.environment['SNAP_USER_COMMON'] != null) {
-    if (!kReleaseMode) {
-      print(
-          "Using debug database file: ${File("${Platform.environment["SNAP_USER_COMMON"]}/$fileName.db").path}");
-    }
-    return File("${Platform.environment["SNAP_USER_COMMON"]}/$fileName.db")
-        .path;
+    filePath =
+        File("${Platform.environment["SNAP_USER_COMMON"]}/$fileName.db").path;
   } else {
-    if (!kReleaseMode) {
-      print(
-          "Using debug database file: ${File("${(await getApplicationSupportDirectory()).path}/$fileName.db").path}");
-    }
-    return File("${(await getApplicationSupportDirectory()).path}/$fileName.db")
-        .path;
+    filePath =
+        File("${(await getApplicationSupportDirectory()).path}/$fileName.db")
+            .path;
   }
+  if (!kReleaseMode) {
+    print("Using debug database file: $filePath");
+  }
+
+  return filePath;
 }
