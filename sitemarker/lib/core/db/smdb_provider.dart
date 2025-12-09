@@ -41,7 +41,7 @@ class SmdbProvider extends ChangeNotifier {
     init();
   }
 
-  populate() async {
+  Future<void> populate() async {
     allRecords = await db.allRecords;
     _records =
         allRecords.where((element) => element.isDeleted == false).toList();
@@ -58,7 +58,7 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   /// Add a new record
-  insertRecord(SmRecord record) async {
+  Future<void> insertRecord(SmRecord record) async {
     final rec = SitemarkerRecord(
       id: getDefaultId(),
       name: record.name,
@@ -73,7 +73,7 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   /// toggle delete a record
-  toggleDeleteRecord(SmRecord record) async {
+  Future<void> toggleDeleteRecord(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
     db.toggleDelete(rec.first);
     await populate();
@@ -81,7 +81,7 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   /// Soft delete a record
-  softDeleteRecord(SmRecord record) async {
+  Future<void> softDeleteRecord(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
     await db.softDelete(rec.first);
     await populate();
@@ -89,7 +89,7 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   /// Update a record
-  updateRecord(SmRecord record) async {
+  Future<void> updateRecord(SmRecord record) async {
     await db.updateRecord(SitemarkerRecord(
       id: record.id!,
       name: record.name,
@@ -103,7 +103,7 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   /// Import from html
-  importFromHTML() async {
+  Future<void> importFromHTML() async {
     List<SmRecord> recs;
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowedExtensions: ['html', 'htm'],
@@ -147,7 +147,7 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   /// Export to html
-  exportToHTML(List<SmRecord> exportingRecords) async {
+  Future<void> exportToHTML(List<SmRecord> exportingRecords) async {
     String? outFile = await FilePicker.platform.saveFile(
       allowedExtensions: ['html'],
       dialogTitle: 'Please select an output file:',
@@ -172,7 +172,7 @@ class SmdbProvider extends ChangeNotifier {
   // Implement import from omio file
   // THIS IS THE CORRECTED CODE FOR SmdbProvider.importFromOmioFile
 // Please use this version
-  importFromOmioFile(File f) async {
+  Future<void> importFromOmioFile(File f) async {
     List<SmRecord> recs;
 
     try {
@@ -233,7 +233,7 @@ class SmdbProvider extends ChangeNotifier {
   }
 
   // Implement export to omio file
-  exportToOmioFile(List<SmRecord> recordsToExport) async {
+  Future<void> exportToOmioFile(List<SmRecord> recordsToExport) async {
     String data = DataHelper.convertToOmio(recordsToExport);
     await saveFile(data);
 

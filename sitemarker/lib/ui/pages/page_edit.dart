@@ -64,7 +64,6 @@ class _PageEditState extends State<PageEdit> {
                       }
                       return;
                     }
-                    ;
                     bool goBack = true;
                     goBack = await showDialog(
                           context: context,

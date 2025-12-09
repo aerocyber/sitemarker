@@ -18,7 +18,7 @@ class SmTheme {
 
   /// Initialize the themes. Packages themes are manually added to this list.
   /// For loading custom themes, see [loadCustomThemes] function
-  init() async {
+  Future<void> init() async {
     themeStore = [
       await rootBundle.loadString('assets/themes/default.colorsfile'),
     ];
@@ -27,7 +27,7 @@ class SmTheme {
 
   /// Load custom themes from user directories. Custom themes are not supported
   /// on web. Note: Web is **_NOT_** supported.
-  loadCustomThemes() async {
+  Future<void> loadCustomThemes() async {
     Directory themeDir = Directory(await getThemePath());
     if (!themeDir.existsSync()) {
       // No themes. So, log it and return

@@ -25,7 +25,7 @@ class SMSettingsProvider extends ChangeNotifier {
   /// Initialize the settings. If no value is found for a key, provide a default
   /// value. Also, populate the secure store with defaults if they're not populated
   /// already. This function is called from the constructor of this class.
-  init() async {
+  Future<void> init() async {
     settingsStore = SharedPreferencesAsync();
     themeNameValue =
         (await settingsStore.getString(themeNameKey)) ?? themeNameValue;
@@ -52,7 +52,7 @@ class SMSettingsProvider extends ChangeNotifier {
   String getCurrentThemeMode() => themeModeValue;
 
   /// Change the theme mode. Allowed values are `system`, `light` and `dark`
-  changeThemeMode(String newMode) async {
+  Future<void> changeThemeMode(String newMode) async {
     newMode = newMode.toLowerCase();
     if (!['system', 'light', 'dark'].contains(newMode)) {
       throw Exception('Invalid Theme Mode');
@@ -78,7 +78,7 @@ class SMSettingsProvider extends ChangeNotifier {
 
   /// Change the theme. The required parameter is a theme id. Theme Ids can be
   /// obtained from the `geThemes()` function
-  changeTheme(String newThemeId) async {
+  Future<void> changeTheme(String newThemeId) async {
     if (newThemeId == themeNameValue) {
       return;
     }

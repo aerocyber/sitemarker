@@ -30,7 +30,7 @@ class SmSettings {
     return smServerUrl != null && smUsername != null && smPassword != null;
   }
 
-  login(SharedPreferencesAsync settingsStore, String username, String password,
+  Future<void> login(SharedPreferencesAsync settingsStore, String username, String password,
       String serverUrl) async {
     await settingsStore.setString('SM_SERVER_URL', serverUrl);
     await settingsStore.setString('SM_USERNAME', username);
@@ -40,7 +40,7 @@ class SmSettings {
     smPassword = password;
   }
 
-  logout(SharedPreferencesAsync settingsStore) async {
+  Future<void> logout(SharedPreferencesAsync settingsStore) async {
     await settingsStore.remove('SM_SERVER_URL');
     await settingsStore.remove('SM_USERNAME');
     await settingsStore.remove('SM_PASSWORD');

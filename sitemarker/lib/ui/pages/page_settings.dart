@@ -149,7 +149,7 @@ class _PageSettingsState extends State<PageSettings>
     });
   }
 
-  handleDropdown(SitemarkerTheme? selection) {
+  void handleDropdown(SitemarkerTheme? selection) {
     if (selection == null) {
       _DropDownThemeModeController.text = theme.name;
       selection = theme;

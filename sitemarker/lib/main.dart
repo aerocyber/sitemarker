@@ -83,7 +83,7 @@ class _SMAppState extends State<SMApp> {
   final _sharedItems = <SharedMediaFile>[];
   String? url_;
 
-  permission_() async {
+  Future<void> permission_() async {
     await requestLegacyPermissions();
   }
 
