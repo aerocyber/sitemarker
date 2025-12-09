@@ -125,6 +125,48 @@ class SitemarkerDB extends _$SitemarkerDB {
   Future<List<SitemarkerRecord>> get allRecords =>
       select(sitemarkerRecords).get();
 
+  // Get all records in folder with folder ID known
+  Future<List<SitemarkerRecord>> getRecordsByFolderId(int folderId) {
+    return (select(sitemarkerRecords)
+          ..where((t) => t.folderId.equals(folderId)))
+        .get();
+  }
+
+  // Get all subfolders of a folder with folder ID known
+  Future<List<Folder>> getAllSubfolders(int folderId) {
+    return (select(folders)..where((t) => t.parentId.equals(folderId))).get();
+  }
+
+  // Get all tags of a record where the ID of the record is known
+  Future<List<RecordTag>> getAllTags(int recordId) async {
+    final mappings = await (select(tagMappings)
+          ..where((t) => t.bookmarkId.equals(recordId)))
+        .get();
+    List<RecordTag> records = [];
+    for (final mapping in mappings) {
+      records.add(await (select(recordTags)
+            ..where((t) => t.id.equals(mapping.id)))
+          .getSingle());
+    }
+
+    return records;
+  }
+
+  // Get all bookmarks which have got the same tag id
+  Future<List<SitemarkerRecord>> getAllRecordsByTagId(int tagId) async {
+    final mappings =
+        await (select(tagMappings)..where((t) => t.tagId.equals(tagId))).get();
+
+    List<SitemarkerRecord> records = [];
+    for (final mapping in mappings) {
+      records.add(await (select(sitemarkerRecords)
+            ..where((t) => t.id.equals(mapping.bookmarkId)))
+          .getSingle());
+    }
+
+    return records;
+  }
+
   /// Get records matching name
   Future<List<SitemarkerRecord>> getRecordsByName(String name) {
     return (select(sitemarkerRecords)..where((t) => t.name.equals(name))).get();
@@ -145,47 +187,6 @@ class SitemarkerDB extends _$SitemarkerDB {
         .get();
   }
 
-  /// Get records matching/containing tags
-  Future<List<SitemarkerRecord>> getRecordsByTags(List<String> tags) async {
-    List<SitemarkerRecord> toRet = [];
-    List<SitemarkerRecord> tmp = [];
-    List<SitemarkerRecord> srl = await select(sitemarkerRecords).get();
-
-    for (int i = 0; i < srl.length; i++) {
-      List<String> s = srl[i].tags.split(",");
-      for (int j = 0; i < s.length; j++) {
-        String str = s[i].trim();
-        s[i] = str;
-      }
-      tmp.add(SitemarkerRecord(
-        id: srl[i].id,
-        name: srl[i].name,
-        url: srl[i].url,
-        tags: srl[i].tags,
-        isDeleted: srl[i].isDeleted,
-        dateAdded: srl[i].dateAdded,
-      ));
-    }
-
-    for (int i = 0; i < tmp.length; i++) {
-      List<String> tmpTags = tmp[i].tags.split(',');
-      bool ignoreIter = false;
-      for (int t = 0; t < tags.length; t++) {
-        if (!tmpTags.contains(tags[i])) {
-          tmp.removeAt(i);
-          ignoreIter = true;
-        }
-      }
-      if (ignoreIter) {
-        break;
-      }
-    }
-
-    toRet = tmp;
-
-    return toRet;
-  }
-
   /// Add a new record
   Future<int> insertRecord(SitemarkerRecord record) =>
       into(sitemarkerRecords).insert(record);
@@ -204,9 +205,12 @@ class SitemarkerDB extends _$SitemarkerDB {
       id: record.id,
       name: record.name,
       url: record.url,
-      tags: record.tags,
       isDeleted: !record.isDeleted,
       dateAdded: record.dateAdded,
+      dateModified: record.dateModified,
+      folderId: record.folderId,
+      lastSynced: record.lastSynced,
+      notes: record.notes,
     );
 
     return update(sitemarkerRecords).replace(rec);
@@ -218,9 +222,12 @@ class SitemarkerDB extends _$SitemarkerDB {
       id: record.id,
       name: record.name,
       url: record.url,
-      tags: record.tags,
       isDeleted: true,
       dateAdded: record.dateAdded,
+      dateModified: record.dateModified,
+      folderId: record.folderId,
+      lastSynced: record.lastSynced,
+      notes: record.notes,
     );
 
     return update(sitemarkerRecords).replace(rec);
@@ -237,6 +244,9 @@ class SitemarkerDB extends _$SitemarkerDB {
     return (select(sitemarkerRecords)..where((t) => t.isDeleted.equals(false)))
         .get();
   }
+
+  /// Get all folders
+  Future<List<Folder>> get allFolders => select(folders).get();
 }
 
 /// Schema definition
