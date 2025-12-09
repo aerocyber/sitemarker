@@ -31,6 +31,80 @@ class SitemarkerDB extends _$SitemarkerDB {
               schema.sitemarkerRecords.dateModified,
             );
           },
+          from3To4: (m, schema) async {
+            // Create new tables
+            await m.createTable(schema.folders);
+            await m.createTable(schema.recordTags);
+            await m.createTable(schema.tagMappings);
+
+            // Default folder (id 1: root)
+            into(schema.folders).insert(
+              RawValuesInsertable({
+                'id': Variable<int>(1),
+                'name': Variable<String>('Root'),
+              }),
+              mode: InsertMode.insertOrIgnore,
+            );
+
+            // Add new columns
+            await m.addColumn(
+                schema.sitemarkerRecords, schema.sitemarkerRecords.folderId);
+            await m.addColumn(
+                schema.sitemarkerRecords, schema.sitemarkerRecords.lastSynced);
+            await m.addColumn(
+                schema.sitemarkerRecords, schema.sitemarkerRecords.notes);
+
+            // Migrate tags
+
+            final rawRowsOfTags = await customSelect(
+                'SELECT id, tags FROM sitemarker_records',
+                readsFrom: {}).get();
+
+            Map<String, int> tagCache = {};
+
+            for (final row in rawRowsOfTags) {
+              final recordId = row.read<int>('id');
+              final tagsString = row.read<String?>('tags');
+
+              if (tagsString != null && tagsString.isNotEmpty) {
+                // split and trim
+                final tagsList = tagsString
+                    .split(',')
+                    .map((t) => t.trim())
+                    .where((t) => t.isNotEmpty);
+
+                // deduplicated insert/assignment
+                for (final tag in tagsList) {
+                  int? tagId = tagCache[tag];
+
+                  if (tagId == null) {
+                    final existingTag = await customSelect(
+                      'SELECT id FROM record_tags WHERE name = ?',
+                      variables: [Variable<String>(tag)],
+                      readsFrom: {schema.recordTags},
+                    ).getSingleOrNull();
+
+                    if (existingTag != null) {
+                      tagId = existingTag.read<int>('id');
+                    } else {
+                      tagId = await into(schema.recordTags).insert(
+                        RawValuesInsertable({
+                          'name': Variable<String>(tag),
+                        }),
+                      );
+                    }
+                    tagCache[tag] = tagId;
+                  }
+                  await into(schema.tagMappings).insert(
+                    RawValuesInsertable({
+                      'bookmark_id': Variable<int>(recordId),
+                      'tag_id': Variable<int>(tagId),
+                    }),
+                  );
+                }
+              }
+            }
+          },
         ),
         beforeOpen: (details) async {
           if (details.hadUpgrade) {
@@ -185,6 +259,10 @@ class SitemarkerRecords extends Table {
 
   // DB v4: Added the notes column
   TextColumn get notes => text().nullable()();
+
+  // DB v4: Added the folderId column
+  IntColumn get folderId =>
+      integer().references(Folders, #id).withDefault(const Constant(1))();
 }
 
 // DB v4: Move tags outside of SitemarkerRecords

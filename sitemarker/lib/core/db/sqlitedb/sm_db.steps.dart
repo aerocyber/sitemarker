@@ -131,9 +131,175 @@ i1.GeneratedColumn<DateTime> _column_8(String aliasedName) =>
     i1.GeneratedColumn<DateTime>('date_modified', aliasedName, false,
         type: i1.DriftSqlType.dateTime,
         defaultValue: const CustomExpression('1747938600'));
+
+final class Schema4 extends i0.VersionedSchema {
+  Schema4({required super.database}) : super(version: 4);
+  @override
+  late final List<i1.DatabaseSchemaEntity> entities = [
+    folders,
+    sitemarkerRecords,
+    recordTags,
+    tagMappings,
+  ];
+  late final Shape2 folders = Shape2(
+      source: i0.VersionedTable(
+        entityName: 'folders',
+        withoutRowId: false,
+        isStrict: false,
+        tableConstraints: [
+          'UNIQUE(parent_id, name)',
+        ],
+        columns: [
+          _column_0,
+          _column_9,
+          _column_10,
+        ],
+        attachedDatabase: database,
+      ),
+      alias: null);
+  late final Shape3 sitemarkerRecords = Shape3(
+      source: i0.VersionedTable(
+        entityName: 'sitemarker_records',
+        withoutRowId: false,
+        isStrict: false,
+        tableConstraints: [],
+        columns: [
+          _column_0,
+          _column_1,
+          _column_2,
+          _column_6,
+          _column_11,
+          _column_12,
+          _column_13,
+          _column_14,
+          _column_15,
+        ],
+        attachedDatabase: database,
+      ),
+      alias: null);
+  late final Shape4 recordTags = Shape4(
+      source: i0.VersionedTable(
+        entityName: 'record_tags',
+        withoutRowId: false,
+        isStrict: false,
+        tableConstraints: [],
+        columns: [
+          _column_0,
+          _column_10,
+        ],
+        attachedDatabase: database,
+      ),
+      alias: null);
+  late final Shape5 tagMappings = Shape5(
+      source: i0.VersionedTable(
+        entityName: 'tag_mappings',
+        withoutRowId: false,
+        isStrict: false,
+        tableConstraints: [],
+        columns: [
+          _column_0,
+          _column_16,
+          _column_17,
+        ],
+        attachedDatabase: database,
+      ),
+      alias: null);
+}
+
+class Shape2 extends i0.VersionedTable {
+  Shape2({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get parentId =>
+      columnsByName['parent_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get name =>
+      columnsByName['name']! as i1.GeneratedColumn<String>;
+}
+
+i1.GeneratedColumn<int> _column_9(String aliasedName) =>
+    i1.GeneratedColumn<int>('parent_id', aliasedName, true,
+        type: i1.DriftSqlType.int,
+        defaultConstraints:
+            i1.GeneratedColumn.constraintIsAlways('REFERENCES folders (id)'));
+i1.GeneratedColumn<String> _column_10(String aliasedName) =>
+    i1.GeneratedColumn<String>('name', aliasedName, false,
+        type: i1.DriftSqlType.string);
+
+class Shape3 extends i0.VersionedTable {
+  Shape3({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get name =>
+      columnsByName['name']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<String> get url =>
+      columnsByName['url']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<bool> get isDeleted =>
+      columnsByName['is_deleted']! as i1.GeneratedColumn<bool>;
+  i1.GeneratedColumn<DateTime> get dateAdded =>
+      columnsByName['date_added']! as i1.GeneratedColumn<DateTime>;
+  i1.GeneratedColumn<DateTime> get dateModified =>
+      columnsByName['date_modified']! as i1.GeneratedColumn<DateTime>;
+  i1.GeneratedColumn<DateTime> get lastSynced =>
+      columnsByName['last_synced']! as i1.GeneratedColumn<DateTime>;
+  i1.GeneratedColumn<String> get notes =>
+      columnsByName['notes']! as i1.GeneratedColumn<String>;
+  i1.GeneratedColumn<int> get folderId =>
+      columnsByName['folder_id']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<DateTime> _column_11(String aliasedName) =>
+    i1.GeneratedColumn<DateTime>('date_added', aliasedName, false,
+        type: i1.DriftSqlType.dateTime,
+        defaultValue: const CustomExpression('1765132200'));
+i1.GeneratedColumn<DateTime> _column_12(String aliasedName) =>
+    i1.GeneratedColumn<DateTime>('date_modified', aliasedName, false,
+        type: i1.DriftSqlType.dateTime,
+        defaultValue: const CustomExpression('1765132200'));
+i1.GeneratedColumn<DateTime> _column_13(String aliasedName) =>
+    i1.GeneratedColumn<DateTime>('last_synced', aliasedName, true,
+        type: i1.DriftSqlType.dateTime);
+i1.GeneratedColumn<String> _column_14(String aliasedName) =>
+    i1.GeneratedColumn<String>('notes', aliasedName, true,
+        type: i1.DriftSqlType.string);
+i1.GeneratedColumn<int> _column_15(String aliasedName) =>
+    i1.GeneratedColumn<int>('folder_id', aliasedName, false,
+        type: i1.DriftSqlType.int,
+        defaultConstraints:
+            i1.GeneratedColumn.constraintIsAlways('REFERENCES folders (id)'),
+        defaultValue: const CustomExpression('1'));
+
+class Shape4 extends i0.VersionedTable {
+  Shape4({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<String> get name =>
+      columnsByName['name']! as i1.GeneratedColumn<String>;
+}
+
+class Shape5 extends i0.VersionedTable {
+  Shape5({required super.source, required super.alias}) : super.aliased();
+  i1.GeneratedColumn<int> get id =>
+      columnsByName['id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get bookmarkId =>
+      columnsByName['bookmark_id']! as i1.GeneratedColumn<int>;
+  i1.GeneratedColumn<int> get tagId =>
+      columnsByName['tag_id']! as i1.GeneratedColumn<int>;
+}
+
+i1.GeneratedColumn<int> _column_16(String aliasedName) =>
+    i1.GeneratedColumn<int>('bookmark_id', aliasedName, false,
+        type: i1.DriftSqlType.int,
+        defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+            'REFERENCES sitemarker_records (id) ON DELETE CASCADE'));
+i1.GeneratedColumn<int> _column_17(String aliasedName) =>
+    i1.GeneratedColumn<int>('tag_id', aliasedName, false,
+        type: i1.DriftSqlType.int,
+        defaultConstraints: i1.GeneratedColumn.constraintIsAlways(
+            'REFERENCES record_tags (id) ON DELETE CASCADE'));
 i0.MigrationStepWithVersion migrationSteps({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
+  required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
 }) {
   return (currentVersion, database) async {
     switch (currentVersion) {
@@ -147,6 +313,11 @@ i0.MigrationStepWithVersion migrationSteps({
         final migrator = i1.Migrator(database, schema);
         await from2To3(migrator, schema);
         return 3;
+      case 3:
+        final schema = Schema4(database: database);
+        final migrator = i1.Migrator(database, schema);
+        await from3To4(migrator, schema);
+        return 4;
       default:
         throw ArgumentError.value('Unknown migration from $currentVersion');
     }
@@ -156,9 +327,11 @@ i0.MigrationStepWithVersion migrationSteps({
 i1.OnUpgrade stepByStep({
   required Future<void> Function(i1.Migrator m, Schema2 schema) from1To2,
   required Future<void> Function(i1.Migrator m, Schema3 schema) from2To3,
+  required Future<void> Function(i1.Migrator m, Schema4 schema) from3To4,
 }) =>
     i0.VersionedSchema.stepByStepHelper(
         step: migrationSteps(
       from1To2: from1To2,
       from2To3: from2To3,
+      from3To4: from3To4,
     ));
