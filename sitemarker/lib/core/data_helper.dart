@@ -36,7 +36,7 @@ class DataHelper {
   static String convertToOmio(List<SmRecord> recordsToConvert) {
     Map<String, dynamic> omioMap = {};
     Map<String, String> omioHeader = {
-      "Omio Version": "4.1.1",
+      "Omio Version": "4.2",
       "Created On": DateTime.timestamp().toString()
     };
     int recCount = 0;
@@ -49,6 +49,8 @@ class DataHelper {
           "URL": recordsToConvert[i].url,
           "Categories": recordsToConvert[i].tags,
           "Added On": recordsToConvert[i].dt.toString(),
+          if (recordsToConvert[i].notes != null)
+            "Notes": recordsToConvert[i].notes!,
         }
       });
     }
@@ -93,7 +95,6 @@ class DataHelper {
       throw Exception('Invalid omio file. Hash mismatched');
     }
 
-    
     for (String key in imported["Data"]!.keys) {
       records.add(
         SmRecord(
