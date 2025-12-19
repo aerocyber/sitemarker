@@ -7,7 +7,7 @@ import 'package:sitemarker/ui/pages/home_screen.dart';
 import 'package:sitemarker/core/data_types/settings/sm_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
-import 'package:sitemarker/core/settings_provider.dart';
+import 'package:sitemarker/core/providers/settings_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 Future<void> requestLegacyPermissions() async {
