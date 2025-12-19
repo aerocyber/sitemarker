@@ -290,6 +290,7 @@ class SitemarkerRecords extends Table {
   TextColumn get notes => text().nullable()();
 
   // DB v4: Added the folderId column
+  // 1 is root
   IntColumn get folderId =>
       integer().references(Folders, #id).withDefault(const Constant(1))();
 
