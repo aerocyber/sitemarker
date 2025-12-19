@@ -46,6 +46,21 @@ class SitemarkerDB extends _$SitemarkerDB {
               mode: InsertMode.insertOrIgnore,
             );
 
+            await m.renameTable(
+                schema.sitemarkerRecords, 'sitemarker_records_old');
+            await m.createTable(schema.sitemarkerRecords);
+
+            await customStatement('''
+              INSERT INTO sitemarker_records (
+                id, name, url, is_deleted, date_added, date_modified, 
+                folder_id, last_synced, notes
+              )
+              SELECT 
+                id, name, url, is_deleted, date_added, date_modified, 
+                1, NULL, NULL 
+              FROM sitemarker_records_old
+            ''');
+
             // Add new columns
             await m.addColumn(
                 schema.sitemarkerRecords, schema.sitemarkerRecords.folderId);
@@ -57,8 +72,8 @@ class SitemarkerDB extends _$SitemarkerDB {
             // Migrate tags
 
             final rawRowsOfTags = await customSelect(
-                'SELECT id, tags FROM sitemarker_records',
-                readsFrom: {}).get();
+              'SELECT id, tags FROM sitemarker_records_old',
+            ).get();
 
             Map<String, int> tagCache = {};
 
@@ -81,7 +96,6 @@ class SitemarkerDB extends _$SitemarkerDB {
                     final existingTag = await customSelect(
                       'SELECT id FROM record_tags WHERE name = ?',
                       variables: [Variable<String>(tag)],
-                      readsFrom: {},
                     ).getSingleOrNull();
 
                     if (existingTag != null) {
@@ -107,6 +121,8 @@ class SitemarkerDB extends _$SitemarkerDB {
                 }
               }
             }
+
+            await customStatement('DROP TABLE sitemarker_records_old');
           },
         ),
         beforeOpen: (details) async {
@@ -255,7 +271,7 @@ class SitemarkerDB extends _$SitemarkerDB {
 /// Schema definition
 class SitemarkerRecords extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get name => text().unique()();
+  TextColumn get name => text()();
   TextColumn get url => text()();
   BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
 
@@ -276,6 +292,9 @@ class SitemarkerRecords extends Table {
   // DB v4: Added the folderId column
   IntColumn get folderId =>
       integer().references(Folders, #id).withDefault(const Constant(1))();
+
+  @override
+  List<String> get customConstraints => ['UNIQUE(folder_id, name)'];
 }
 
 // DB v4: Move tags outside of SitemarkerRecords
