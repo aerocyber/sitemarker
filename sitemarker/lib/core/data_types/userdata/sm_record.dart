@@ -1,25 +1,43 @@
+import 'package:sitemarker/core/db/sqlitedb/sm_db.dart';
+
 /// Assisting data structure for DB to application and application to DB data passing
 class SmRecord {
   int? id;
   String name;
   String url;
-  String tags;
-  DateTime dt;
+  List<String> tags;
   bool? isDeleted;
   String? notes;
+  DateTime dateAdded;
+  DateTime dateModified;
+  DateTime? lastSynced;
+  int folderId;
 
   SmRecord({
     this.id,
     this.isDeleted,
     this.notes,
+    this.lastSynced,
     required this.name,
     required this.url,
     required this.tags,
-    required this.dt,
+    required this.folderId,
+    required this.dateAdded,
+    required this.dateModified,
   });
 
-  @override
-  String toString() {
-    return 'SmRecord{id: $id, name: $name, url: $url, tags: $tags, dt: $dt, isDeleted: $isDeleted}';
+  SmRecord fromSitemarkerRecord(SitemarkerRecord record, List<String> tags) {
+    return SmRecord(
+      id: record.id,
+      name: record.name,
+      url: record.url,
+      tags: tags,
+      dateAdded: record.dateAdded,
+      dateModified: record.dateModified,
+      folderId: record.folderId,
+      lastSynced: record.lastSynced,
+      isDeleted: record.isDeleted,
+      notes: record.notes,
+    );
   }
 }
