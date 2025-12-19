@@ -1,4 +1,4 @@
-import 'package:sitemarker/core/helpers/html_fns.dart';
+import 'package:sitemarker/core/helpers/html_fn_helper.dart';
 import 'package:validators/validators.dart' as validators;
 import 'package:http/http.dart' as http;
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
