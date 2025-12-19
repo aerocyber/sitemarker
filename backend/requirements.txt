@@ -6,7 +6,7 @@ charset-normalizer==3.4.2
 click==8.1.8
 cryptography==45.0.2
 dnspython==2.7.0
-filelock==3.18.0
+filelock==3.20.1
 flask==3.1.1
 flask-cors==6.0.0
 flask-pymongo==3.0.1
@@ -24,6 +24,6 @@ python-dotenv==1.1.0
 requests==2.32.4
 requests-file==2.1.0
 tldextract==5.3.0
-urllib3==2.6.0
+urllib3==2.6.2
 validators==0.35.0
 werkzeug==3.1.4
