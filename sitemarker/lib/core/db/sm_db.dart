@@ -1,6 +1,9 @@
 import 'package:drift/drift.dart';
+import 'package:rxdart/rxdart.dart';
+import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/dbio/shared_db.dart' as impl;
 import 'package:sitemarker/core/db/sm_db.steps.dart';
+import 'package:sitemarker/core/helpers/dir_view_helper.dart';
 
 part 'sm_db.g.dart';
 
@@ -62,12 +65,12 @@ class SitemarkerDB extends _$SitemarkerDB {
             ''');
 
             // Add new columns
-            await m.addColumn(
-                schema.sitemarkerRecords, schema.sitemarkerRecords.folderId);
-            await m.addColumn(
-                schema.sitemarkerRecords, schema.sitemarkerRecords.lastSynced);
-            await m.addColumn(
-                schema.sitemarkerRecords, schema.sitemarkerRecords.notes);
+            // await m.addColumn(
+            //     schema.sitemarkerRecords, schema.sitemarkerRecords.folderId);
+            // await m.addColumn(
+            //     schema.sitemarkerRecords, schema.sitemarkerRecords.lastSynced);
+            // await m.addColumn(
+            //     schema.sitemarkerRecords, schema.sitemarkerRecords.notes);
 
             // Migrate tags
 
@@ -139,6 +142,60 @@ class SitemarkerDB extends _$SitemarkerDB {
         });
   }
 
+  // Watcher (Helper) for Provider
+  Stream<DirView> watchDirectory(int folderId) {
+    final folderStream =
+        (select(folders)..where((f) => f.parentId.equals(folderId))).watch();
+
+    final recordStream = (select(sitemarkerRecords)
+          ..where((r) => r.folderId.equals(folderId)))
+        .watch();
+
+    return Rx.combineLatest2(
+        folderStream,
+        recordStream,
+        (List<Folder> f, List<SitemarkerRecord> r) =>
+            DirView(records: r, subdirs: f));
+  }
+
+  // Writer (Helper) for record creation
+  Future<void> createRecordsWithTags({required SmRecord record}) {
+    return transaction(() async {
+      final recordId = await into(sitemarkerRecords)
+          .insert(SitemarkerRecordsCompanion.insert(
+        name: record.name,
+        url: record.url,
+        folderId: Value(record.folderId),
+      ));
+      record.id = recordId;
+
+      if (record.tags.isNotEmpty) {
+        for (String tag in record.tags) {
+          if (tag.trim().isEmpty) {
+            // Empty tag
+            continue;
+          }
+          final existingTag = await (select(recordTags)
+                ..where((t) => t.name.equals(tag)))
+              .getSingleOrNull();
+
+          int tagId;
+          if (existingTag != null) {
+            tagId = existingTag.id;
+          } else {
+            tagId = await into(recordTags)
+                .insert(RecordTagsCompanion.insert(name: tag));
+          }
+
+          await into(tagMappings).insert(
+            TagMappingsCompanion.insert(bookmarkId: recordId, tagId: tagId),
+            mode: InsertMode.insertOrIgnore,
+          );
+        }
+      }
+    });
+  }
+
   // SELECTs
   /// Get all records
   Future<List<SitemarkerRecord>> get allRecords =>
@@ -157,7 +214,7 @@ class SitemarkerDB extends _$SitemarkerDB {
   }
 
   // Get all tags of a record where the ID of the record is known
-  Future<List<RecordTag>> getAllTags(int recordId) async {
+  Future<List<RecordTag>> getAllTagsInRecord(int recordId) async {
     final mappings = await (select(tagMappings)
           ..where((t) => t.bookmarkId.equals(recordId)))
         .get();
@@ -237,19 +294,21 @@ class SitemarkerDB extends _$SitemarkerDB {
 
   /// Soft delete a record
   Future<bool> softDelete(SitemarkerRecord record) {
-    SitemarkerRecord rec = SitemarkerRecord(
-      id: record.id,
-      name: record.name,
-      url: record.url,
-      isDeleted: true,
-      dateAdded: record.dateAdded,
-      dateModified: record.dateModified,
-      folderId: record.folderId,
-      lastSynced: record.lastSynced,
-      notes: record.notes,
-    );
+    // SitemarkerRecord rec = SitemarkerRecord(
+    //   id: record.id,
+    //   name: record.name,
+    //   url: record.url,
+    //   isDeleted: true,
+    //   dateAdded: record.dateAdded,
+    //   dateModified: record.dateModified,
+    //   folderId: record.folderId,
+    //   lastSynced: record.lastSynced,
+    //   notes: record.notes,
+    // );
 
-    return update(sitemarkerRecords).replace(rec);
+    return update(sitemarkerRecords).replace(
+      record.copyWith(isDeleted: true),
+    );
   }
 
   /// Get deleted records

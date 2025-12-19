@@ -26,7 +26,8 @@ class SmRecord {
     required this.dateModified,
   });
 
-  SmRecord fromSitemarkerRecord(SitemarkerRecord record, List<String> tags) {
+  static SmRecord fromSitemarkerRecord(
+      SitemarkerRecord record, List<String> tags) {
     return SmRecord(
       id: record.id,
       name: record.name,

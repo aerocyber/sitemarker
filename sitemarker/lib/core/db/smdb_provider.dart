@@ -5,22 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/sm_db.dart';
-import 'package:sitemarker/core/helpers/html_fns.dart';
+import 'package:sitemarker/core/helpers/html_fn_helper.dart';
 import 'package:sitemarker/core/helpers/data_helper.dart';
 import 'package:sitemarker/core/file_io/file_servicer.dart';
 
 /// Provider for all database and user data related activities
 class SmdbProvider extends ChangeNotifier {
-  // The db
-  late SitemarkerDB db;
-  // The records with isDeleted = false
-  List<SitemarkerRecord> _records = [];
-  // Getter for records with isDeleted = false
-  List<SitemarkerRecord> get records => _records;
-  // Soft deleted records
-  List<SitemarkerRecord> deletedRecords = [];
-  // All records
-  List<SitemarkerRecord> allRecords = [];
   // Duplicate records as part of import
   List<SmRecord> _importDups = [];
   // Getter for dups
@@ -30,48 +20,6 @@ class SmdbProvider extends ChangeNotifier {
   // Getter for successful imports
   int get successImport => _successImport;
 
-  /// Load the values from db. Not to be called from outside the class
-  void init() async {
-    await populate();
-    notifyListeners();
-  }
-
-  SmdbProvider() {
-    db = SitemarkerDB();
-    init();
-  }
-
-  Future<void> populate() async {
-    allRecords = await db.allRecords;
-    _records =
-        allRecords.where((element) => element.isDeleted == false).toList();
-    deletedRecords =
-        allRecords.where((element) => element.isDeleted == true).toList();
-  }
-
-  /// Get the default id to be used. Called internally.
-  int getDefaultId() {
-    if (_records.isNotEmpty) {
-      return _records.last.id + 1;
-    }
-    return 0;
-  }
-
-  /// Add a new record
-  Future<void> insertRecord(SmRecord record) async {
-    final rec = SitemarkerRecord(
-      id: getDefaultId(),
-      name: record.name,
-      url: record.url,
-      tags: record.tags,
-      isDeleted: false,
-      dateAdded: record.dt,
-    );
-    await db.insertRecord(rec);
-    await populate();
-    notifyListeners();
-  }
-
   /// toggle delete a record
   Future<void> toggleDeleteRecord(SmRecord record) async {
     final rec = await db.getRecordsByName(record.name);
@@ -80,13 +28,6 @@ class SmdbProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Soft delete a record
-  Future<void> softDeleteRecord(SmRecord record) async {
-    final rec = await db.getRecordsByName(record.name);
-    await db.softDelete(rec.first);
-    await populate();
-    notifyListeners();
-  }
 
   /// Update a record
   Future<void> updateRecord(SmRecord record) async {
@@ -243,36 +184,6 @@ class SmdbProvider extends ChangeNotifier {
   /// Get all the records as a List of SmRecord
   List<SmRecord> getAllRecords() {
     return allRecords
-        .map(
-          (e) => SmRecord(
-            id: e.id,
-            name: e.name,
-            url: e.url,
-            dt: e.dateAdded,
-            tags: e.tags,
-          ),
-        )
-        .toList();
-  }
-
-  /// Get all the undeleted records as a List of SmRecord
-  List<SmRecord> getAllUndeletedRecords() {
-    return _records
-        .map(
-          (e) => SmRecord(
-            id: e.id,
-            name: e.name,
-            url: e.url,
-            dt: e.dateAdded,
-            tags: e.tags,
-          ),
-        )
-        .toList();
-  }
-
-  /// Get all the undeleted records as a List of SmRecord
-  List<SmRecord> getAllDeletedRecords() {
-    return deletedRecords
         .map(
           (e) => SmRecord(
             id: e.id,
