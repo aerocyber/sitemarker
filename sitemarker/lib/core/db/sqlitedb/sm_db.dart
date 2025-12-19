@@ -81,7 +81,7 @@ class SitemarkerDB extends _$SitemarkerDB {
                     final existingTag = await customSelect(
                       'SELECT id FROM record_tags WHERE name = ?',
                       variables: [Variable<String>(tag)],
-                      readsFrom: {schema.recordTags},
+                      readsFrom: {},
                     ).getSingleOrNull();
 
                     if (existingTag != null) {
@@ -96,10 +96,13 @@ class SitemarkerDB extends _$SitemarkerDB {
                     tagCache[tag] = tagId;
                   }
                   await into(schema.tagMappings).insert(
-                    RawValuesInsertable({
-                      'bookmark_id': Variable<int>(recordId),
-                      'tag_id': Variable<int>(tagId),
-                    }),
+                    RawValuesInsertable(
+                      {
+                        'bookmark_id': Variable<int>(recordId),
+                        'tag_id': Variable<int>(tagId),
+                      },
+                    ),
+                    mode: InsertMode.insertOrIgnore,
                   );
                 }
               }
@@ -107,7 +110,7 @@ class SitemarkerDB extends _$SitemarkerDB {
           },
         ),
         beforeOpen: (details) async {
-          if (details.hadUpgrade) {
+          if (details.hadUpgrade && details.versionBefore! < 2) {
             await update(sitemarkerRecords).write(
               SitemarkerRecordsCompanion(
                 dateAdded: Value(
