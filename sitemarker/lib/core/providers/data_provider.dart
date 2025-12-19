@@ -4,6 +4,8 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/foundation.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/sm_db.dart';
+import 'package:sitemarker/core/file_io/file_servicer.dart';
+import 'package:sitemarker/core/helpers/data_helper.dart';
 import 'package:sitemarker/core/helpers/dir_view_helper.dart';
 
 class DataProvider extends ChangeNotifier {
@@ -14,10 +16,11 @@ class DataProvider extends ChangeNotifier {
   int _currentFolderId = 1;
   List<Folder> _subfolders = [];
   List<SitemarkerRecord> _records = [];
+  List<SmRecord> _duplicatesWhileImporting = [];
 
   // For "back" button navigation.
   // Practically, it's a stack
-  final List<int> _folderHistory = [];
+  final List<Map<int, String>> _folderHistory = [];
 
   bool _isLoading = true;
   StreamSubscription? _subscription;
@@ -28,6 +31,7 @@ class DataProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   int get currentFolderId => _currentFolderId;
   bool get isRoot => _folderHistory.isEmpty;
+  List<SmRecord> get duplicatesWhileImport => _duplicatesWhileImporting;
 
   DataProvider() {
     init();
@@ -38,14 +42,17 @@ class DataProvider extends ChangeNotifier {
     openFolder(1, addToHistory: false);
   }
 
-  void openFolder(int folderId, {bool addToHistory = true}) {
+  void openFolder(int folderId, {bool addToHistory = true}) async {
     if (addToHistory && _currentFolderId != folderId) {
-      _folderHistory.add(_currentFolderId);
+      _isLoading = true;
+      notifyListeners();
+
+      _folderHistory.add({
+        _currentFolderId: (await _db.getFolderById(_currentFolderId)).first
+      });
     }
 
     _currentFolderId = folderId;
-    _isLoading = true;
-    notifyListeners();
 
     // Cancel old stream, start a new one
     _subscription?.cancel();
@@ -63,11 +70,31 @@ class DataProvider extends ChangeNotifier {
     });
   }
 
+  Future<void> undoSoftDelete(SmRecord record) async {
+    _isLoading = true;
+    notifyListeners();
+
+    await _db.toggleDelete(record.toSitemarkerRecord());
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> updateRecord(SmRecord record) async {
+    _isLoading = true;
+    notifyListeners();
+
+    await _db.updateRecord(record.toSitemarkerRecord());
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
   bool navigateBack() {
     if (_folderHistory.isEmpty) return false;
 
     final previousFolderId = _folderHistory.removeLast();
-    openFolder(previousFolderId, addToHistory: false);
+    openFolder(previousFolderId.keys.toList().last, addToHistory: false);
     return true;
   }
 
@@ -96,24 +123,17 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> deleteRecord(SitemarkerRecord record) async {
+  Future<void> deleteRecord(SmRecord record) async {
     _isLoading = true;
     notifyListeners();
 
-    await _db.softDelete(record);
+    await _db.softDelete(record.toSitemarkerRecord());
 
     _isLoading = false;
     notifyListeners();
   }
 
   // TODO: Delete folder (feature update)
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    _db.close();
-    super.dispose();
-  }
 
   Future<List<SmRecord>> getDeletedRecords() async {
     _isLoading = true;
@@ -149,5 +169,33 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
 
     return __records;
+  }
+
+  /// Perma delete record
+  // TODO: Implement perma delete with safety logs for sync
+  void deleteRecordPermanently(SmRecord record) async {
+    _isLoading = true;
+    notifyListeners();
+
+    await _db.hardDelete(record.toSitemarkerRecord());
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> exportToOmioFile(List<SmRecord> recordsToExport) async {
+    _isLoading = true;
+    notifyListeners();
+
+    await saveFile(DataHelper.convertToOmio(recordsToExport));
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    _db.close();
+    super.dispose();
   }
 }

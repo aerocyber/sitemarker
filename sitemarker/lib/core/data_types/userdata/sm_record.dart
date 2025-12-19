@@ -41,4 +41,18 @@ class SmRecord {
       notes: record.notes,
     );
   }
+
+  SitemarkerRecord toSitemarkerRecord() {
+    return SitemarkerRecord(
+      id: id ?? -1,
+      name: name,
+      url: url,
+      isDeleted: isDeleted ?? false,
+      dateAdded: dateAdded,
+      dateModified: dateModified,
+      folderId: folderId,
+      lastSynced: lastSynced,
+      notes: notes,
+    );
+  }
 }

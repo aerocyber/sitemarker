@@ -208,6 +208,13 @@ class SitemarkerDB extends _$SitemarkerDB {
         .get();
   }
 
+  Future<List<String>> getFolderById(int folderId) async {
+    return (await (select(folders)..where((t) => t.id.equals(folderId)))
+            .get())
+        .map((t) => t.name)
+        .toList();
+  }
+
   // Get all subfolders of a folder with folder ID known
   Future<List<Folder>> getAllSubfolders(int folderId) {
     return (select(folders)..where((t) => t.parentId.equals(folderId))).get();

@@ -28,6 +28,7 @@ Future<bool> saveFile(String content) async {
       return true;
     } on PlatformException {
       // print("Platform error while saving: ${e.message}");
+      // TODO: Log it!
       return false;
     }
   }
@@ -60,7 +61,7 @@ Future<String?> readFile() async {
       }
     } on PlatformException {
       // print("Platform error while reading: ${e.message}");
-      // TODO: Log this
+      // TODO: Log this!
     }
     return null;
   }

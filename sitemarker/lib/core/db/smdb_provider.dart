@@ -11,37 +11,10 @@ import 'package:sitemarker/core/file_io/file_servicer.dart';
 
 /// Provider for all database and user data related activities
 class SmdbProvider extends ChangeNotifier {
-  // Duplicate records as part of import
-  List<SmRecord> _importDups = [];
-  // Getter for dups
-  List<SmRecord> get importDups => _importDups;
   // Counter for successful imports
   int _successImport = 0;
   // Getter for successful imports
   int get successImport => _successImport;
-
-  /// toggle delete a record
-  Future<void> toggleDeleteRecord(SmRecord record) async {
-    final rec = await db.getRecordsByName(record.name);
-    db.toggleDelete(rec.first);
-    await populate();
-    notifyListeners();
-  }
-
-
-  /// Update a record
-  Future<void> updateRecord(SmRecord record) async {
-    await db.updateRecord(SitemarkerRecord(
-      id: record.id!,
-      name: record.name,
-      url: record.url,
-      tags: record.tags,
-      isDeleted: record.isDeleted!,
-      dateAdded: record.dt,
-    ));
-    await populate();
-    notifyListeners();
-  }
 
   /// Import from html
   Future<void> importFromHTML() async {
@@ -181,26 +154,4 @@ class SmdbProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get all the records as a List of SmRecord
-  List<SmRecord> getAllRecords() {
-    return allRecords
-        .map(
-          (e) => SmRecord(
-            id: e.id,
-            name: e.name,
-            url: e.url,
-            dt: e.dateAdded,
-            tags: e.tags,
-          ),
-        )
-        .toList();
-  }
-
-  /// Perma delete record
-  void deleteRecordPermanently(SmRecord record) async {
-    final rec = await db.getRecordsByName(record.name);
-    db.hardDelete(rec.first);
-    await populate();
-    notifyListeners();
-  }
 }
