@@ -145,7 +145,7 @@ class SitemarkerDB extends _$SitemarkerDB {
     List<RecordTag> records = [];
     for (final mapping in mappings) {
       records.add(await (select(recordTags)
-            ..where((t) => t.id.equals(mapping.id)))
+            ..where((t) => t.id.equals(mapping.tagId)))
           .getSingle());
     }
 
