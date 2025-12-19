@@ -12,14 +12,7 @@ class HtmlFns {
 
   /// Get bookmark items from html string
   static List<SmRecord> fromHtml(String htmlString) {
-    if (!htmlString.startsWith('''<!DOCTYPE NETSCAPE-Bookmark-file-1>
-<!-- This is an automatically generated file.
-     It will be read and overwritten.
-     DO NOT EDIT! -->
-<META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
-<meta http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'none'; img-src data: *; object-src 'none'"></meta>
-<TITLE>Bookmarks</TITLE>''')) {
+    if (!htmlString.startsWith("<!DOCTYPE NETSCAPE-Bookmark-file-1>")) {
       throw Exception('Invalid HTML Bookmark file');
     }
 
@@ -44,8 +37,9 @@ class HtmlFns {
           SmRecord(
             name: aElement.getElementsByTagName('a')[j].innerHtml,
             url: aElement.getElementsByTagName('a')[j].attributes['href']!,
-            tags:
-                'imported on ${DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString()}',
+            tags: [
+              'imported on ${DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString()}'
+            ],
             dt: DateTime.fromMillisecondsSinceEpoch(
               int.parse(aElement
                   .getElementsByTagName('a')[j]

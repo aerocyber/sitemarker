@@ -1,4 +1,4 @@
-import 'package:sitemarker/core/db/sqlitedb/sm_db.dart';
+import 'package:sitemarker/core/db/sm_db.dart';
 
 /// Assisting data structure for DB to application and application to DB data passing
 class SmRecord {

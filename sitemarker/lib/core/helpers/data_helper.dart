@@ -8,28 +8,40 @@ import 'package:crypto/crypto.dart';
 /// Class with methods aiding in various things related to data management
 class DataHelper {
   /// Get the title of the HTML page which is pointed by the url
-  static Future<String> getPageTitleFromURL(String url) async {
+  static Future<String?> getPageTitleFromURL(String url) async {
     if (!validators.isURL(url)) {
       throw Exception('Invalid URL');
     }
-
-    String title = '';
-    String respHttp = '';
 
     final Uri uri = Uri.parse(url);
     try {
       http.Response r = await http.get(uri);
       if (r.statusCode == 200) {
-        respHttp = r.body;
-        title = HtmlFns.getTitle(respHttp);
+        return HtmlFns.getTitle(r.body);
       } else if (r.statusCode >= 400 && r.statusCode < 500) {
-        throw Exception('Client side request failed');
+        // TODO: Log it!
+        return null;
       }
     } on Exception {
-      rethrow;
+      // TODO: Log it!
+      return null;
     }
 
-    return title;
+    return null;
+  }
+
+  static String getTagStringFromList(List<String> tags) {
+    String tag = "";
+    for (String s in tags) {
+      if (s.isNotEmpty) {
+        tag += s;
+      }
+      if (tags.last == s) {
+        tag += ',';
+      }
+    }
+
+    return tag;
   }
 
   /// Convert a list of SmRecord to omio string
