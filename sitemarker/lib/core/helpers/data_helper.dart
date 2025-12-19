@@ -10,6 +10,7 @@ class DataHelper {
   /// Get the title of the HTML page which is pointed by the url
   static Future<String?> getPageTitleFromURL(String url) async {
     if (!validators.isURL(url)) {
+      // TODO: log it!
       throw Exception('Invalid URL');
     }
 
@@ -59,10 +60,9 @@ class DataHelper {
       omioBody.addAll({
         recordsToConvert[i].name: {
           "URL": recordsToConvert[i].url,
-          "Categories": recordsToConvert[i].tags,
-          "Added On": recordsToConvert[i].dt.toString(),
-          if (recordsToConvert[i].notes != null)
-            "Notes": recordsToConvert[i].notes!,
+          "Categories": getTagStringFromList(recordsToConvert[i].tags),
+          "Added On": recordsToConvert[i].dateAdded.toString(),
+          "Notes": recordsToConvert[i].notes ?? "",
         }
       });
     }
@@ -92,28 +92,49 @@ class DataHelper {
     if (imported["Header"] == null ||
         imported["Omio Info"] == null ||
         imported["Data"] == null) {
+      // TODO: Log it!
       throw Exception('Invalid omio file');
     }
     if (sha256
             .convert(utf8.encode(json.encode(imported["Header"]!)))
             .toString() !=
         imported["Omio Info"]!["Header Hash"]!) {
+      // TODO: Log it!
       throw Exception('Invalid omio file. Hash mismatched');
     }
     if (sha256
             .convert(utf8.encode(json.encode(imported["Data"]!)))
             .toString() !=
         imported["Header"]!["Data Hash"]!) {
+      // TODO: Log it!
       throw Exception('Invalid omio file. Hash mismatched');
     }
 
     for (String key in imported["Data"]!.keys) {
+      for (String k in ["URL", "Categories", "Added On"]) {
+        if (!((imported["Data"]![key]) as List).contains(k)) {
+          // TODO: Log it!
+          throw Exception("Invalid omio");
+        }
+      }
+    }
+
+    for (String key in imported["Data"]!.keys) {
+      for (String k in ["URL", "Categories", "Added On"]) {
+        if (!((imported["Data"]![key]) as List).contains(k)) {
+          // TODO: Log it!
+          throw Exception("Invalid omio");
+        }
+      }
       records.add(
         SmRecord(
+          folderId: 1,
+          notes: imported["Data"]![key]!["Notes"],
           name: key,
           url: imported["Data"]![key]!["URL"]!,
           tags: imported["Data"]![key]!["categories"] ?? "",
-          dt: DateTime.parse(imported["Data"]![key]!["Added On"]!),
+          dateAdded: DateTime.parse(imported["Data"]![key]!["Added On"]!),
+          dateModified: DateTime.parse(imported["Data"]![key]!["Added On"]!),
         ),
       );
     }
