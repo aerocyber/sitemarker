@@ -7,6 +7,10 @@ class HtmlFns {
   /// Get title of the html document
   static String getTitle(String htmlString) {
     Document d = parse(htmlString);
+    List<Element> elementList = d.getElementsByTagName('title');
+    if (elementList.length != 1) {
+      throw Exception("Inavlid HTML Document.");
+    }
     return d.getElementsByTagName('title')[0].innerHtml;
   }
 
@@ -40,11 +44,17 @@ class HtmlFns {
             tags: [
               'imported on ${DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day).toString()}'
             ],
-            dt: DateTime.fromMillisecondsSinceEpoch(
+            dateAdded: DateTime.fromMillisecondsSinceEpoch(
               int.parse(aElement
                   .getElementsByTagName('a')[j]
                   .attributes['add_date']!),
             ),
+            dateModified: DateTime.fromMillisecondsSinceEpoch(
+              int.parse(aElement
+                  .getElementsByTagName('a')[j]
+                  .attributes['add_date']!),
+            ),
+            folderId: 1,
           ),
         );
       }
@@ -71,7 +81,7 @@ class HtmlFns {
     // Get each record
     for (int i = 0; i < recordsToHTMLify.length; i++) {
       convertTemp =
-          '<dt><a href="${recordsToHTMLify[i].url}" add_date="${recordsToHTMLify[i].dt.millisecondsSinceEpoch}" last_modified="${DateTime.timestamp().millisecondsSinceEpoch}">${recordsToHTMLify[i].name}</a>';
+          '<dt><a href="${recordsToHTMLify[i].url}" add_date="${recordsToHTMLify[i].dateModified.millisecondsSinceEpoch}" last_modified="${DateTime.timestamp().millisecondsSinceEpoch}">${recordsToHTMLify[i].name}</a>';
       returner += convertTemp;
     }
 
