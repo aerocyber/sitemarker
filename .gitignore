@@ -1,2 +1,3 @@
 .env
 .cache/
+sitemarker/lib/core/db/sqlitedb/sm_db.g.dart
