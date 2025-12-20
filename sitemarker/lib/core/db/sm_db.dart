@@ -196,6 +196,13 @@ class SitemarkerDB extends _$SitemarkerDB {
     });
   }
 
+  Future<int> createFolder(String folderName, {int? parentFolderId}) async {
+    return (await into(folders).insert(FoldersCompanion.insert(
+      name: folderName,
+      parentId: Value(parentFolderId),
+    )));
+  }
+
   // SELECTs
   /// Get all records
   Future<List<SitemarkerRecord>> get allRecords =>
@@ -209,8 +216,7 @@ class SitemarkerDB extends _$SitemarkerDB {
   }
 
   Future<List<String>> getFolderById(int folderId) async {
-    return (await (select(folders)..where((t) => t.id.equals(folderId)))
-            .get())
+    return (await (select(folders)..where((t) => t.id.equals(folderId))).get())
         .map((t) => t.name)
         .toList();
   }

@@ -37,6 +37,7 @@ dependencies:
   device_info_plus: ^12.3.0
   pub_semver: ^2.2.0
   rxdart: ^0.28.0
+  universal_io: ^2.3.1
 
 
 dev_dependencies:

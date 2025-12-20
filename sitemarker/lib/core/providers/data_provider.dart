@@ -1,12 +1,16 @@
 import 'dart:async';
 
 import 'package:drift/drift.dart' show Value;
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:universal_io/io.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/sm_db.dart';
 import 'package:sitemarker/core/file_io/file_servicer.dart';
 import 'package:sitemarker/core/helpers/data_helper.dart';
 import 'package:sitemarker/core/helpers/dir_view_helper.dart';
+import 'package:sitemarker/core/helpers/html_fn_helper.dart';
 
 class DataProvider extends ChangeNotifier {
   // The db
@@ -16,7 +20,7 @@ class DataProvider extends ChangeNotifier {
   int _currentFolderId = 1;
   List<Folder> _subfolders = [];
   List<SitemarkerRecord> _records = [];
-  List<SmRecord> _duplicatesWhileImporting = [];
+  List<SmRecord> _globalDeletedRecords = [];
 
   // For "back" button navigation.
   // Practically, it's a stack
@@ -31,7 +35,9 @@ class DataProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   int get currentFolderId => _currentFolderId;
   bool get isRoot => _folderHistory.isEmpty;
-  List<SmRecord> get duplicatesWhileImport => _duplicatesWhileImporting;
+  List<SmRecord> get globalDeletedRecords => _globalDeletedRecords;
+  List<SitemarkerRecord> get activeRecords =>
+      _records.where((r) => !r.isDeleted).toList();
 
   DataProvider() {
     init();
@@ -40,16 +46,23 @@ class DataProvider extends ChangeNotifier {
   void init() {
     _db = SitemarkerDB();
     openFolder(1, addToHistory: false);
+    getDeletedRecords();
   }
 
   void openFolder(int folderId, {bool addToHistory = true}) async {
-    if (addToHistory && _currentFolderId != folderId) {
-      _isLoading = true;
-      notifyListeners();
+    _isLoading = true;
+    notifyListeners();
 
-      _folderHistory.add({
-        _currentFolderId: (await _db.getFolderById(_currentFolderId)).first
-      });
+    String folderName = "Home";
+    if (addToHistory && _currentFolderId != folderId) {
+      if (_currentFolderId != 1) {
+        final names = await _db.getFolderById(_currentFolderId);
+        if (names.isNotEmpty) {
+          folderName = names.first;
+        }
+      }
+
+      _folderHistory.add({_currentFolderId: folderName});
     }
 
     _currentFolderId = folderId;
@@ -135,22 +148,22 @@ class DataProvider extends ChangeNotifier {
 
   // TODO: Delete folder (feature update)
 
-  Future<List<SmRecord>> getDeletedRecords() async {
+  Future<void> getDeletedRecords() async {
     _isLoading = true;
     notifyListeners();
 
+    final _deletedRecords = await _db.getDeletedRecords();
     final List<SmRecord> deletedRecords = [];
-    for (SitemarkerRecord rec in _records) {
-      if (rec.isDeleted) {
-        final tags = (await _db.getAllTagsInRecord(rec.id)).map((t) => t.name)
-            as List<String>;
-        deletedRecords.add(SmRecord.fromSitemarkerRecord(rec, tags));
-      }
+
+    for (SitemarkerRecord record in _deletedRecords) {
+      final tags =
+          (await _db.getAllTagsInRecord(record.id)).map((t) => t.name).toList();
+      deletedRecords.add(SmRecord.fromSitemarkerRecord(record, tags));
     }
+
+    _globalDeletedRecords = deletedRecords;
     _isLoading = false;
     notifyListeners();
-
-    return deletedRecords;
   }
 
   Future<List<SmRecord>> getRecordsNotDeleted() async {
@@ -187,6 +200,126 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
 
     await saveFile(DataHelper.convertToOmio(recordsToExport));
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> importFromHTML() async {
+    _isLoading = true;
+    notifyListeners();
+    List<SmRecord> recs;
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowedExtensions: ['html', 'htm'],
+      dialogTitle: 'Select a HTML bookmarks file',
+      allowMultiple: false,
+      initialDirectory: (await getApplicationDocumentsDirectory()).path,
+      lockParentWindow: true,
+      type: FileType.custom,
+    );
+
+    if (result == null) {
+      // User cancelled it
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    File f = File(result.files.single.path!);
+
+    try {
+      recs = HtmlFns.fromHtml((await f.readAsString()));
+
+      final folderId = await _db.createFolder(
+          "Imported-from-HTML-ON-${DateTime.now().toIso8601String()}");
+
+      for (int i = 0; i < recs.length; i++) {
+        recs[i].folderId = folderId;
+        await _db.createRecordsWithTags(record: recs[i]);
+      }
+    } on Exception {
+      // TODO: Log it!
+      _isLoading = false;
+      notifyListeners();
+    }
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> exportToHTML(List<SmRecord> exportingRecords) async {
+    _isLoading = true;
+    notifyListeners();
+
+    String? outFile = await FilePicker.platform.saveFile(
+      allowedExtensions: ['html'],
+      dialogTitle: 'Please select an output file:',
+      fileName: 'sitemarker-html-output-${DateTime.now().toString()}.html',
+      type: FileType.custom,
+      lockParentWindow: true,
+      initialDirectory: (await getDownloadsDirectory())!.path,
+    );
+
+    if (outFile == null) {
+      // User cancelled the operation
+      // TODO: Log it!
+      _isLoading = false;
+      notifyListeners();
+    }
+
+    String data = HtmlFns.toHtml(exportingRecords);
+    File f = File(outFile!);
+    await f.writeAsString(data);
+
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> importFromOmioFile() async {
+    _isLoading = true;
+    notifyListeners();
+
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      allowedExtensions: ["omio"],
+      dialogTitle: "Select omio file",
+      allowMultiple: false,
+      initialDirectory: (await getApplicationDocumentsDirectory()).path,
+      lockParentWindow: true,
+      type: FileType.custom,
+    );
+
+    if (result == null) {
+      // User cancelled the operation
+      // TODO: Log it!
+      _isLoading = false;
+      notifyListeners();
+      return;
+    }
+
+    File f = File(result.files.single.path!);
+    if (!f.existsSync()) {
+      // File exists.
+      // TODO: Log it!
+      _isLoading = false;
+      notifyListeners();
+      throw FileSystemException("File not found");
+    }
+
+    try {
+      List<SmRecord> recordsToImport =
+          DataHelper.fromOmio(await f.readAsString());
+
+      for (SmRecord rec in recordsToImport) {
+        rec.folderId = _currentFolderId;
+        await _db.createRecordsWithTags(record: rec);
+      }
+    } catch (e) {
+      // Error with omio file
+      _isLoading = false;
+      notifyListeners();
+      throw Exception("Invalid omio file");
+    }
 
     _isLoading = false;
     notifyListeners();
