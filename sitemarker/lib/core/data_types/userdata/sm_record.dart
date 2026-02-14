@@ -6,7 +6,7 @@ class SmRecord {
   String name;
   String url;
   List<String> tags;
-  bool? isDeleted;
+  bool isDeleted;
   String? notes;
   DateTime dateAdded;
   DateTime dateModified;
@@ -15,7 +15,7 @@ class SmRecord {
 
   SmRecord({
     this.id,
-    this.isDeleted,
+    required this.isDeleted,
     this.notes,
     this.lastSynced,
     required this.name,

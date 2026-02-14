@@ -1,7 +1,7 @@
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:flutter/material.dart';
 import 'package:sitemarker/core/data_types/size_config.dart';
-import 'package:sitemarker/ui/pages/page_edit.dart';
+import 'package:sitemarker/ui_old/pages/page_edit.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:toastification/toastification.dart';

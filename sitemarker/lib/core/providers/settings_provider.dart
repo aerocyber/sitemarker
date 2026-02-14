@@ -1,24 +1,25 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
 import 'package:sitemarker/core/data_types/settings/sm_theme.dart';
 
 /// `SMSettingsProvider` is used by provider state management system for
 /// managing the settings used by the app.
 /// It has funtion calls to change the settings.
-class SMSettingsProvider extends ChangeNotifier {
+class SettingsProvider extends ChangeNotifier {
   /// Theme Settings
   final String themeNameKey = "THEME_COLOR";
   String themeNameValue = "io.github.aerocyber.sitemarker.colors.default";
   final String themeModeKey = "THEME_MODE";
-  String themeModeValue = "system";
+  String themeModeValue = "systemTheme";
   late String themeDir;
   bool customThemeDirFound = true;
 
   /// Settings DB
   late final SharedPreferencesAsync settingsStore;
 
-  SMSettingsProvider() {
+  SettingsProvider() {
     init();
   }
 
@@ -46,19 +47,17 @@ class SMSettingsProvider extends ChangeNotifier {
   }
 
   /// Get the currently set theme
-  String getCurrentTheme() => themeNameValue;
+  String get getCurrentTheme => themeNameValue;
 
   /// Get the currently set theme mode
-  String getCurrentThemeMode() => themeModeValue;
+  String get getCurrentThemeMode => themeModeValue;
 
   /// Change the theme mode. Allowed values are `system`, `light` and `dark`
-  Future<void> changeThemeMode(String newMode) async {
-    newMode = newMode.toLowerCase();
-    if (!['system', 'light', 'dark'].contains(newMode)) {
-      throw Exception('Invalid Theme Mode');
-    }
-    await settingsStore.setString(themeModeKey, newMode);
-    themeModeValue = newMode;
+  Future<void> changeThemeMode(SitemarkerTheme newMode) async {
+    String themeMode = newMode.themeValue;
+
+    await settingsStore.setString(themeModeKey, themeMode);
+    themeModeValue = themeMode;
     notifyListeners();
   }
 

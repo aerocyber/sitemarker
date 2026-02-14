@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
-import 'package:sitemarker/ui/pages/page_details.dart';
+import 'package:sitemarker/ui_old/pages/page_details.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:toastification/toastification.dart';

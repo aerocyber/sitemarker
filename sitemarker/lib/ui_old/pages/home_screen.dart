@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sitemarker/ui/pages/page_add.dart';
-import 'package:sitemarker/ui/pages/page_settings.dart';
-import 'package:sitemarker/ui/pages/page_view.dart';
-import 'package:sitemarker/ui/components/bottom_nav_bar_btn.dart';
+import 'package:sitemarker/ui_old/pages/page_add.dart';
+import 'package:sitemarker/ui_old/pages/page_settings.dart';
+import 'package:sitemarker/ui_old/pages/page_view.dart';
+import 'package:sitemarker/ui_old/components/bottom_nav_bar_btn.dart';
 
 class SMHomeScreen extends StatefulWidget {
   const SMHomeScreen({super.key, required this.url});

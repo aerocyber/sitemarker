@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:sitemarker/core/data_types/size_config.dart';
-import 'package:sitemarker/ui/components/card_bookmark.dart';
-import 'package:sitemarker/ui/pages/page_add.dart';
-import 'package:sitemarker/ui/components/sitemarker_search_delegate.dart';
+import 'package:sitemarker/ui_old/components/card_bookmark.dart';
+import 'package:sitemarker/ui_old/pages/page_add.dart';
+import 'package:sitemarker/ui_old/components/sitemarker_search_delegate.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
-import 'package:sitemarker/ui/pages/recycle_bin.dart';
-import 'package:sitemarker/ui/pages/view_omio.dart';
+import 'package:sitemarker/ui_old/pages/recycle_bin.dart';
+import 'package:sitemarker/ui_old/pages/view_omio.dart';
 // import 'package:sitemarker/ui/pages/recycle_bin.dart';
 
 class SitemarkerPageView extends StatefulWidget {

@@ -135,6 +135,7 @@ class DataHelper {
           tags: imported["Data"]![key]!["categories"] ?? "",
           dateAdded: DateTime.parse(imported["Data"]![key]!["Added On"]!),
           dateModified: DateTime.parse(imported["Data"]![key]!["Added On"]!),
+          isDeleted: false,
         ),
       );
     }

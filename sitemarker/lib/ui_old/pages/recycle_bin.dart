@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:sitemarker/core/db/smdb_provider.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
 import 'package:sitemarker/core/db/sm_db.dart';
-import 'package:sitemarker/ui/components/card_deleted.dart';
+import 'package:sitemarker/ui_old/components/card_deleted.dart';
 
 class RecycleBin extends StatelessWidget {
   const RecycleBin({super.key});

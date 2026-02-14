@@ -19,7 +19,7 @@ class DataProvider extends ChangeNotifier {
   // States
   int _currentFolderId = 1;
   List<Folder> _subfolders = [];
-  List<SitemarkerRecord> _records = [];
+  List<SmRecord> _records = [];
   List<SmRecord> _globalDeletedRecords = [];
 
   // For "back" button navigation.
@@ -31,13 +31,13 @@ class DataProvider extends ChangeNotifier {
 
   // Getters for UI
   List<Folder> get subfolder => _subfolders;
-  List<SitemarkerRecord> get records => _records;
+  List<SmRecord> get records => _records;
   bool get isLoading => _isLoading;
   int get currentFolderId => _currentFolderId;
   bool get isRoot => _folderHistory.isEmpty;
   List<SmRecord> get globalDeletedRecords => _globalDeletedRecords;
-  List<SitemarkerRecord> get activeRecords =>
-      _records.where((r) => !r.isDeleted).toList();
+  List<SmRecord> get activeRecords =>
+      _records.where((r) => r.isDeleted).toList();
 
   DataProvider() {
     init();
@@ -70,9 +70,15 @@ class DataProvider extends ChangeNotifier {
     // Cancel old stream, start a new one
     _subscription?.cancel();
 
-    _subscription = _db.watchDirectory(folderId).listen((DirView data) {
+    _subscription = _db.watchDirectory(folderId).listen((DirView data) async {
       _subfolders = data.subdirs;
-      _records = data.records;
+      List<SmRecord> r = [];
+      for (SitemarkerRecord rec in data.records) {
+        var t =
+            (await _db.getAllTagsInRecord(rec.id)).map((t) => t.name).toList();
+        r.add(SmRecord.fromSitemarkerRecord(rec, t));
+      }
+      _records = r;
       _isLoading = false;
       notifyListeners();
     }, onError: (e) {
@@ -171,11 +177,9 @@ class DataProvider extends ChangeNotifier {
     notifyListeners();
 
     final List<SmRecord> __records = [];
-    for (SitemarkerRecord rec in _records) {
+    for (SmRecord rec in _records) {
       if (!(rec.isDeleted)) {
-        final tags = (await _db.getAllTagsInRecord(rec.id)).map((t) => t.name)
-            as List<String>;
-        __records.add(SmRecord.fromSitemarkerRecord(rec, tags));
+        __records.add(rec);
       }
     }
     _isLoading = false;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sitemarker/core/data_types/size_config.dart';
 import 'package:sitemarker/core/data_types/userdata/sm_record.dart';
-import 'package:sitemarker/ui/pages/page_details.dart';
+import 'package:sitemarker/ui_old/pages/page_details.dart';
 
 class SitemarkerSearchDelegate extends SearchDelegate {
   List<SmRecord> records;

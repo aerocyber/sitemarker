@@ -39,6 +39,7 @@ class HtmlFns {
         // Add it
         ret.add(
           SmRecord(
+            isDeleted: false,
             name: aElement.getElementsByTagName('a')[j].innerHtml,
             url: aElement.getElementsByTagName('a')[j].attributes['href']!,
             tags: [
