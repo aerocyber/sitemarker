@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sitemarker/ui_desktop/home_screen.dart';
-import 'package:sitemarker/ui_desktop/router.dart';
+import 'package:sitemarker/router.dart';
 
 class DesktopApp extends StatefulWidget {
   const DesktopApp({super.key});

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:sitemarker/animations/bouncy_button.dart';
 import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
 import 'package:sitemarker/core/providers/settings_provider.dart';
 

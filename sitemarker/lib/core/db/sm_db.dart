@@ -35,63 +35,56 @@ class SitemarkerDB extends _$SitemarkerDB {
             );
           },
           from3To4: (m, schema) async {
-            // Create new tables
+            // 1. YES, we must explicitly create the brand new tables!
             await m.createTable(schema.folders);
             await m.createTable(schema.recordTags);
             await m.createTable(schema.tagMappings);
 
-            // Default folder (id 1: root)
-            into(schema.folders).insert(
+            // 2. Insert the Default root folder (id 1)
+            await into(schema.folders).insert(
               RawValuesInsertable({
-                'id': Variable<int>(1),
-                'name': Variable<String>('Root'),
+                'id': const Variable<int>(1),
+                'name': const Variable<String>('Root'),
               }),
               mode: InsertMode.insertOrIgnore,
             );
 
-            await m.renameTable(
-                schema.sitemarkerRecords, 'sitemarker_records_old');
-            await m.createTable(schema.sitemarkerRecords);
-
-            await customStatement('''
-              INSERT INTO sitemarker_records (
-                id, name, url, is_deleted, date_added, date_modified, 
-                folder_id, last_synced, notes
-              )
-              SELECT 
-                id, name, url, is_deleted, date_added, date_modified, 
-                1, NULL, NULL 
-              FROM sitemarker_records_old
-            ''');
-
-            // Add new columns
-            // await m.addColumn(
-            //     schema.sitemarkerRecords, schema.sitemarkerRecords.folderId);
-            // await m.addColumn(
-            //     schema.sitemarkerRecords, schema.sitemarkerRecords.lastSynced);
-            // await m.addColumn(
-            //     schema.sitemarkerRecords, schema.sitemarkerRecords.notes);
-
-            // Migrate tags
-
+            // 3. Extract Tags BEFORE we alter the main table
+            // (If v4 removed the 'tags' column, alterTable will delete it, so we read it now)
             final rawRowsOfTags = await customSelect(
-              'SELECT id, tags FROM sitemarker_records_old',
+              'SELECT id, tags FROM sitemarker_records',
             ).get();
 
-            Map<String, int> tagCache = {};
+            // 4. Safely migrate the main table
+            // We tell Drift explicitly which columns are new so it doesn't
+            // try to look for them in the old v3 database.
+            await m.alterTable(
+              TableMigration(
+                schema.sitemarkerRecords,
+                newColumns: [
+                  schema.sitemarkerRecords.lastSynced,
+                  schema.sitemarkerRecords.notes,
+                  schema.sitemarkerRecords.folderId,
+                ],
+              ),
+            );
 
+            // 5. Process and insert the tags into the new mapping tables
+            Map<String, int> tagCache = {};
             for (final row in rawRowsOfTags) {
               final recordId = row.read<int>('id');
+
+              // Safety check: ensure tags column actually existed in the result
+              if (!row.data.containsKey('tags')) continue;
+
               final tagsString = row.read<String?>('tags');
 
               if (tagsString != null && tagsString.isNotEmpty) {
-                // split and trim
                 final tagsList = tagsString
                     .split(',')
                     .map((t) => t.trim())
                     .where((t) => t.isNotEmpty);
 
-                // deduplicated insert/assignment
                 for (final tag in tagsList) {
                   int? tagId = tagCache[tag];
 
@@ -105,27 +98,22 @@ class SitemarkerDB extends _$SitemarkerDB {
                       tagId = existingTag.read<int>('id');
                     } else {
                       tagId = await into(schema.recordTags).insert(
-                        RawValuesInsertable({
-                          'name': Variable<String>(tag),
-                        }),
+                        RawValuesInsertable({'name': Variable<String>(tag)}),
                       );
                     }
                     tagCache[tag] = tagId;
                   }
+
                   await into(schema.tagMappings).insert(
-                    RawValuesInsertable(
-                      {
-                        'bookmark_id': Variable<int>(recordId),
-                        'tag_id': Variable<int>(tagId),
-                      },
-                    ),
+                    RawValuesInsertable({
+                      'bookmark_id': Variable<int>(recordId),
+                      'tag_id': Variable<int>(tagId),
+                    }),
                     mode: InsertMode.insertOrIgnore,
                   );
                 }
               }
             }
-
-            await customStatement('DROP TABLE sitemarker_records_old');
           },
         ),
         beforeOpen: (details) async {

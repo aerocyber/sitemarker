@@ -3,9 +3,9 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/providers/data_provider.dart';
 import 'package:sitemarker/core/providers/settings_provider.dart';
-import 'package:sitemarker/ui_desktop/desktop_app.dart';
-import 'package:sitemarker/ui_desktop/desktop_cli_app.dart';
-import 'package:sitemarker/ui_mobile/mobile_app.dart';
+import 'package:sitemarker/desktop_app.dart';
+import 'package:sitemarker/desktop_cli_app.dart';
+import 'package:sitemarker/mobile_app.dart';
 import 'package:universal_io/io.dart';
 
 Future<void> legacyPermissionHandler() async {

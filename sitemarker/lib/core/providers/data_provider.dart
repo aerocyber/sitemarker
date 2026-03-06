@@ -37,7 +37,7 @@ class DataProvider extends ChangeNotifier {
   bool get isRoot => _folderHistory.isEmpty;
   List<SmRecord> get globalDeletedRecords => _globalDeletedRecords;
   List<SmRecord> get activeRecords =>
-      _records.where((r) => r.isDeleted).toList();
+      _records.where((r) => !r.isDeleted).toList();
 
   DataProvider() {
     init();
