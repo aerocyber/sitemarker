@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:sitemarker/router.dart';
 
-class DesktopApp extends StatefulWidget {
-  const DesktopApp({super.key});
+class UIApp extends StatefulWidget {
+  const UIApp({super.key});
 
   @override
-  State<DesktopApp> createState() => _DesktopAppState();
+  State<UIApp> createState() => _UIAppState();
 }
 
-class _DesktopAppState extends State<DesktopApp> {
+class _UIAppState extends State<UIApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
