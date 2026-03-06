@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sitemarker/components/bouncy_button.dart';
 import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
 import 'package:sitemarker/core/providers/settings_provider.dart';
 
@@ -16,10 +17,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Set theme mode
     return Consumer<SettingsProvider>(
       builder: (context, value, child) {
-        // Set theme mode
         _themeMode = value.getCurrentThemeMode;
 
         return SafeArea(
@@ -29,9 +28,9 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Column(
                 children: [
                   _buildThemeSettings(value),
-                  SizedBox(
-                    height: 10.0,
-                  ),
+                  const SizedBox(
+                      height:
+                          30.0), // Increased spacing for visual breathing room
                   _buildDeleteGroup(),
                 ],
               ),
@@ -43,48 +42,44 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildDeleteGroup() {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            BouncyButton(
-              onPressed: () {},
-              child: ElevatedButton(
-                  style: ButtonStyle(
-                    elevation: WidgetStatePropertyAll<double>(2.5),
-                    shape: WidgetStatePropertyAll<OutlinedBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius: BorderRadiusGeometry.all(
-                          Radius.circular(5.0),
-                        ),
-                      ),
-                    ),
-                  ),
-                  onPressed: () {},
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.delete),
-                      SizedBox(
-                        width: 20,
-                      ),
-                      Text("Move all records to Trash")
-                    ],
-                  )),
+    return BouncyButton(
+      onPressed: () {
+        // Trigger your delete logic here
+        debugPrint("Moving all records to trash...");
+      },
+      // Use a Container instead of an ElevatedButton to prevent tap conflicts
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 14.0),
+        decoration: BoxDecoration(
+          color: Theme.of(context)
+              .colorScheme
+              .errorContainer, // Use Material 3 error theme
+          borderRadius: BorderRadius.circular(8.0),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              offset: const Offset(0, 2),
+              blurRadius: 4,
             ),
           ],
-        )
-      ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min, // Prevents row from taking full width
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
+            const SizedBox(width: 12),
+            Text(
+              "Move all records to Trash",
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.error,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
-  }
-
-  void handleThemeDropDown(
-      SitemarkerTheme newTheme, SettingsProvider provider) {
-    provider.changeThemeMode(newTheme);
-    setState(() {
-      _themeMode = newTheme.themeValue;
-    });
   }
 
   int themeModeIndex(String themeMode) {
@@ -96,31 +91,30 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Widget _buildThemeSettings(SettingsProvider p) {
-    // TODO: Theme switch functionality
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Spacer(),
-        Text("Theme"),
-        Spacer(),
+        const Spacer(),
+        const Text("Theme", style: TextStyle(fontSize: 16)),
+        const Spacer(),
         DropdownMenu<SitemarkerTheme>(
           enableFilter: false,
           enableSearch: false,
           initialSelection: themes[themeModeIndex(_themeMode)],
           onSelected: (value) {
-            value ??= themes[themeModeIndex(_themeMode)];
-            p.changeThemeMode(value);
-            setState(() {
-              _themeMode = value!.themeValue;
-            });
+            if (value != null) {
+              p.changeThemeMode(value);
+              setState(() {
+                _themeMode = value.themeValue;
+              });
+            }
           },
           dropdownMenuEntries: SitemarkerTheme.values
               .map<DropdownMenuEntry<SitemarkerTheme>>((theme) {
             return DropdownMenuEntry(value: theme, label: theme.themeName);
           }).toList(),
         ),
-        Spacer(),
+        const Spacer(),
       ],
     );
   }

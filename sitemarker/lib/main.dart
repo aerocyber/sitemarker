@@ -15,25 +15,38 @@ Future<void> legacyPermissionHandler() async {
 
 void main(List<String> args) {
   WidgetsFlutterBinding.ensureInitialized();
-  late final StatefulWidget app;
 
   if (Platform.isLinux || Platform.isWindows || Platform.isMacOS) {
     if (args.isNotEmpty) {
-      app = DesktopCliApp(
-        args: args,
+      runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => DataProvider()),
+            ChangeNotifierProvider(create: (_) => SettingsProvider()),
+          ],
+          child: DesktopCliApp(args: args),
+        ),
+      );
+    } else {
+      runApp(
+        MultiProvider(
+          providers: [
+            ChangeNotifierProvider(create: (_) => DataProvider()),
+            ChangeNotifierProvider(create: (_) => SettingsProvider()),
+          ],
+          child: UIApp(),
+        ),
       );
     }
   } else {
-    app = UIApp();
+    runApp(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => DataProvider()),
+          ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ],
+        child: UIApp(),
+      ),
+    );
   }
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => DataProvider()),
-        ChangeNotifierProvider(create: (_) => SettingsProvider()),
-      ],
-      child: app,
-    ),
-  );
 }
