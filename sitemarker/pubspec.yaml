@@ -55,5 +55,5 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/themes/
+    # - assets/themes/
     - assets/io.github.aerocyber.sitemarker.png

@@ -34,6 +34,7 @@ class SmTheme {
       // TODO: Log it
       return;
     }
+    
     // Get the themes
     List<FileSystemEntity> themesInDir = await themeDir.list().toList();
     for (int i = 0; i < themesInDir.length; i++) {

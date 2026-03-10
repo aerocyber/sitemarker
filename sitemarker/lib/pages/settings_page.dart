@@ -12,14 +12,14 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  String _themeMode = 'systemTheme';
+  String _themeMode = SitemarkerTheme.systemTheme.themeValue;
   List<SitemarkerTheme> themes = SitemarkerTheme.values;
 
   @override
   Widget build(BuildContext context) {
     return Consumer<SettingsProvider>(
       builder: (context, value, child) {
-        _themeMode = value.getCurrentThemeMode;
+        _themeMode = value.themeModeValue;
 
         return SafeArea(
           child: Padding(
@@ -57,7 +57,7 @@ class _SettingsPageState extends State<SettingsPage> {
           borderRadius: BorderRadius.circular(8.0),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
+              color: Colors.black.withValues(alpha: 0.1),
               offset: const Offset(0, 2),
               blurRadius: 4,
             ),
@@ -84,10 +84,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   int themeModeIndex(String themeMode) {
     int index = themes.map((t) => t.themeValue).toList().indexOf(themeMode);
-    if (index != -1) {
-      return index;
+    if (index == -1) {
+      return themes.map((t) => t.themeValue).toList().indexOf('systemTheme');
     }
-    return themes.map((t) => t.themeValue).toList().indexOf('systemTheme');
+    return index;
   }
 
   Widget _buildThemeSettings(SettingsProvider p) {
@@ -100,6 +100,7 @@ class _SettingsPageState extends State<SettingsPage> {
         DropdownMenu<SitemarkerTheme>(
           enableFilter: false,
           enableSearch: false,
+          selectOnly: true,
           initialSelection: themes[themeModeIndex(_themeMode)],
           onSelected: (value) {
             if (value != null) {

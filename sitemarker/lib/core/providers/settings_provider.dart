@@ -1,19 +1,14 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sitemarker/core/data_types/settings/sitemarker_theme.dart';
-import 'package:sitemarker/core/data_types/settings/sm_theme.dart';
 
 /// `SMSettingsProvider` is used by provider state management system for
 /// managing the settings used by the app.
 /// It has funtion calls to change the settings.
 class SettingsProvider extends ChangeNotifier {
   /// Theme Settings
-  final String themeNameKey = "THEME_COLOR";
-  String themeNameValue = "io.github.aerocyber.sitemarker.colors.default";
   final String themeModeKey = "THEME_MODE";
-  String themeModeValue = "systemTheme";
-  late String themeDir;
+  String themeModeValue = SitemarkerTheme.systemTheme.themeValue;
   bool customThemeDirFound = true;
 
   /// Settings DB
@@ -28,29 +23,12 @@ class SettingsProvider extends ChangeNotifier {
   /// already. This function is called from the constructor of this class.
   Future<void> init() async {
     settingsStore = SharedPreferencesAsync();
-    themeNameValue =
-        (await settingsStore.getString(themeNameKey)) ?? themeNameValue;
-    if ((await settingsStore.getString(themeNameKey)) == null) {
-      settingsStore.setString(themeNameKey, themeNameValue);
-    }
+
     themeModeValue =
         (await settingsStore.getString(themeModeKey)) ?? themeModeValue;
-    if ((await settingsStore.getString(themeModeKey)) == null) {
-      settingsStore.setString(themeModeKey, themeModeValue);
-    }
-    SmTheme st = SmTheme();
-    themeDir = await st.getThemePath();
-    if (themeDir == '') {
-      customThemeDirFound = false;
-    }
+
     notifyListeners();
   }
-
-  /// Get the currently set theme
-  String get getCurrentTheme => themeNameValue;
-
-  /// Get the currently set theme mode
-  String get getCurrentThemeMode => themeModeValue;
 
   /// Change the theme mode. Allowed values are `system`, `light` and `dark`
   Future<void> changeThemeMode(SitemarkerTheme newMode) async {
@@ -61,39 +39,5 @@ class SettingsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Get all available themes from SmTheme class.
-  Map<String, String> getThemes() {
-    SmTheme st = SmTheme();
-    List<String> themeStore = st.getThemeStore();
-    Map<String, String> themeList = {};
-
-    for (int i = 0; i < themeStore.length; i++) {
-      Map jsonDec = json.decode(themeStore[i]);
-      themeList.addAll({jsonDec["name"]: jsonDec["id"]});
-    }
-
-    return themeList;
-  }
-
-  /// Change the theme. The required parameter is a theme id. Theme Ids can be
-  /// obtained from the `geThemes()` function
-  Future<void> changeTheme(String newThemeId) async {
-    if (newThemeId == themeNameValue) {
-      return;
-    }
-    if (newThemeId.isEmpty) {
-      throw Exception('Theme ID cannot be empty');
-    }
-    if (customThemeDirFound == false) {
-      throw Exception('Custom theme directory not found');
-    }
-    Map<String, String> themes = getThemes();
-    List<String> themeIds = themes.values as List<String>;
-    if (!themeIds.contains(newThemeId)) {
-      throw Exception('Theme with ID $newThemeId was not found.');
-    }
-    await settingsStore.setString(themeNameKey, newThemeId);
-    themeNameValue = newThemeId;
-    notifyListeners();
-  }
+  setTheme() {}
 }
