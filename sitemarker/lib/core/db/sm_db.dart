@@ -35,16 +35,16 @@ class SitemarkerDB extends _$SitemarkerDB {
             );
           },
           from3To4: (m, schema) async {
-            // 1. YES, we must explicitly create the brand new tables!
+            // 1. Ceate the brand new tables!
             await m.createTable(schema.folders);
             await m.createTable(schema.recordTags);
             await m.createTable(schema.tagMappings);
 
-            // 2. Insert the Default root folder (id 1)
+            // 2. Insert the Default root folder aka / (id 1)
             await into(schema.folders).insert(
               RawValuesInsertable({
                 'id': const Variable<int>(1),
-                'name': const Variable<String>('Root'),
+                'name': const Variable<String>(''),
               }),
               mode: InsertMode.insertOrIgnore,
             );
@@ -58,16 +58,12 @@ class SitemarkerDB extends _$SitemarkerDB {
             // 4. Safely migrate the main table
             // We tell Drift explicitly which columns are new so it doesn't
             // try to look for them in the old v3 database.
-            await m.alterTable(
-              TableMigration(
-                schema.sitemarkerRecords,
-                newColumns: [
-                  schema.sitemarkerRecords.lastSynced,
-                  schema.sitemarkerRecords.notes,
-                  schema.sitemarkerRecords.folderId,
-                ],
-              ),
-            );
+            await m.addColumn(
+                sitemarkerRecords, schema.sitemarkerRecords.lastSynced);
+            await m.addColumn(
+                sitemarkerRecords, schema.sitemarkerRecords.notes);
+            await m.addColumn(
+                sitemarkerRecords, schema.sitemarkerRecords.folderId);
 
             // 5. Process and insert the tags into the new mapping tables
             Map<String, int> tagCache = {};

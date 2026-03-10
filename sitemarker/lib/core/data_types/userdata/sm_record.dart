@@ -47,7 +47,7 @@ class SmRecord {
       id: id ?? -1,
       name: name,
       url: url,
-      isDeleted: isDeleted ?? false,
+      isDeleted: isDeleted,
       dateAdded: dateAdded,
       dateModified: dateModified,
       folderId: folderId,
