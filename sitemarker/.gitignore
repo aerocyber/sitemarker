@@ -46,4 +46,4 @@ app.*.map.json
 *debug-symbols*
 
 *.jks
-*.g.dart
+*.g.dartandroid/build
