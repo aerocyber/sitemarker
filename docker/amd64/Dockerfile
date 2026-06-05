@@ -1,9 +1,7 @@
 # syntax=docker/dockerfile:1
 
-FROM amd64/fedora:40 AS base
-ENV VERSION=2.1.1
-ENV BUILDNO=1
-ENV SITEMARKER_PLATFORM=arm64
+FROM fedora:44 AS base
+ENV SITEMARKER_PLATFORM=amd64
 ENV PATH="${PATH}:/opt/flutter/bin"
 
 WORKDIR /app
@@ -23,7 +21,7 @@ RUN cd /app; \
     flutter pub get
 
 FROM base AS build
-RUN flutter build linux --release --tree-shake-icons --build-name ${VERSION} --build-number ${BUILDNO} --split-debug-info ${VERSION}-${SITEMARKER_PLATFORM}-DEBUGINFO --no-obfuscate
+RUN flutter build linux --release --tree-shake-icons --split-debug-info ${SITEMARKER_PLATFORM}-DEBUGINFO --no-obfuscate
 
 FROM scratch AS binaries
 COPY --from=build build/linux/amd64/release/bundle /linux-build
