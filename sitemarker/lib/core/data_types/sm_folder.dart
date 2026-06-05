@@ -4,14 +4,29 @@ class SmFolder {
   int? id;
   int? parentId; // null => root
   String name;
+  bool isDeleted;
 
-  SmFolder({this.id, required this.name, required this.parentId});
+  SmFolder({
+    this.id,
+    required this.name,
+    required this.parentId,
+    required this.isDeleted,
+  });
 
   static SmFolder fromFolders(FolderRecord folder) {
-    return SmFolder(name: folder.name, parentId: folder.parentId);
+    return SmFolder(
+      name: folder.name,
+      parentId: folder.parentId,
+      isDeleted: folder.isDeleted,
+    );
   }
 
   FolderRecord toFolderRecord() {
-    return FolderRecord(id: id ?? -1, name: name, parentId: parentId);
+    return FolderRecord(
+      id: id ?? -1,
+      name: name,
+      parentId: parentId,
+      isDeleted: isDeleted,
+    );
   }
 }

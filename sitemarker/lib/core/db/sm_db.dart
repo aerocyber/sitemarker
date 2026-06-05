@@ -8,10 +8,15 @@ import 'package:sitemarker/core/db/tables/record_tags.dart';
 import 'package:sitemarker/core/db/tables/sitemarker_records.dart';
 import 'package:sitemarker/core/db/tables/tag_mappings.dart';
 
+import 'package:sitemarker/core/db/daos/folder_dao.dart';
+
 part 'sm_db.g.dart';
 
 /// DB
-@DriftDatabase(tables: [SitemarkerRecords, RecordTags, TagMappings, FolderRecords])
+@DriftDatabase(
+  tables: [SitemarkerRecords, RecordTags, TagMappings, FolderRecords],
+  daos: [FolderDao],
+)
 class SitemarkerDB extends _$SitemarkerDB {
   // SitemarkerDB() : super(impl.connect());
   SitemarkerDB([QueryExecutor? e]) : super(e ?? impl.connect());
@@ -176,15 +181,6 @@ class SitemarkerDB extends _$SitemarkerDB {
     });
   }
 
-  Future<int> createFolder(String folderName, {int? parentFolderId}) async {
-    return (await into(folders).insert(
-      FoldersCompanion.insert(
-        name: folderName,
-        parentId: Value(parentFolderId),
-      ),
-    ));
-  }
-
   // SELECTs
   /// Get all records
   Future<List<SitemarkerRecord>> get allRecords =>
@@ -197,17 +193,7 @@ class SitemarkerDB extends _$SitemarkerDB {
     )..where((t) => t.folderId.equals(folderId))).get();
   }
 
-  Future<List<String>> getFolderById(int folderId) async {
-    return (await (select(
-      folders,
-    )..where((t) => t.id.equals(folderId))).get()).map((t) => t.name).toList();
-  }
-
-  // Get all subfolders of a folder with folder ID known
-  Future<List<Folder>> getAllSubfolders(int folderId) {
-    return (select(folders)..where((t) => t.parentId.equals(folderId))).get();
-  }
-
+  
   // Get all tags of a record where the ID of the record is known
   Future<List<RecordTag>> getAllTagsInRecord(int recordId) async {
     final mappings = await (select(
@@ -327,5 +313,5 @@ class SitemarkerDB extends _$SitemarkerDB {
   }
 
   /// Get all folders
-  Future<List<Folder>> get allFolders => select(folders).get();
+  Future<List<FolderRecord>> get allFolders => select(folderRecords).get();
 }
