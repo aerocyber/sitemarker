@@ -9,13 +9,14 @@ import 'package:sitemarker/core/db/tables/sitemarker_records.dart';
 import 'package:sitemarker/core/db/tables/tag_mappings.dart';
 
 import 'package:sitemarker/core/db/daos/folder_dao.dart';
+import 'package:sitemarker/core/db/daos/records_dao.dart';
 
 part 'sm_db.g.dart';
 
 /// DB
 @DriftDatabase(
   tables: [SitemarkerRecords, RecordTags, TagMappings, FolderRecords],
-  daos: [FolderDao],
+  daos: [FolderDao, RecordsDao],
 )
 class SitemarkerDB extends _$SitemarkerDB {
   // SitemarkerDB() : super(impl.connect());
@@ -193,7 +194,6 @@ class SitemarkerDB extends _$SitemarkerDB {
     )..where((t) => t.folderId.equals(folderId))).get();
   }
 
-  
   // Get all tags of a record where the ID of the record is known
   Future<List<RecordTag>> getAllTagsInRecord(int recordId) async {
     final mappings = await (select(

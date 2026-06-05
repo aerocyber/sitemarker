@@ -52,6 +52,16 @@ class FolderDao extends DatabaseAccessor<SitemarkerDB> with _$FolderDaoMixin {
         .toList();
   }
 
+  /// Get all folders which are deleted
+  /// Returns `null` if not found.
+  Future<List<SmFolder>> getDeletedFolders() async {
+    return (await (select(
+          folderRecords,
+        )..where((f) => f.isDeleted.equals(true))).get())
+        .map((folder) => SmFolder.fromFolders(folder))
+        .toList();
+  }
+
   /// Permanently delete a folder by Id
   /// Throws `FolderDoesNotExistException` if not found
   /// Throws `IdCannotBeNullException` if folderInfo.id is null
