@@ -1,12 +1,11 @@
 import 'package:drift/drift.dart';
 import 'package:sitemarker/core/db/sm_db.dart';
-import 'package:sitemarker/core/db/tables/tag_mappings.dart';
 import 'package:sitemarker/core/db/tables/record_tags.dart';
 import 'package:sitemarker/core/errors/db_error/tag_not_found.dart';
 
 part 'tags_dao.g.dart';
 
-@DriftAccessor(tables: [TagMappings, RecordTags])
+@DriftAccessor(tables: [RecordTags])
 class TagsDao extends DatabaseAccessor<SitemarkerDB> with _$TagsDaoMixin {
   TagsDao(super.db);
 
@@ -29,6 +28,13 @@ class TagsDao extends DatabaseAccessor<SitemarkerDB> with _$TagsDaoMixin {
 
     if (recordTagSearch == null) throw TagNotFoundException(id: tagId);
 
-    return update(recordTags).replace(recordTagSearch.copyWith(name: newTagName));
+    return update(
+      recordTags,
+    ).replace(recordTagSearch.copyWith(name: newTagName));
+  }
+
+  /// Insert a new tag
+  Future<int> addNewTag(String tagName) {
+    return into(recordTags).insert(RecordTagsCompanion(name: Value(tagName)));
   }
 }
