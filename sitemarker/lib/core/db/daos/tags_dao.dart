@@ -17,9 +17,11 @@ class TagsDao extends DatabaseAccessor<SitemarkerDB> with _$TagsDaoMixin {
 
   /// Get tag by Id
   /// Returns null if not found
-  Future<RecordTag?> getTagById(int tagId) async => (select(
-    recordTags,
-  )..where((tag) => tag.id.equals(tagId))).getSingleOrNull();
+  Future<RecordTag?> getTagById(int tagId) async {
+    return await (select(
+      recordTags,
+    )..where((tag) => tag.id.equals(tagId))).getSingleOrNull();
+  }
 
   /// Change tag name
   /// Throws `TagNotFoundException` if tag is not found
