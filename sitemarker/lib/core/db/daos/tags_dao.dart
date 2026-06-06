@@ -10,10 +10,10 @@ class TagsDao extends DatabaseAccessor<SitemarkerDB> with _$TagsDaoMixin {
   TagsDao(super.db);
 
   /// Get all tags
-  /// This is a list of Bookmark Id : Tag Id mappings
-  Future<List<Map<int, int>>> get getAllTags async => (await select(
-    tagMappings,
-  ).get()).map((tag) => {tag.bookmarkId: tag.tagId}).toList();
+  /// This is a list of Tag Id : Tag Name mappings
+  Future<List<Map<int, String>>> get getAllTags async => (await select(
+    recordTags,
+  ).get()).map((tag) => {tag.id: tag.name}).toList();
 
   /// Get tag by Id
   /// Returns null if not found
