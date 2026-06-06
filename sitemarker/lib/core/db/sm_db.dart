@@ -183,33 +183,6 @@ class SitemarkerDB extends _$SitemarkerDB {
   }
 
   // SELECTs
-  /// Get all records
-  Future<List<SitemarkerRecord>> get allRecords =>
-      select(sitemarkerRecords).get();
-
-  // Get all records in folder with folder ID known
-  Future<List<SitemarkerRecord>> getRecordsByFolderId(int folderId) {
-    return (select(
-      sitemarkerRecords,
-    )..where((t) => t.folderId.equals(folderId))).get();
-  }
-
-  // Get all tags of a record where the ID of the record is known
-  Future<List<RecordTag>> getAllTagsInRecord(int recordId) async {
-    final mappings = await (select(
-      tagMappings,
-    )..where((t) => t.bookmarkId.equals(recordId))).get();
-    List<RecordTag> records = [];
-    for (final mapping in mappings) {
-      records.add(
-        await (select(
-          recordTags,
-        )..where((t) => t.id.equals(mapping.tagId))).getSingle(),
-      );
-    }
-
-    return records;
-  }
 
   // Get all bookmarks which have got the same tag id
   Future<List<SitemarkerRecord>> getAllRecordsByTagId(int tagId) async {
@@ -229,16 +202,6 @@ class SitemarkerDB extends _$SitemarkerDB {
     return records;
   }
 
-  /// Get records matching name
-  Future<List<SitemarkerRecord>> getRecordsByName(String name) {
-    return (select(sitemarkerRecords)..where((t) => t.name.equals(name))).get();
-  }
-
-  /// Get records matching url
-  Future<List<SitemarkerRecord>> getRecordsByURL(String url) {
-    return (select(sitemarkerRecords)..where((t) => t.url.equals(url))).get();
-  }
-
   Future<List<SitemarkerRecord>> getRecordsByRangeOfDateAdded(
     DateTime dateRangeStart,
     DateTime dateRangeEnd,
@@ -251,10 +214,6 @@ class SitemarkerDB extends _$SitemarkerDB {
         ))
         .get();
   }
-
-  /// Add a new record
-  Future<int> insertRecord(SitemarkerRecord record) =>
-      into(sitemarkerRecords).insert(record);
 
   /// Update a record
   Future<bool> updateRecord(SitemarkerRecord updatedRecord) =>
@@ -279,37 +238,6 @@ class SitemarkerDB extends _$SitemarkerDB {
     );
 
     return update(sitemarkerRecords).replace(rec);
-  }
-
-  /// Soft delete a record
-  Future<bool> softDelete(SitemarkerRecord record) {
-    // SitemarkerRecord rec = SitemarkerRecord(
-    //   id: record.id,
-    //   name: record.name,
-    //   url: record.url,
-    //   isDeleted: true,
-    //   dateAdded: record.dateAdded,
-    //   dateModified: record.dateModified,
-    //   folderId: record.folderId,
-    //   lastSynced: record.lastSynced,
-    //   notes: record.notes,
-    // );
-
-    return update(sitemarkerRecords).replace(record.copyWith(isDeleted: true));
-  }
-
-  /// Get deleted records
-  Future<List<SitemarkerRecord>> getDeletedRecords() {
-    return (select(
-      sitemarkerRecords,
-    )..where((t) => t.isDeleted.equals(true))).get();
-  }
-
-  /// Get undeleted records
-  Future<List<SitemarkerRecord>> getUndeletedRecords() {
-    return (select(
-      sitemarkerRecords,
-    )..where((t) => t.isDeleted.equals(false))).get();
   }
 
   /// Get all folders
