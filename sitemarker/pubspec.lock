@@ -539,6 +539,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0"
+  remove_from_coverage:
+    dependency: "direct dev"
+    description:
+      name: remove_from_coverage
+      sha256: "5b5745f6b692c80e3d7903fb83f9e789dc4575e6db5443a1b391ca25c10bad06"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   rps:
     dependency: "direct dev"
     description:

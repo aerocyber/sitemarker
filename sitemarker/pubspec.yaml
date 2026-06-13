@@ -9,6 +9,7 @@ scripts:
   test-db: "flutter test test/integration_tests/db_testing"
   test-all: "flutter test"
   check: "dart format lib test && flutter analyze"
+  coverage: "flutter test --coverage && dart run remove_from_coverage -f coverage/lcov.info -r '.g.dart$' -r '.drift.dart$'"
 
 environment:
   sdk: ^3.12.1
@@ -30,6 +31,7 @@ dev_dependencies:
   drift_dev: ^2.33.0
   build_runner: ^2.15.0
   rps: ^0.10.1
+  remove_from_coverage: ^2.0.0
 
 flutter:
   uses-material-design: true
