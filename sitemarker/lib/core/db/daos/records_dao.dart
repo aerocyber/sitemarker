@@ -189,8 +189,37 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
   }
 
   /// Edit record
+  Future<bool> replaceRecordWithNew(SmRecord record) {
+    if (record.id == null) {
+      throw InvalidDataException(
+        "The record cannot have an id of null for this operation",
+      );
+    }
+
+    return update(sitemarkerRecords).replace(record.toSitemarkerRecord());
+  }
 
   /// Toggle record deletion state
+  Future<bool> toggleSoftDeleteStatus(SmRecord record) {
+    if (record.id == null) {
+      throw InvalidDataException(
+        "The record cannot have id of null for this operation",
+      );
+    }
+
+    return update(sitemarkerRecords).replace(
+      record.toSitemarkerRecord().copyWith(isDeleted: !record.isDeleted),
+    );
+  }
 
   /// Permanently delete a record
+  Future permaDeleteRecord(SmRecord record) async {
+    if (record.id == null) {
+      throw InvalidDataException(
+        "The record cannot have id of null for this operation",
+      );
+    }
+
+    return delete(sitemarkerRecords)..where((rec) => rec.id.equals(record.id!));
+  }
 }
