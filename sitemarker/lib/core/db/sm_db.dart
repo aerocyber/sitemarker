@@ -13,10 +13,13 @@ import 'package:sitemarker/core/db/daos/records_dao.dart';
 
 part 'sm_db.g.dart';
 
+// TODO: Optimize data fetching from tables.
+
 /// DB
 @DriftDatabase(
   tables: [SitemarkerRecords, RecordTags, TagMappings, FolderRecords],
   daos: [FolderDao, RecordsDao],
+  include: {'tables/search.drift'},
 )
 class SitemarkerDB extends _$SitemarkerDB {
   // SitemarkerDB() : super(impl.connect());
@@ -30,6 +33,13 @@ class SitemarkerDB extends _$SitemarkerDB {
   @override
   MigrationStrategy get migration {
     return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+
+        await customStatement(
+          "INSERT INTO sitemarker_records_fts(sitemarker_records_fts) VALUES('rebuild');",
+        );
+      },
       onUpgrade: stepByStep(
         from1To2: (m, schema) async {
           await m.addColumn(
@@ -122,6 +132,9 @@ class SitemarkerDB extends _$SitemarkerDB {
               }
             }
           }
+          await customStatement(
+            "INSERT INTO sitemarker_records_fts(sitemarker_records_fts) VALUES('rebuild');",
+          );
         },
       ),
       beforeOpen: (details) async {
@@ -137,6 +150,8 @@ class SitemarkerDB extends _$SitemarkerDB {
               ),
             ),
           );
+
+          await customStatement('PRAGMA foreign_keys = ON');
         }
       },
     );

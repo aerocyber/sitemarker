@@ -1,0 +1,46 @@
+-- Specific to drift:
+import 'package:sitemarker/core/db/tables/sitemarker_records.dart';
+
+
+-- FTS5 Virtual Table
+CREATE VIRTUAL TABLE sitemarker_records_fts USING fts5(
+    name,
+    url,
+    content = 'sitemarker_records',
+    -- source of data
+    content_rowid = 'id' -- primary key of the source is linked to the virtual table primary key
+);
+
+-- Triggers
+-- 1. Data Insertion
+CREATE TRIGGER records_ai AFTER
+    INSERT ON sitemarker_records BEGIN
+    INSERT INTO sitemarker_records_fts(rowid, name, url)
+    VALUES (new.id, new.name, new.url);
+END;
+
+
+-- 2. Data Updation
+CREATE TRIGGER records_au AFTER
+    UPDATE ON sitemarker_records BEGIN
+    INSERT INTO sitemarker_records_fts(sitemarker_records_fts, rowid, name, url)
+    VALUES ('delete', old.id, old.name, old.url);
+    INSERT INTO sitemarker_records_fts(rowid, name, url)
+    VALUES (new.id, new.name, new.url);
+END;
+
+-- 3. Data Deletion
+CREATE TRIGGER records_ad AFTER DELETE ON sitemarker_records BEGIN
+    INSERT INTO sitemarker_records_fts(sitemarker_records_fts, rowid, name, url) 
+    VALUES ('delete', old.id, old.name, old.url);
+END;
+
+
+-- The Generated Dart Method
+-- Drift will convert this into a type-safe Dart function.
+searchActiveRecords:
+SELECT r.** FROM sitemarker_records_fts fts
+INNER JOIN sitemarker_records r ON r.id = fts.rowid
+WHERE sitemarker_records_fts MATCH :query 
+  AND r.is_deleted = 0 
+ORDER BY bm25(sitemarker_records_fts);

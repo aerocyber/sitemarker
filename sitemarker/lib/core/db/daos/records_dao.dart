@@ -225,4 +225,14 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
 
     return delete(sitemarkerRecords)..where((rec) => rec.id.equals(record.id!));
   }
+
+  Future<void> purgeOldRecords() async {
+    final sixtyDaysAgo = DateTime.now().subtract(const Duration(days: 60));
+
+    // Hard delete anything flagged as deleted 60+ days ago
+    await (delete(sitemarkerRecords)
+          ..where((r) => r.isDeleted.equals(true))
+          ..where((r) => r.dateModified.isSmallerThanValue(sixtyDaysAgo)))
+        .go();
+  }
 }
