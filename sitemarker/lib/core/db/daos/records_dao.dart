@@ -189,6 +189,7 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
   }
 
   /// Edit record
+  /// Throws `InvalidDataException` if record.id is null
   Future<bool> replaceRecordWithNew(SmRecord record) {
     if (record.id == null) {
       throw InvalidDataException(
@@ -200,6 +201,7 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
   }
 
   /// Toggle record deletion state
+  /// Throws `InvalidDataException` if record.id is null
   Future<bool> toggleSoftDeleteStatus(SmRecord record) {
     if (record.id == null) {
       throw InvalidDataException(
@@ -213,6 +215,7 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
   }
 
   /// Permanently delete a record
+  /// Throws `InvalidDataException` if record.id is null
   Future permaDeleteRecord(SmRecord record) async {
     if (record.id == null) {
       throw InvalidDataException(
