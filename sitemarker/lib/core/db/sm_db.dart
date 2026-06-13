@@ -54,11 +54,13 @@ class SitemarkerDB extends _$SitemarkerDB {
           );
         },
         from3To4: (m, schema) async {
-          await m.createTable(schema.folders);
+          // 1. Create tables using the CORRECT generated getter
+          await m.createTable(schema.folderRecords);
           await m.createTable(schema.recordTags);
           await m.createTable(schema.tagMappings);
 
-          await into(schema.folders).insert(
+          // 2. Insert default root folder
+          await into(schema.folderRecords).insert(
             RawValuesInsertable({
               'id': const Variable<int>(1),
               'name': const Variable<String>('home'),
@@ -66,47 +68,30 @@ class SitemarkerDB extends _$SitemarkerDB {
             mode: InsertMode.insertOrIgnore,
           );
 
+          // 3. Native Tag Extraction & Mapping CTEs
           await customStatement('''
             WITH RECURSIVE split(bookmark_id, tag, rest) AS (
-              SELECT id, '', tags || ',' 
-              FROM sitemarker_records 
-              WHERE tags IS NOT NULL AND tags != ''
-              
+              SELECT id, '', tags || ',' FROM sitemarker_records WHERE tags IS NOT NULL AND tags != ''
               UNION ALL
-              
-              SELECT bookmark_id,
-                     trim(substr(rest, 1, instr(rest, ',') - 1)),
-                     substr(rest, instr(rest, ',') + 1)
-              FROM split
-              WHERE rest != ''
+              SELECT bookmark_id, trim(substr(rest, 1, instr(rest, ',') - 1)), substr(rest, instr(rest, ',') + 1)
+              FROM split WHERE rest != ''
             )
-
             INSERT OR IGNORE INTO record_tags (name)
             SELECT DISTINCT tag FROM split WHERE tag != '';
           ''');
 
           await customStatement('''
             WITH RECURSIVE split(bookmark_id, tag, rest) AS (
-              SELECT id, '', tags || ',' 
-              FROM sitemarker_records 
-              WHERE tags IS NOT NULL AND tags != ''
-              
+              SELECT id, '', tags || ',' FROM sitemarker_records WHERE tags IS NOT NULL AND tags != ''
               UNION ALL
-              
-              SELECT bookmark_id,
-                     trim(substr(rest, 1, instr(rest, ',') - 1)),
-                     substr(rest, instr(rest, ',') + 1)
-              FROM split
-              WHERE rest != ''
+              SELECT bookmark_id, trim(substr(rest, 1, instr(rest, ',') - 1)), substr(rest, instr(rest, ',') + 1)
+              FROM split WHERE rest != ''
             )
-
             INSERT OR IGNORE INTO tag_mappings (bookmark_id, tag_id)
-            SELECT s.bookmark_id, t.id 
-            FROM split s 
-            JOIN record_tags t ON s.tag = t.name 
-            WHERE s.tag != '';
+            SELECT s.bookmark_id, t.id FROM split s JOIN record_tags t ON s.tag = t.name WHERE s.tag != '';
           ''');
 
+          // 4. Inject new columns before TableMigration runs
           await m.addColumn(
             schema.sitemarkerRecords,
             schema.sitemarkerRecords.lastSynced,
@@ -120,10 +105,26 @@ class SitemarkerDB extends _$SitemarkerDB {
             schema.sitemarkerRecords.folderId,
           );
 
+          // 5. Safely rebuild the table to apply your unique constraints and drop the old tags column
+          await m.alterTable(TableMigration(schema.sitemarkerRecords));
+
+          // 6. Manually reconstruct the FTS engine and triggers
+          await customStatement('''
+            CREATE VIRTUAL TABLE IF NOT EXISTS sitemarker_records_fts USING fts5(
+                name, url, content = 'sitemarker_records', content_rowid = 'id'
+            );
+          ''');
           await customStatement(
-            'ALTER TABLE sitemarker_records DROP COLUMN tags;',
+            "CREATE TRIGGER IF NOT EXISTS records_ai AFTER INSERT ON sitemarker_records BEGIN INSERT INTO sitemarker_records_fts(rowid, name, url) VALUES (new.id, new.name, new.url); END;",
+          );
+          await customStatement(
+            "CREATE TRIGGER IF NOT EXISTS records_au AFTER UPDATE ON sitemarker_records BEGIN INSERT INTO sitemarker_records_fts(sitemarker_records_fts, rowid, name, url) VALUES ('delete', old.id, old.name, old.url); INSERT INTO sitemarker_records_fts(rowid, name, url) VALUES (new.id, new.name, new.url); END;",
+          );
+          await customStatement(
+            "CREATE TRIGGER IF NOT EXISTS records_ad AFTER DELETE ON sitemarker_records BEGIN INSERT INTO sitemarker_records_fts(sitemarker_records_fts, rowid, name, url) VALUES ('delete', old.id, old.name, old.url); END;",
           );
 
+          // 7. Rebuild the search index
           await customStatement(
             "INSERT INTO sitemarker_records_fts(sitemarker_records_fts) VALUES('rebuild');",
           );
