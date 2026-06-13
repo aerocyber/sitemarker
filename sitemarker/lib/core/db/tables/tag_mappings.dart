@@ -12,4 +12,7 @@ class TagMappings extends Table {
   )();
   IntColumn get tagId =>
       integer().references(RecordTags, #id, onDelete: KeyAction.cascade)();
+
+  @override
+  List<String> get customConstraints => ['UNIQUE(bookmark_id, tag_id)'];
 }
