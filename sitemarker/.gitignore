@@ -46,3 +46,4 @@ app.*.map.json
 
 # Build runner generated files
 *.g.dart
+test/generated_migrations_for_drift/
