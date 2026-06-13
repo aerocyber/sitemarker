@@ -8,18 +8,11 @@ class SitemarkerRecords extends Table {
   BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
 
   // DB v2: Added the dateAdded column
-  DateTimeColumn get dateAdded => dateTime().withDefault(
-    Constant(
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-    ),
-  )();
+  DateTimeColumn get dateAdded => dateTime().withDefault(currentDateAndTime)();
 
   // DB v3: Added the dateModified column
-  DateTimeColumn get dateModified => dateTime().withDefault(
-    Constant(
-      DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day),
-    ),
-  )();
+  DateTimeColumn get dateModified =>
+      dateTime().withDefault(currentDateAndTime)();
 
   // DB v4: Added the last synced column
   DateTimeColumn get lastSynced => dateTime().nullable()();

@@ -15,6 +15,7 @@ class SmFolder {
 
   static SmFolder fromFolders(FolderRecord folder) {
     return SmFolder(
+      id: folder.id,
       name: folder.name,
       parentId: folder.parentId,
       isDeleted: folder.isDeleted,
