@@ -1,9 +1,14 @@
 name: sitemarker
 description: "A beautiful, offline-first digital vault for your bookmarks."
 
-publish_to: 'none'
+publish_to: "none"
 
 version: 4.0.0+4000 # TODO: Don't forget the version updation!!
+
+scripts:
+  test-db: "flutter test test/integration_tests/db_testing"
+  test-all: "flutter test"
+  check: "dart format lib test && flutter analyze"
 
 environment:
   sdk: ^3.12.1
@@ -24,10 +29,9 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   drift_dev: ^2.33.0
   build_runner: ^2.15.0
-
+  rps: ^0.10.1
 
 flutter:
-
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:

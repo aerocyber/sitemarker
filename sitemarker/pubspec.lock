@@ -267,6 +267,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.2"
+  http:
+    dependency: transitive
+    description:
+      name: http
+      sha256: "87721a4a50b19c7f1d49001e51409bddc46303966ce89a65af4f4e6004896412"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.6.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -491,6 +499,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.5.2"
+  prompts:
+    dependency: transitive
+    description:
+      name: prompts
+      sha256: "3773b845e85a849f01e793c4fc18a45d52d7783b4cb6c0569fad19f9d0a774a1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   pub_semver:
     dependency: transitive
     description:
@@ -523,6 +539,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.0"
+  rps:
+    dependency: "direct dev"
+    description:
+      name: rps
+      sha256: "0ace6102743504a790f509056a03284386fa8c3164f43613e40c8422d879c96e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.1"
   shelf:
     dependency: transitive
     description:
