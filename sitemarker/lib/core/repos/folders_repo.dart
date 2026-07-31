@@ -1,134 +1,116 @@
-import 'package:drift/drift.dart';
-// Adjust these imports to match your actual file paths
-import 'package:sitemarker/core/db/sm_db.dart';
+import 'package:sitemarker/core/data_types/sm_folder.dart';
+import 'package:sitemarker/core/db/daos/folder_dao.dart';
 import 'package:sitemarker/core/logging/logger.dart';
 
 class FoldersRepository {
-  final SitemarkerDB _db;
+  final FolderDao _folderDao;
 
-  FoldersRepository(this._db);
+  FoldersRepository(this._folderDao);
 
-  /// Fetch all active folders
-  Future<List<FolderRecord>> getAllFolders() async {
-    LogManager.instance.log(LogLevel.debug, 'Fetching all active folders');
+  /// Fetch ALL active (non-deleted) folders across the entire tree
+  Future<List<SmFolder>> getAllFolders() async {
+    LogManager.instance.log(LogLevel.debug, 'Fetching all non-deleted folders');
     try {
-      return await (_db.select(
-        _db.folderRecords,
-      )..where((f) => f.isDeleted.equals(false))).get();
+      return await _folderDao.getNonDeletedFolders();
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to fetch folders: $e\n$stack',
+        'Failed to fetch all folders: $e\n$stack',
       );
-      throw Exception('Could not load folders.');
+      rethrow;
     }
   }
 
-  /// Fetch only top-level root folders (where parentId is null)
-  /// This keeps the initial app startup fast and lightweight.
-  Future<List<FolderRecord>> getRootFolders() async {
-    LogManager.instance.log(LogLevel.debug, 'Fetching root level folders');
+  /// Fetch ONLY top-level root folders for fast initial app startup.
+  /// Root folders are defined as having parentId as null or pointing to home (ID 1).
+  Future<List<SmFolder>> getRootFolders() async {
+    LogManager.instance.log(
+      LogLevel.debug,
+      'Fetching root folders for initial startup',
+    );
     try {
-      return await (_db.select(_db.folderRecords)
-            ..where((f) => f.parentId.isNull())
-            ..where((f) => f.isDeleted.equals(false)))
-          .get();
+      final allFolders = await _folderDao.getNonDeletedFolders();
+
+      // Filter in-memory to avoid adding a new SQL query to FolderDao for 4.0
+      return allFolders
+          .where((folder) => folder.parentId == null || folder.parentId == 1)
+          .toList();
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
         'Failed to fetch root folders: $e\n$stack',
       );
-      throw Exception('Could not load root folders.');
+      rethrow;
     }
   }
 
-  /// Fetch only the direct subfolders of a specific parent directory
-  Future<List<FolderRecord>> getSubfolders(int parentId) async {
+  /// Fetch direct subfolders of a specific parent folder
+  Future<List<SmFolder>> getSubfolders(int parentId) async {
     LogManager.instance.log(
       LogLevel.debug,
       'Fetching subfolders for parent: $parentId',
     );
     try {
-      return await (_db.select(_db.folderRecords)
-            ..where((f) => f.parentId.equals(parentId))
-            ..where((f) => f.isDeleted.equals(false)))
-          .get();
+      final allFolders = await _folderDao.getNonDeletedFolders();
+      return allFolders.where((folder) => folder.parentId == parentId).toList();
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to fetch subfolders: $e\n$stack',
+        'Failed to fetch subfolders for $parentId: $e\n$stack',
       );
-      throw Exception('Could not load subfolders.');
+      rethrow;
     }
   }
 
-  /// Create a new folder.
-  /// Leave parentId null to create a folder at the root level.
+  /// Create new folder
   Future<int> createFolder(String name, {int? parentId}) async {
     LogManager.instance.log(
       LogLevel.info,
       'Creating folder: $name under parent: $parentId',
     );
     try {
-      final newFolder = FolderRecordsCompanion.insert(
-        name: name,
-        parentId: Value(parentId),
-        isDeleted: const Value(false),
-      );
-
-      // Returns the auto-incremented ID of the new folder
-      return await _db.into(_db.folderRecords).insert(newFolder);
+      final folder = SmFolder(name: name, parentId: parentId, isDeleted: false);
+      return await _folderDao.createFolder(folder);
     } catch (e, stack) {
-      // Handles the UNIQUE(parent_id, name) constraint failure
       LogManager.instance.log(
         LogLevel.error,
         'Failed to create folder $name: $e\n$stack',
       );
-      throw Exception(
-        'Failed to create folder. A folder with this name might already exist here.',
-      );
+      rethrow;
     }
   }
 
-  /// Rename a folder or move it to a new parent
-  Future<void> updateFolder(int id, {String? newName, int? newParentId}) async {
-    LogManager.instance.log(LogLevel.info, 'Updating folder $id');
+  /// Rename folder
+  Future<bool> renameFolder(SmFolder folder, String newName) async {
+    LogManager.instance.log(
+      LogLevel.info,
+      'Renaming folder ID ${folder.id} to $newName',
+    );
     try {
-      final update = FolderRecordsCompanion(
-        name: newName != null ? Value(newName) : const Value.absent(),
-        parentId: newParentId != null
-            ? Value(newParentId)
-            : const Value.absent(),
-      );
-
-      await (_db.update(
-        _db.folderRecords,
-      )..where((f) => f.id.equals(id))).write(update);
+      return await _folderDao.updateFolderById(folder, newName);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to update folder $id: $e\n$stack',
+        'Failed to rename folder: $e\n$stack',
       );
-      throw Exception('Failed to update folder.');
+      rethrow;
     }
   }
 
-  /// Soft-delete a folder (sets isDeleted to true instead of wiping it from disk)
-  /// Especially useful for future sync
-  Future<void> deleteFolder(int id) async {
-    LogManager.instance.log(LogLevel.info, 'Soft-deleting folder $id');
+  /// Soft delete folder
+  Future<bool> toggleSoftDelete(SmFolder folder) async {
+    LogManager.instance.log(
+      LogLevel.info,
+      'Toggling soft delete on folder ID ${folder.id}',
+    );
     try {
-      final update = const FolderRecordsCompanion(isDeleted: Value(true));
-
-      await (_db.update(
-        _db.folderRecords,
-      )..where((f) => f.id.equals(id))).write(update);
+      return await _folderDao.toggleSoftDeleteFolderById(folder);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to delete folder $id: $e\n$stack',
+        'Failed to toggle delete on folder: $e\n$stack',
       );
-      throw Exception('Failed to delete the folder.');
+      rethrow;
     }
   }
 }
