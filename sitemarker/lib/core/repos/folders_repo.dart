@@ -40,6 +40,24 @@ class FoldersRepository {
     }
   }
 
+  /// Fetch direct subfolders of a specific parent folder
+  Future<List<SmFolder>> getSubfolders(int parentId) async {
+    LogManager.instance.log(
+      LogLevel.debug,
+      'Fetching subfolders for parent: $parentId',
+    );
+    try {
+      final allFolders = await _folderDao.getNonDeletedFolders();
+      return allFolders.where((folder) => folder.parentId == parentId).toList();
+    } catch (e, stack) {
+      LogManager.instance.log(
+        LogLevel.error,
+        'Failed to fetch subfolders for $parentId: $e\n$stack',
+      );
+      rethrow;
+    }
+  }
+
   /// Fetch folders in trash
   Future<List<SmFolder>> getDeletedFolders() async {
     LogManager.instance.log(LogLevel.debug, 'Fetching deleted folders');
@@ -49,6 +67,41 @@ class FoldersRepository {
       LogManager.instance.log(
         LogLevel.error,
         'Failed to fetch deleted folders: $e\n$stack',
+      );
+      rethrow;
+    }
+  }
+
+  /// Create new folder
+  Future<int> createFolder(String name, {int? parentId}) async {
+    LogManager.instance.log(
+      LogLevel.info,
+      'Creating folder: $name under parent: $parentId',
+    );
+    try {
+      final folder = SmFolder(name: name, parentId: parentId, isDeleted: false);
+      return await _folderDao.createFolder(folder);
+    } catch (e, stack) {
+      LogManager.instance.log(
+        LogLevel.error,
+        'Failed to create folder $name: $e\n$stack',
+      );
+      rethrow;
+    }
+  }
+
+  /// Rename folder
+  Future<bool> renameFolder(SmFolder folder, String newName) async {
+    LogManager.instance.log(
+      LogLevel.info,
+      'Renaming folder ID ${folder.id} to $newName',
+    );
+    try {
+      return await _folderDao.updateFolderById(folder, newName);
+    } catch (e, stack) {
+      LogManager.instance.log(
+        LogLevel.error,
+        'Failed to rename folder: $e\n$stack',
       );
       rethrow;
     }

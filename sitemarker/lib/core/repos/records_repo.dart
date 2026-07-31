@@ -23,6 +23,23 @@ class RecordsRepository {
     }
   }
 
+  /// Fetch bookmarks for a specific folder
+  Future<List<SmRecord>> getRecordsByFolder(int folderId) async {
+    LogManager.instance.log(
+      LogLevel.debug,
+      'Fetching records for folder: $folderId',
+    );
+    try {
+      return await _recordsDao.getRecordByFolderId(folderId);
+    } catch (e, stack) {
+      LogManager.instance.log(
+        LogLevel.error,
+        'Failed to fetch records for folder $folderId: $e\n$stack',
+      );
+      rethrow;
+    }
+  }
+
   /// Fetch bookmarks in trash
   Future<List<SmRecord>> getDeletedRecords() async {
     LogManager.instance.log(LogLevel.debug, 'Fetching deleted records');
@@ -32,6 +49,34 @@ class RecordsRepository {
       LogManager.instance.log(
         LogLevel.error,
         'Failed fetching deleted records: $e\n$stack',
+      );
+      rethrow;
+    }
+  }
+
+  /// Insert a new bookmark
+  Future<int> addRecord(SmRecord record) async {
+    LogManager.instance.log(LogLevel.info, 'Adding record: ${record.url}');
+    try {
+      return await _recordsDao.addRecord(record);
+    } catch (e, stack) {
+      LogManager.instance.log(
+        LogLevel.error,
+        'Failed to add record ${record.url}: $e\n$stack',
+      );
+      rethrow;
+    }
+  }
+
+  /// Update existing bookmark
+  Future<bool> updateRecord(SmRecord record) async {
+    LogManager.instance.log(LogLevel.info, 'Updating record ID: ${record.id}');
+    try {
+      return await _recordsDao.replaceRecordWithNew(record);
+    } catch (e, stack) {
+      LogManager.instance.log(
+        LogLevel.error,
+        'Failed to update record ${record.id}: $e\n$stack',
       );
       rethrow;
     }
