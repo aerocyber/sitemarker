@@ -10,6 +10,8 @@ import 'package:sitemarker/core/db/tables/tag_mappings.dart';
 
 import 'package:sitemarker/core/db/daos/folder_dao.dart';
 import 'package:sitemarker/core/db/daos/records_dao.dart';
+import 'package:sitemarker/core/db/daos/tag_mapping_dao.dart';
+import 'package:sitemarker/core/db/daos/tags_dao.dart';
 
 part 'sm_db.g.dart';
 
@@ -18,7 +20,7 @@ part 'sm_db.g.dart';
 /// DB
 @DriftDatabase(
   tables: [SitemarkerRecords, RecordTags, TagMappings, FolderRecords],
-  daos: [FolderDao, RecordsDao],
+  daos: [FolderDao, RecordsDao, TagsDao, TagMappingDao],
   include: {'tables/search.drift'},
 )
 class SitemarkerDB extends _$SitemarkerDB {
