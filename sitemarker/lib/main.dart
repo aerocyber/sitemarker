@@ -9,6 +9,7 @@ import 'package:sitemarker/core/repos/tags_repo.dart';
 import 'package:sitemarker/core/providers/folders_provier.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
 import 'package:sitemarker/core/providers/tags_provider.dart';
+import 'package:sitemarker/router.dart';
 
 void main() async {
   // Required for asynchronous DB and platform channel setup
@@ -46,9 +47,11 @@ class SitemarkerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Sitemarker',
-      home: const Scaffold(body: Center(child: Text('Sitemarker 4.0'))),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      routerConfig: appRouter,
     );
   }
 }
