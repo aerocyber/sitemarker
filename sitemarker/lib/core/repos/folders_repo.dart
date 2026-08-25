@@ -73,18 +73,17 @@ class FoldersRepository {
   }
 
   /// Create new folder
-  Future<int> createFolder(String name, {int? parentId}) async {
+  Future<int> createFolder(SmFolder folder) async {
     LogManager.instance.log(
       LogLevel.info,
-      'Creating folder: $name under parent: $parentId',
+      'Creating folder: ${folder.name} under parent: ${folder.parentId}',
     );
     try {
-      final folder = SmFolder(name: name, parentId: parentId, isDeleted: false);
       return await _folderDao.createFolder(folder);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to create folder $name: $e\n$stack',
+        'Failed to create folder ${folder.name}: $e\n$stack',
       );
       rethrow;
     }
@@ -170,6 +169,9 @@ class FoldersRepository {
           name: folder.name,
           parentId: targetParentId,
           isDeleted: false,
+          dateAdded: folder.dateAdded,
+          dateModified: DateTime.now(),
+          lastSynced: folder.lastSynced,
         );
         await _folderDao.updateFolderById(updatedFolder, updatedFolder.name);
         if (folder.isDeleted) {

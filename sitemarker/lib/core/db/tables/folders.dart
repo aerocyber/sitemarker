@@ -9,6 +9,12 @@ class FolderRecords extends Table {
   TextColumn get name => text()();
   BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
 
+  DateTimeColumn get dateAdded => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get dateModified =>
+      dateTime().withDefault(currentDateAndTime)();
+
+  DateTimeColumn get lastSynced => dateTime().nullable()();
+
   @override
   List<String> get customConstraints => ['UNIQUE(parent_id, name)'];
 }

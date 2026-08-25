@@ -50,13 +50,13 @@ class FoldersProvier extends ChangeNotifier {
   }
 
   /// Create a new folder
-  Future<void> createFolder(String name, {int? parentId}) async {
-    await _repo.createFolder(name, parentId: parentId);
+  Future<void> createFolder(SmFolder folder) async {
+    await _repo.createFolder(folder);
 
-    if (parentId == null || parentId == 1) {
+    if (folder.parentId == null || folder.parentId == 1) {
       await loadRootFolders();
     } else {
-      await loadSubFolders(parentId);
+      await loadSubFolders(folder.parentId!);
     }
   }
 
@@ -80,7 +80,6 @@ class FoldersProvier extends ChangeNotifier {
       await loadSubFolders(folder.parentId!);
     }
   }
-
 
   /// Undo soft delete
   Future<void> restoreFromTrash(SmFolder folder) async {
