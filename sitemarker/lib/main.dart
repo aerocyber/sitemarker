@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import 'package:sitemarker/core/db/sm_db.dart';
@@ -6,7 +6,7 @@ import 'package:sitemarker/core/repos/folders_repo.dart';
 import 'package:sitemarker/core/repos/records_repo.dart';
 import 'package:sitemarker/core/repos/tags_repo.dart';
 
-import 'package:sitemarker/core/providers/folders_provier.dart';
+import 'package:sitemarker/core/providers/folders_provider.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
 import 'package:sitemarker/core/providers/tags_provider.dart';
 import 'package:sitemarker/router.dart';
@@ -52,6 +52,7 @@ class SitemarkerApp extends StatelessWidget {
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       routerConfig: appRouter,
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
     );
   }
 }

@@ -20,7 +20,7 @@ class _FolderContainerState extends State<FolderContainer> {
       onTap: () => print("Navigate to folder with id: ${widget.folder.id}"),
       trailing: IconButton(
         // TODO: Bottom sheet for folder item
-        onPressed: () => _showBottomSheet,
+        onPressed: () => _showBottomSheet(context),
         icon: const Icon(Icons.more_vert),
       ),
     );
@@ -28,80 +28,84 @@ class _FolderContainerState extends State<FolderContainer> {
 
   void _showBottomSheet(BuildContext context) {
     showModalBottomSheet(
+      isScrollControlled: true,
       context: context,
       builder: (_) => SafeArea(
-        child: Column(
-          children: [
-            ListTile(
-              title: Text(
-                widget.folder.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-            ),
-
-            // TODO: Edit folder
-            const ListTile(leading: Icon(Icons.edit), title: Text('Edit')),
-
-            if (widget.folder.isDeleted) ...[
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
               ListTile(
-                leading: const Icon(Icons.restore, color: Colors.green),
-                title: const Text(
-                  'Restore',
-                  style: TextStyle(color: Colors.green),
+                title: Text(
+                  widget.folder.name,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-                onTap: () {
-                  // TODO: Restore folder
-                  Navigator.pop(context);
-                },
+              ),
+          
+              // TODO: Edit folder
+              const ListTile(leading: Icon(Icons.edit), title: Text('Edit')),
+          
+              if (widget.folder.isDeleted) ...[
+                ListTile(
+                  leading: const Icon(Icons.restore, color: Colors.green),
+                  title: const Text(
+                    'Restore',
+                    style: TextStyle(color: Colors.green),
+                  ),
+                  onTap: () {
+                    // TODO: Restore folder
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.delete_forever, color: Colors.red),
+                  title: const Text(
+                    'Delete Permanently',
+                    style: TextStyle(color: Colors.red),
+                  ),
+                  subtitle: const Text(
+                    'This will delete all contents inside.',
+                    style: TextStyle(fontSize: 12, color: Colors.redAccent),
+                  ),
+                  onTap: () {
+                    // TODO: Perma delete the folder
+                    Navigator.pop(context);
+                  },
+                ),
+              ] else
+                ListTile(
+                  leading: const Icon(Icons.delete, color: Colors.redAccent),
+                  title: const Text(
+                    'Delete',
+                    style: TextStyle(color: Colors.redAccent),
+                  ),
+                  onTap: () {
+                    // TODO: Soft delete the folder
+                    Navigator.pop(context);
+                  },
+                ),
+          
+              const Divider(),
+          
+              ListTile(
+                leading: const Icon(Icons.info),
+                title: const Text('Date Added'),
+                subtitle: Text(formatDate(widget.folder.dateAdded)),
               ),
               ListTile(
-                leading: const Icon(Icons.delete_forever, color: Colors.red),
-                title: const Text(
-                  'Delete Permanently',
-                  style: TextStyle(color: Colors.red),
-                ),
-                subtitle: const Text(
-                  'This will delete all contents inside.',
-                  style: TextStyle(fontSize: 12, color: Colors.redAccent),
-                ),
-                onTap: () {
-                  // TODO: Perma delete the folder
-                  Navigator.pop(context);
-                },
+                leading: const Icon(Icons.info),
+                title: const Text('Last modified'),
+                subtitle: Text(formatDate(widget.folder.dateModified)),
               ),
-            ] else
               ListTile(
-                leading: const Icon(Icons.delete, color: Colors.redAccent),
-                title: const Text(
-                  'Delete',
-                  style: TextStyle(color: Colors.redAccent),
-                ),
-                onTap: () {
-                  // TODO: Soft delete the folder
-                  Navigator.pop(context);
-                },
+                leading: const Icon(Icons.sync),
+                title: const Text('Last sync at'),
+                subtitle: Text(formatDate(widget.folder.lastSynced)),
               ),
-
-            const Divider(),
-
-            ListTile(
-              leading: const Icon(Icons.info),
-              title: const Text('Date Added'),
-              subtitle: Text(formatDate(widget.folder.dateAdded)),
-            ),
-            ListTile(
-              leading: const Icon(Icons.info),
-              title: const Text('Last modified'),
-              subtitle: Text(formatDate(widget.folder.dateModified)),
-            ),
-            ListTile(
-              leading: const Icon(Icons.sync),
-              title: const Text('Last sync at'),
-              subtitle: Text(formatDate(widget.folder.lastSynced)),
-            ),
-
-            SizedBox(height: 8.0),
-          ],
+          
+              SizedBox(height: 8.0),
+            ],
+          ),
         ),
       ),
     );

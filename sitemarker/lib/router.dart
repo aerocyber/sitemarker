@@ -1,22 +1,49 @@
 import 'package:go_router/go_router.dart';
+
 import 'package:sitemarker/ui/homepage/home_ui.dart';
-import 'package:sitemarker/ui/folders/folder_ui.dart';
 import 'package:sitemarker/ui/screens/search_ui.dart';
+import 'package:sitemarker/ui/settings_screen.dart';
+import 'package:sitemarker/ui/records_screen.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/', // The default route when the app boots
+  initialLocation: '/records',
   routes: [
-    GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
-    GoRoute(
-      // The folder parameter route we discussed earlier
-      path: '/folder/:id',
-      builder: (context, state) {
-        final folderId = int.parse(state.pathParameters['id'] ?? '1');
-        return FolderScreen(folderId: folderId);
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        return ScaffoldWithNavBar(navigationShell: navigationShell);
       },
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/records',
+              builder: (context, state) => const RecordsScreen(folderId: 1),
+              routes: [
+                GoRoute(
+                  path: 'folder/:id',
+                  builder: (context, state) {
+                    final folderId = int.parse(
+                      state.pathParameters['id'] ?? '1',
+                    );
+                    // Reusing the consolidated RecordsScreen!
+                    return RecordsScreen(folderId: folderId);
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/settings',
+              builder: (context, state) => const SettingsScreen(),
+            ),
+          ],
+        ),
+      ],
     ),
     GoRoute(
-      // The search route expecting query parameters like ?q=xyz&name=true
       path: '/search',
       builder: (context, state) {
         final query = state.uri.queryParameters['q'] ?? '';
