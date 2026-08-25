@@ -30,7 +30,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => FoldersProvier(foldersRepo)..loadRootFolders(),
+          create: (_) => FoldersProvider(foldersRepo)..loadRootFolders(),
         ),
         ChangeNotifierProvider(create: (_) => RecordsProvider(recordsRepo)),
         ChangeNotifierProvider(
@@ -53,6 +53,7 @@ class SitemarkerApp extends StatelessWidget {
       darkTheme: ThemeData.dark(),
       routerConfig: appRouter,
       localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      debugShowCheckedModeBanner: false,
     );
   }
 }

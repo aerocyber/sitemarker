@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:sitemarker/core/repos/folders_repo.dart';
 import 'package:sitemarker/core/data_types/sm_folder.dart';
 
-class FoldersProvier extends ChangeNotifier {
+class FoldersProvider extends ChangeNotifier {
   final FoldersRepository _repo;
-  FoldersProvier(this._repo);
+  FoldersProvider(this._repo);
 
   List<SmFolder> _rootFolders = [];
   List<SmFolder> get rootFolders => _rootFolders;

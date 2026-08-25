@@ -14,7 +14,7 @@ class _RecordContainerState extends State<RecordContainer> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(Icons.folder, color: Theme.of(context).colorScheme.primary),
+      leading: Icon(Icons.public, color: Theme.of(context).colorScheme.primary),
       title: Text(widget.record.name),
       subtitle: Text(widget.record.url),
       // TODO: Navigation to folder

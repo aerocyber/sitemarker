@@ -12,12 +12,19 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        scrolledUnderElevation: 0.0,
+        leadingWidth: 150,
         leading: IconButton(
-          icon: const Icon(Icons.account_circle_outlined),
+          icon: const Icon(Icons.account_circle_outlined, size: 30),
           onPressed: () {},
         ),
         title: const Text('Sitemarker'),
-        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () {})],
+        centerTitle: true,
+        actions: [
+          // TODO: Add a new record.
+          IconButton(icon: const Icon(Icons.add, size: 30), onPressed: () {}),
+          SizedBox(width: 100),
+        ],
       ),
       body: navigationShell,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -26,6 +33,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
         duration: const Duration(milliseconds: 250),
         curve: Curves.easeInOutCubic,
         child: FloatingActionButton(
+          shape: CircleBorder(),
           onPressed: () => context.go('/search'),
           elevation: 2,
           child: const Icon(Icons.search),
@@ -33,7 +41,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
       ),
       bottomNavigationBar: BottomAppBar(
         padding: EdgeInsets.zero,
-        shape: const CircularNotchedRectangle(),
+        shape: isSettings ? null : const CircularNotchedRectangle(),
         notchMargin: 8.0,
         clipBehavior: Clip.antiAlias,
         child: BottomNavigationBar(
