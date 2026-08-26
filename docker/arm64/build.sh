@@ -1,1 +1,3 @@
-podman build --output=./build/docker/arm64 --target=binaries .
+cd .
+cd ../..
+docker build -f docker/amd64/Dockerfile --output type=local,dest=out/ .

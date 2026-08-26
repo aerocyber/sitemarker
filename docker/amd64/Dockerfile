@@ -56,7 +56,7 @@ RUN flutter build linux --release --tree-shake-icons --split-debug-info ${SITEMA
     fi
 
 # Create a master output directory for all packages
-RUN mkdir -p build/linux/dist
+RUN mkdir -p build/linux/dist/amd64
 
 # Step B: Create The Raw Tarball
 RUN tar -czf build/linux/dist/sitemarker-linux-${SITEMARKER_PLATFORM}.tar.gz -C build/linux/x64/release/ bundle
@@ -77,4 +77,4 @@ RUN echo -e "name: sitemarker\narch: amd64\nplatform: linux\nversion: ${APP_VERS
     nfpm pkg --packager rpm --target build/linux/dist/
 
 FROM scratch AS binaries
-COPY --from=build /app/build/linux/dist /linux-build
+COPY --from=build /app/build/linux/dist /linux-build/amd64
