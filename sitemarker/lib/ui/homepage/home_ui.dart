@@ -13,7 +13,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         scrolledUnderElevation: 0.0,
-        leadingWidth: 150,
+        leadingWidth: 75,
         leading: IconButton(
           icon: const Icon(Icons.account_circle_outlined, size: 30),
           onPressed: () {},
@@ -23,7 +23,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
         actions: [
           // TODO: Add a new record.
           IconButton(icon: const Icon(Icons.add, size: 30), onPressed: () {}),
-          SizedBox(width: 100),
+          SizedBox(width: 50),
         ],
       ),
       body: navigationShell,

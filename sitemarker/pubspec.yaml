@@ -29,6 +29,7 @@ dependencies:
 
   path: any
   intl: ^0.20.3
+  receive_sharing_intent: ^1.9.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
