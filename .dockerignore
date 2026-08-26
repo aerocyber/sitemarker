@@ -1,0 +1,8 @@
+sitemarker/build/
+sitemarker/.dart_tool/
+.git/
+.github/
+sitemarker/linux/flutter/ephemeral/
+sitemarker/windows/flutter/ephemeral/
+*.DEBUGINFO
+out/
