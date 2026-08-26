@@ -6,7 +6,7 @@ import 'package:sitemarker/ui/settings_screen.dart';
 import 'package:sitemarker/ui/records_screen.dart';
 
 final appRouter = GoRouter(
-  initialLocation: '/records',
+  initialLocation: '/',
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
@@ -16,7 +16,7 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/records',
+              path: '/',
               builder: (context, state) => const RecordsScreen(folderId: 1),
               routes: [
                 GoRoute(

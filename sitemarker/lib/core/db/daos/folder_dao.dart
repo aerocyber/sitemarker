@@ -45,9 +45,9 @@ class FolderDao extends DatabaseAccessor<SitemarkerDB> with _$FolderDaoMixin {
   /// Get all folders which are not deleted
   /// Returns `null` if not found.
   Future<List<SmFolder>> getNonDeletedFolders() async {
-    return (await (select(
-          folderRecords,
-        )..where((f) => f.isDeleted.equals(false))).get())
+    return (await (select(folderRecords)
+              ..where((f) => f.isDeleted.equals(false) & f.id.equals(1).not()))
+            .get())
         .map((folder) => SmFolder.fromFolders(folder))
         .toList();
   }

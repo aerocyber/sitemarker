@@ -38,6 +38,11 @@ class SitemarkerDB extends _$SitemarkerDB {
       onCreate: (Migrator m) async {
         await m.createAll();
 
+        await into(folderRecords).insert(
+          const FolderRecordsCompanion(id: Value(1), name: Value('home')),
+          mode: InsertMode.insertOrIgnore,
+        );
+
         await customStatement(
           "INSERT INTO sitemarker_records_fts(sitemarker_records_fts) VALUES('rebuild');",
         );

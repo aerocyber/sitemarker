@@ -37,9 +37,12 @@ class _RecordContainerState extends State<RecordContainer> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text(
-                  widget.record.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                
+                title: Center(
+                  child: Text(
+                    widget.record.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
 

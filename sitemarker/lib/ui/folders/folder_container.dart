@@ -36,15 +36,17 @@ class _FolderContainerState extends State<FolderContainer> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListTile(
-                title: Text(
-                  widget.folder.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                title: Center(
+                  child: Text(
+                    widget.folder.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
-          
+
               // TODO: Edit folder
               const ListTile(leading: Icon(Icons.edit), title: Text('Edit')),
-          
+
               if (widget.folder.isDeleted) ...[
                 ListTile(
                   leading: const Icon(Icons.restore, color: Colors.green),
@@ -84,9 +86,9 @@ class _FolderContainerState extends State<FolderContainer> {
                     Navigator.pop(context);
                   },
                 ),
-          
+
               const Divider(),
-          
+
               ListTile(
                 leading: const Icon(Icons.info),
                 title: const Text('Date Added'),
@@ -102,7 +104,7 @@ class _FolderContainerState extends State<FolderContainer> {
                 title: const Text('Last sync at'),
                 subtitle: Text(formatDate(widget.folder.lastSynced)),
               ),
-          
+
               SizedBox(height: 8.0),
             ],
           ),
