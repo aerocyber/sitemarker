@@ -157,4 +157,14 @@ class RecordsRepository {
       rethrow;
     }
   }
+
+  /// Search for entry
+  Future<List<SmRecord>> searchRecords(String query) async {
+    try {
+      return await _recordsDao.searchActive(query);
+    } catch (e) {
+      LogManager.instance.log(LogLevel.error, 'Search failed: $e');
+      return [];
+    }
+  }
 }

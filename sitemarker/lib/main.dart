@@ -50,6 +50,9 @@ class SitemarkerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Sitemarker',
+
+      // TODO: Make thememode respect user preference through settings (shared pref)
+      themeMode: ThemeMode.system,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       routerConfig: appRouter,

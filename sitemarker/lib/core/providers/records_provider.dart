@@ -64,4 +64,9 @@ class RecordsProvider extends ChangeNotifier {
     await _repo.permaDeleteRecord(record);
     await loadTrash();
   }
+
+  Future<List<SmRecord>> searchRecords(String query) async {
+    if (query.trim().isEmpty) return [];
+    return await _repo.searchRecords(query.trim());
+  }
 }

@@ -235,4 +235,26 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
           ..where((r) => r.dateModified.isSmallerThanValue(sixtyDaysAgo)))
         .go();
   }
+
+  /// Search active records using FTS5
+  Future<List<SmRecord>> searchActive(String query) async {
+    // Append wildcard for partial word matching
+    final records = await db.searchActiveRecords('$query*').get();
+
+    TagMappingDao tagMappingDao = TagMappingDao(db);
+    TagsDao tagsDao = TagsDao(db);
+    List<SmRecord> finalRecords = [];
+
+    for (var record in records) {
+      List<TagMapping> tagMapping = await tagMappingDao
+          .getTagMappingByBookmarkId(record.r.id);
+      List<String> tags = [];
+      for (var mapping in tagMapping) {
+        var tag = await tagsDao.getTagById(mapping.tagId);
+        if (tag != null) tags.add(tag.name);
+      }
+      finalRecords.add(SmRecord.fromSitemarkerRecord(record.r, tags));
+    }
+    return finalRecords;
+  }
 }

@@ -28,7 +28,9 @@ class ScaffoldWithNavBar extends StatelessWidget {
         ),
         actions: [IconButton(icon: const Icon(Icons.add), onPressed: () {})],
       ),
+
       body: navigationShell,
+
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: AnimatedScale(
         scale: isSettings ? 0.0 : 1.0,
@@ -36,7 +38,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
         curve: Curves.easeInOutCubic,
         child: FloatingActionButton(
           shape: CircleBorder(),
-          onPressed: () => context.go('/search'),
+          onPressed: () => context.push('/search'),
           elevation: 2,
           child: const Icon(Icons.search),
         ),
