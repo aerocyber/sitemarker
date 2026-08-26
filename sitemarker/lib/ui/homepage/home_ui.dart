@@ -12,19 +12,21 @@ class ScaffoldWithNavBar extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        scrolledUnderElevation: 0.0,
-        leadingWidth: 75,
+        centerTitle: true, // Centers "Sitemarker"
+        scrolledUnderElevation: 3.0,
+        surfaceTintColor: Colors.transparent, // Fixes the M3 color bleed
+        shadowColor: Theme.of(context).shadowColor.withOpacity(
+          0.4,
+        ), // Adds a clean separation line when scrolling
         leading: IconButton(
-          icon: const Icon(Icons.account_circle_outlined, size: 30),
+          icon: const Icon(Icons.account_circle_outlined),
           onPressed: () {},
         ),
-        title: const Text('Sitemarker'),
-        centerTitle: true,
-        actions: [
-          // TODO: Add a new record.
-          IconButton(icon: const Icon(Icons.add, size: 30), onPressed: () {}),
-          SizedBox(width: 50),
-        ],
+        title: const Text(
+          'Sitemarker',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () {})],
       ),
       body: navigationShell,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,

@@ -13,101 +13,254 @@ class FolderContainer extends StatefulWidget {
 class _FolderContainerState extends State<FolderContainer> {
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(Icons.folder, color: Theme.of(context).colorScheme.primary),
-      title: Text(widget.folder.name),
-      // TODO: Navigation to folder
-      onTap: () => print("Navigate to folder with id: ${widget.folder.id}"),
-      trailing: IconButton(
-        // TODO: Bottom sheet for folder item
-        onPressed: () => _showBottomSheet(context),
-        icon: const Icon(Icons.more_vert),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+      elevation: 0,
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 4.0,
+        ),
+        leading: CircleAvatar(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          child: Icon(
+            Icons.folder_outlined, // Swapped to a folder icon
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+          ),
+        ),
+        title: Text(
+          widget.folder.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontWeight: FontWeight.w500),
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.more_vert),
+          onPressed: () => _showBottomSheet(context),
+        ),
       ),
     );
   }
 
   void _showBottomSheet(BuildContext context) {
     showModalBottomSheet(
-      isScrollControlled: true,
       context: context,
-      builder: (_) => SafeArea(
+      isScrollControlled: true,
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
+      ),
+      builder: (bottomSheetContext) => SafeArea(
         child: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ListTile(
-                title: Center(
-                  child: Text(
-                    widget.folder.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+              // 1. The M3 Drag Handle
+              const SizedBox(height: 16.0),
+              Container(
+                width: 32.0,
+                height: 4.0,
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    bottomSheetContext,
+                  ).colorScheme.onSurfaceVariant.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(2.0),
+                ),
+              ),
+              const SizedBox(height: 16.0),
+
+              // 2. Centered Title
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Text(
+                  widget.folder.name,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(bottomSheetContext).textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w600),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(height: 24.0),
+
+              // 3. Card-ified Actions Block
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                elevation: 0,
+                color: Theme.of(
+                  bottomSheetContext,
+                ).colorScheme.surfaceContainerHigh,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.edit_outlined),
+                      title: const Text('Edit'),
+                      onTap: () {
+                        Navigator.pop(bottomSheetContext);
+                        // TODO: Edit folder
+                      },
+                    ),
+                    Divider(
+                      height: 1,
+                      color: Theme.of(
+                        bottomSheetContext,
+                      ).colorScheme.outlineVariant.withOpacity(0.5),
+                    ),
+                    if (widget.folder.isDeleted) ...[
+                      ListTile(
+                        leading: Icon(
+                          Icons.restore,
+                          color: Theme.of(
+                            bottomSheetContext,
+                          ).colorScheme.primary,
+                        ),
+                        title: Text(
+                          'Restore',
+                          style: TextStyle(
+                            color: Theme.of(
+                              bottomSheetContext,
+                            ).colorScheme.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(bottomSheetContext);
+                          // TODO: Restore folder
+                        },
+                      ),
+                      Divider(
+                        height: 1,
+                        color: Theme.of(
+                          bottomSheetContext,
+                        ).colorScheme.outlineVariant.withOpacity(0.5),
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          Icons.delete_forever,
+                          color: Theme.of(bottomSheetContext).colorScheme.error,
+                        ),
+                        title: Text(
+                          'Delete Permanently',
+                          style: TextStyle(
+                            color: Theme.of(
+                              bottomSheetContext,
+                            ).colorScheme.error,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'This will delete all contents inside.',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(
+                              bottomSheetContext,
+                            ).colorScheme.error.withOpacity(0.8),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(bottomSheetContext);
+                          // TODO: Perma delete the folder
+                        },
+                      ),
+                    ] else
+                      ListTile(
+                        leading: Icon(
+                          Icons.delete_outline,
+                          color: Theme.of(bottomSheetContext).colorScheme.error,
+                        ),
+                        title: Text(
+                          'Delete',
+                          style: TextStyle(
+                            color: Theme.of(
+                              bottomSheetContext,
+                            ).colorScheme.error,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.pop(bottomSheetContext);
+                          // TODO: Soft delete the folder
+                        },
+                      ),
+                  ],
                 ),
               ),
 
-              // TODO: Edit folder
-              const ListTile(leading: Icon(Icons.edit), title: Text('Edit')),
+              const SizedBox(height: 16.0),
 
-              if (widget.folder.isDeleted) ...[
-                ListTile(
-                  leading: const Icon(Icons.restore, color: Colors.green),
-                  title: const Text(
-                    'Restore',
-                    style: TextStyle(color: Colors.green),
-                  ),
-                  onTap: () {
-                    // TODO: Restore folder
-                    Navigator.pop(context);
-                  },
+              // 4. Card-ified Metadata Block
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                elevation: 0,
+                color: Theme.of(
+                  bottomSheetContext,
+                ).colorScheme.surfaceContainerHigh,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.delete_forever, color: Colors.red),
-                  title: const Text(
-                    'Delete Permanently',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  subtitle: const Text(
-                    'This will delete all contents inside.',
-                    style: TextStyle(fontSize: 12, color: Colors.redAccent),
-                  ),
-                  onTap: () {
-                    // TODO: Perma delete the folder
-                    Navigator.pop(context);
-                  },
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    _buildMetadataTile(
+                      bottomSheetContext,
+                      icon: Icons.info_outline,
+                      title: 'Date Added',
+                      subtitle: formatDate(widget.folder.dateAdded),
+                    ),
+                    _buildMetadataTile(
+                      bottomSheetContext,
+                      icon: Icons.update_outlined,
+                      title: 'Last modified',
+                      subtitle: formatDate(widget.folder.dateModified),
+                    ),
+                    _buildMetadataTile(
+                      bottomSheetContext,
+                      icon: Icons.sync,
+                      title: 'Last sync at',
+                      subtitle: formatDate(widget.folder.lastSynced),
+                    ),
+                  ],
                 ),
-              ] else
-                ListTile(
-                  leading: const Icon(Icons.delete, color: Colors.redAccent),
-                  title: const Text(
-                    'Delete',
-                    style: TextStyle(color: Colors.redAccent),
-                  ),
-                  onTap: () {
-                    // TODO: Soft delete the folder
-                    Navigator.pop(context);
-                  },
-                ),
-
-              const Divider(),
-
-              ListTile(
-                leading: const Icon(Icons.info),
-                title: const Text('Date Added'),
-                subtitle: Text(formatDate(widget.folder.dateAdded)),
               ),
-              ListTile(
-                leading: const Icon(Icons.info),
-                title: const Text('Last modified'),
-                subtitle: Text(formatDate(widget.folder.dateModified)),
-              ),
-              ListTile(
-                leading: const Icon(Icons.sync),
-                title: const Text('Last sync at'),
-                subtitle: Text(formatDate(widget.folder.lastSynced)),
-              ),
-
-              SizedBox(height: 8.0),
+              const SizedBox(height: 24.0),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMetadataTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return ListTile(
+      dense: true,
+      visualDensity: VisualDensity.compact,
+      leading: Icon(
+        icon,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        size: 20,
+      ),
+      title: Text(
+        title,
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),
     );

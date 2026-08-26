@@ -70,18 +70,23 @@ class _RecordUnionState extends State<RecordUnion> {
     return CustomScrollView(
       slivers: [
         if (subfolders.isNotEmpty) ...[
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.only(
+                left: 20.0,
+                top: 16.0,
+                bottom: 8.0,
+              ),
               child: Text(
-                'Folders',
-                style: TextStyle(
+                'Bookmarks',
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey,
                 ),
               ),
             ),
           ),
+
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) => FolderContainer(folder: subfolders[index]),
@@ -94,18 +99,23 @@ class _RecordUnionState extends State<RecordUnion> {
           const SliverToBoxAdapter(child: Divider()),
 
         if (records.isNotEmpty) ...[
-          const SliverToBoxAdapter(
+          SliverToBoxAdapter(
             child: Padding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 8),
+              padding: const EdgeInsets.only(
+                left: 20.0,
+                top: 16.0,
+                bottom: 8.0,
+              ),
               child: Text(
                 'Bookmarks',
-                style: TextStyle(
+                style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.primary,
                   fontWeight: FontWeight.bold,
-                  color: Colors.grey,
                 ),
               ),
             ),
           ),
+
           SliverList(
             delegate: SliverChildBuilderDelegate(
               (context, index) => RecordContainer(record: records[index]),

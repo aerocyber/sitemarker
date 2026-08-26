@@ -13,137 +13,267 @@ class RecordContainer extends StatefulWidget {
 class _RecordContainerState extends State<RecordContainer> {
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(Icons.public, color: Theme.of(context).colorScheme.primary),
-      title: Text(widget.record.name),
-      subtitle: Text(widget.record.url),
-      // TODO: Navigation to folder
-      onTap: () => print("Navigate to URL with url: ${widget.record.url}"),
-      trailing: IconButton(
-        // TODO: Bottom sheet for folder item
-        onPressed: () => _showBottomSheet(context),
-        icon: const Icon(Icons.more_vert),
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+      elevation: 0, // M3 flat style
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16.0), // Softer, modern corners
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 4.0,
+        ),
+        leading: CircleAvatar(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          child: Icon(
+            Icons.public,
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
+          ),
+        ),
+        title: Text(
+          widget.record.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontWeight: FontWeight.w500),
+        ),
+        subtitle: Text(
+          widget.record.url,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.more_vert),
+          onPressed: () => _showBottomSheet(context),
+        ),
       ),
     );
   }
 
   void _showBottomSheet(BuildContext context) {
     showModalBottomSheet(
-      isScrollControlled: true,
       context: context,
-      builder: (_) => SafeArea(
-        child: SingleChildScrollView(
+      isScrollControlled: true, // Allows it to size correctly
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(28.0),
+        ), // M3 curve
+      ),
+      builder: (context) {
+        return SafeArea(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.min, // Wrap content tightly
             children: [
-              ListTile(
-                
-                title: Center(
-                  child: Text(
-                    widget.record.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+              // 1. The M3 Drag Handle
+              const SizedBox(height: 16.0),
+              Container(
+                width: 32.0,
+                height: 4.0,
+                decoration: BoxDecoration(
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.onSurfaceVariant.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(2.0),
                 ),
               ),
+              const SizedBox(height: 16.0),
 
-              if (widget.record.tags.isNotEmpty) ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0,
-                    vertical: 4.0,
+              // 2. Centered Title
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                child: Text(
+                  widget.record.name, // Hooked up to actual data
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-                  child: Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: [
-                      for (var tag in widget.record.tags)
-                        Chip(
-                          label: Text(tag),
-                          visualDensity: VisualDensity.compact,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(6)),
-                          ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(height: 24.0),
+
+              // 3. Card-ified Actions Block
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                elevation: 0,
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    ListTile(
+                      leading: const Icon(Icons.edit_outlined),
+                      title: const Text('Edit'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Trigger edit routine
+                      },
+                    ),
+                    Divider(
+                      height: 1,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outlineVariant.withOpacity(0.5),
+                    ),
+                    ListTile(
+                      leading: Icon(
+                        Icons.delete_outline,
+                        color: Theme.of(context).colorScheme.error,
+                      ),
+                      title: Text(
+                        'Delete',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                          fontWeight: FontWeight.w500,
                         ),
-                    ],
+                      ),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Trigger delete routine
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16.0),
+
+              // 4. Dynamic Tags Block (Only renders if tags exist)
+              if (widget.record.tags.isNotEmpty) ...[
+                Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                  elevation: 0,
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.label_outline,
+                              size: 20,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 16),
+                            Text(
+                              'Tags',
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(fontWeight: FontWeight.w500),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 12.0),
+                        Wrap(
+                          spacing: 8.0,
+                          runSpacing: 8.0,
+                          children: widget.record.tags.map((tag) {
+                            return Chip(
+                              label: Text(tag),
+                              visualDensity: VisualDensity.compact,
+                              padding: EdgeInsets.zero,
+                              side: BorderSide(
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.outlineVariant,
+                              ),
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
+                            );
+                          }).toList(),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
+                const SizedBox(height: 16.0),
               ],
 
-              if (widget.record.notes != null)
-                ListTile(
-                  leading: const Icon(Icons.note),
-                  title: const Text('Notes'),
-                  subtitle: Text(widget.record.notes!),
+              // 5. Card-ified Dynamic Metadata Block
+              Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0),
+                elevation: 0,
+                color: Theme.of(context).colorScheme.surfaceContainerHigh,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
                 ),
-
-              const Divider(),
-
-              // TODO: Edit record
-              const ListTile(leading: Icon(Icons.edit), title: Text('Edit')),
-
-              if (widget.record.isDeleted) ...[
-                ListTile(
-                  leading: const Icon(Icons.restore, color: Colors.green),
-                  title: const Text(
-                    'Restore',
-                    style: TextStyle(color: Colors.green),
-                  ),
-                  onTap: () {
-                    // TODO: Restore record
-                    Navigator.pop(context);
-                  },
+                clipBehavior: Clip.antiAlias,
+                child: Column(
+                  children: [
+                    _buildMetadataTile(
+                      context,
+                      icon: Icons.info_outline,
+                      title: 'Date Added',
+                      subtitle: _formatDate(widget.record.dateAdded),
+                    ),
+                    _buildMetadataTile(
+                      context,
+                      icon: Icons.update_outlined,
+                      title: 'Last modified',
+                      subtitle: _formatDate(widget.record.dateModified),
+                    ),
+                    _buildMetadataTile(
+                      context,
+                      icon: Icons.sync,
+                      title: 'Last sync at',
+                      subtitle: _formatDate(widget.record.lastSynced),
+                    ),
+                  ],
                 ),
-                ListTile(
-                  leading: const Icon(Icons.delete_forever, color: Colors.red),
-                  title: const Text(
-                    'Delete Permanently',
-                    style: TextStyle(color: Colors.red),
-                  ),
-                  onTap: () {
-                    // TODO: Perma delete the record
-                    Navigator.pop(context);
-                  },
-                ),
-              ] else
-                ListTile(
-                  leading: const Icon(Icons.delete, color: Colors.redAccent),
-                  title: const Text(
-                    'Delete',
-                    style: TextStyle(color: Colors.redAccent),
-                  ),
-                  onTap: () {
-                    // TODO: Soft delete the record
-                    Navigator.pop(context);
-                  },
-                ),
-
-              const Divider(),
-
-              ListTile(
-                leading: const Icon(Icons.info),
-                title: const Text('Date Added'),
-                subtitle: Text(formatDate(widget.record.dateAdded)),
               ),
-              ListTile(
-                leading: const Icon(Icons.info),
-                title: const Text('Last modified'),
-                subtitle: Text(formatDate(widget.record.dateModified)),
-              ),
-              ListTile(
-                leading: const Icon(Icons.sync),
-                title: const Text('Last sync at'),
-                subtitle: Text(formatDate(widget.record.lastSynced)),
-              ),
-
-              SizedBox(height: 8.0),
+              const SizedBox(height: 24.0),
             ],
           ),
+        );
+      },
+    );
+  }
+
+  Widget _buildMetadataTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    return ListTile(
+      dense: true, // Shrinks the vertical padding slightly
+      visualDensity: VisualDensity.compact,
+      leading: Icon(
+        icon,
+        color: Theme.of(context).colorScheme.onSurfaceVariant,
+        size: 20, // Slightly smaller icons for metadata
+      ),
+      title: Text(
+        title,
+        style: Theme.of(
+          context,
+        ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
         ),
       ),
     );
   }
 
-  String formatDate(DateTime? date) {
+  String _formatDate(DateTime? date) {
     if (date == null) return 'Never';
     return DateFormat('MMM d, yyyy • h:mm a').format(date);
   }
