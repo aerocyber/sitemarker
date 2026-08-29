@@ -4,6 +4,7 @@ import 'package:sitemarker/core/data_types/sm_folder.dart';
 import 'package:sitemarker/core/data_types/sm_record.dart';
 import 'package:sitemarker/core/providers/folders_provider.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
+import 'package:sitemarker/ui/components/collapsable_section.dart';
 import 'package:sitemarker/ui/folders/folder_container.dart';
 import 'package:sitemarker/ui/url/record_container.dart';
 
@@ -69,60 +70,30 @@ class _RecordUnionState extends State<RecordUnion> {
 
     return CustomScrollView(
       slivers: [
-        if (subfolders.isNotEmpty) ...[
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 20.0,
-                top: 16.0,
-                bottom: 8.0,
-              ),
-              child: Text(
-                'Bookmarks',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+        if (subfolders.isNotEmpty)
+          CollapsibleSection(
+            title: 'Folders',
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => FolderContainer(folder: subfolders[index]),
+                childCount: subfolders.length,
               ),
             ),
           ),
-
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => FolderContainer(folder: subfolders[index]),
-              childCount: subfolders.length,
-            ),
-          ),
-        ],
 
         if (subfolders.isNotEmpty && records.isNotEmpty)
           const SliverToBoxAdapter(child: Divider()),
 
-        if (records.isNotEmpty) ...[
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(
-                left: 20.0,
-                top: 16.0,
-                bottom: 8.0,
-              ),
-              child: Text(
-                'Bookmarks',
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.bold,
-                ),
+        if (records.isNotEmpty)
+          CollapsibleSection(
+            title: 'Bookmarks',
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => RecordContainer(record: records[index]),
+                childCount: records.length,
               ),
             ),
           ),
-
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              (context, index) => RecordContainer(record: records[index]),
-              childCount: records.length,
-            ),
-          ),
-        ],
 
         SliverToBoxAdapter(child: SizedBox(height: 88.0)),
       ],

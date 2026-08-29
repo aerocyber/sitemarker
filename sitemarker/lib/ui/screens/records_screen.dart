@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sitemarker/ui/record_union.dart';
+import 'package:sitemarker/ui/components/record_union.dart';
 
 class RecordsScreen extends StatelessWidget {
   final int folderId;
