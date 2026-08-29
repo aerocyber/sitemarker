@@ -6,7 +6,7 @@ import 'package:sitemarker/core/providers/folders_provider.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
 import 'package:sitemarker/ui/components/collapsable_section.dart';
 import 'package:sitemarker/ui/folders/folder_container.dart';
-import 'package:sitemarker/ui/url/record_container.dart';
+import 'package:sitemarker/ui/records/record_container.dart';
 
 class RecordUnion extends StatefulWidget {
   final int folderId;

@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/data_types/sm_record.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
-import 'package:sitemarker/ui/url/record_container.dart';
+import 'package:sitemarker/ui/records/record_container.dart';
 
 class SearchScreen extends StatefulWidget {
   final String query;
