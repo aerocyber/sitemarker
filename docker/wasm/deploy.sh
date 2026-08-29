@@ -1,0 +1,1 @@
+docker push ghcr.io/aerocyber/sitemarker-web:latest

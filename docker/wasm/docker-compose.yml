@@ -1,0 +1,15 @@
+services:
+  sitemarker-web:
+    container_name: sitemarker-web
+    image: ghcr.io/aerocyber/sitemarker-web:latest
+    build:
+      context: .
+      dockerfile: docker/web/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    # Optional resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 64M

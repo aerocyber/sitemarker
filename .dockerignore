@@ -6,3 +6,4 @@ sitemarker/linux/flutter/ephemeral/
 sitemarker/windows/flutter/ephemeral/
 *.DEBUGINFO
 out/
+!out/web
