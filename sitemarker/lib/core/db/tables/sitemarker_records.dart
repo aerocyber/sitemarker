@@ -26,5 +26,8 @@ class SitemarkerRecords extends Table {
       integer().references(FolderRecords, #id).withDefault(const Constant(1))();
 
   @override
-  List<String> get customConstraints => ['UNIQUE(folder_id, name)'];
+  List<String> get customConstraints => [
+    'UNIQUE(folder_id, name)',
+    'UNIQUE(folder_id, url)',
+  ];
 }
