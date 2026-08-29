@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:sitemarker/core/data_types/sm_record.dart';
 import 'package:sitemarker/core/db/daos/folder_dao.dart';
 import 'package:sitemarker/core/db/daos/records_dao.dart';
@@ -164,6 +166,32 @@ class RecordsRepository {
       return await _recordsDao.searchActive(query);
     } catch (e) {
       LogManager.instance.log(LogLevel.error, 'Search failed: $e');
+      return [];
+    }
+  }
+
+  Future<List<SmRecord>> searchAdvanced({
+    String? nameQuery,
+    String? urlQuery,
+    List<String>? tags,
+    int? folderId,
+  }) async {
+    LogManager.instance.log(
+      LogLevel.debug,
+      'Executing advanced search via DAO',
+    );
+    try {
+      return await _recordsDao.advancedSearch(
+        nameQuery: nameQuery,
+        urlQuery: urlQuery,
+        tags: tags,
+        folderId: folderId,
+      );
+    } catch (e, stack) {
+      LogManager.instance.log(
+        LogLevel.error,
+        'Advanced search failed: $e\n$stack',
+      );
       return [];
     }
   }

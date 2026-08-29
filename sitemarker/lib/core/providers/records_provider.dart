@@ -73,4 +73,18 @@ class RecordsProvider extends ChangeNotifier {
     if (query.trim().isEmpty) return [];
     return await _repo.searchRecords(query.trim());
   }
+
+  Future<List<SmRecord>> searchAdvanced({
+    String? nameQuery,
+    String? urlQuery,
+    List<String>? tags,
+    int? folderId,
+  }) async {
+    return await _repo.searchAdvanced(
+      nameQuery: nameQuery,
+      urlQuery: urlQuery,
+      tags: tags,
+      folderId: folderId,
+    );
+  }
 }

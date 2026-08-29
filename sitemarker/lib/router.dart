@@ -1,6 +1,6 @@
 import 'package:go_router/go_router.dart';
 
-import 'package:sitemarker/ui/homepage/home_ui.dart';
+import 'package:sitemarker/ui/screens/home_ui.dart';
 import 'package:sitemarker/ui/screens/search_ui.dart';
 import 'package:sitemarker/ui/screens/settings_screen.dart';
 import 'package:sitemarker/ui/screens/records_screen.dart';

@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sitemarker/ui/components/add_options_sheet.dart';
+import 'package:sitemarker/ui/components/search_bottom_sheet.dart';
 
 class HomeUI extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
@@ -45,7 +46,7 @@ class HomeUI extends StatelessWidget {
         curve: Curves.easeInOutCubic,
         child: FloatingActionButton(
           shape: CircleBorder(),
-          onPressed: () => context.push('/search'),
+          onPressed: () => showSearchBottomSheet(context),
           elevation: 2,
           child: const Icon(Icons.search),
         ),
