@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:sitemarker/core/data_types/sm_record.dart';
 import 'package:sitemarker/core/db/daos/folder_dao.dart';
 import 'package:sitemarker/core/db/daos/records_dao.dart';

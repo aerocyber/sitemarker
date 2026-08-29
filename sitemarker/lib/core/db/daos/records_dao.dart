@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:drift/drift.dart';
 import 'package:sitemarker/core/data_types/sm_record.dart';
 import 'package:sitemarker/core/db/sm_db.dart';
@@ -288,15 +286,13 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
 
     if (hasName) {
       textConditions.add(
-        sitemarkerRecords.name.lower().contains(
-          nameQuery!.trim().toLowerCase(),
-        ),
+        sitemarkerRecords.name.lower().contains(nameQuery.trim().toLowerCase()),
       );
     }
 
     if (hasUrl) {
       textConditions.add(
-        sitemarkerRecords.url.lower().contains(urlQuery!.trim().toLowerCase()),
+        sitemarkerRecords.url.lower().contains(urlQuery.trim().toLowerCase()),
       );
     }
 
@@ -320,7 +316,7 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
       TagsDao tagsDao = TagsDao(db);
 
       // Convert user's selected tags to lowercase for case-insensitive matching
-      final lowerTags = tags!.map((t) => t.toLowerCase()).toList();
+      final lowerTags = tags.map((t) => t.toLowerCase()).toList();
 
       final tagIdsSubquery = selectOnly(tagsDao.recordTags)
         ..addColumns([tagsDao.recordTags.id])
