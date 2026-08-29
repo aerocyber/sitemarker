@@ -5,6 +5,9 @@ import 'package:sitemarker/core/repos/records_repo.dart';
 class RecordsProvider extends ChangeNotifier {
   final RecordsRepository _repo;
 
+  int _creationId = -1;
+  int get creationId => _creationId;
+
   RecordsProvider(this._repo);
 
   List<SmRecord> _currentRecords = [];
@@ -41,8 +44,9 @@ class RecordsProvider extends ChangeNotifier {
   }
 
   Future<void> addRecord(SmRecord record) async {
-    await _repo.addRecord(record);
-    await loadRecordsByFolder(record.folderId);
+    _isLoading = true;
+    _creationId = await _repo.addRecord(record);
+    _isLoading = false;
   }
 
   Future<void> updateRecord(SmRecord record) async {

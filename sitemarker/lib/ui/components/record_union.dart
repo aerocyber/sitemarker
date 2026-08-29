@@ -82,7 +82,7 @@ class _RecordUnionState extends State<RecordUnion> {
           ),
 
         if (subfolders.isNotEmpty && records.isNotEmpty)
-          const SliverToBoxAdapter(child: Divider()),
+          const SliverToBoxAdapter(child: SizedBox(height: 25)),
 
         if (records.isNotEmpty)
           CollapsibleSection(

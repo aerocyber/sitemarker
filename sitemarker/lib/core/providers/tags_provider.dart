@@ -20,9 +20,10 @@ class TagsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> createTag(String name) async {
-    await _repo.createTag(name);
+  Future<int> createTag(String name) async {
+    final newId = await _repo.createTag(name);
     await loadTags();
+    return newId; 
   }
 
   Future<void> renameTag(int id, String newName) async {

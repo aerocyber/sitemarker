@@ -1,10 +1,11 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sitemarker/ui/components/add_options_sheet.dart';
 
-class ScaffoldWithNavBar extends StatelessWidget {
+class HomeUI extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
-  const ScaffoldWithNavBar({super.key, required this.navigationShell});
+  const HomeUI({super.key, required this.navigationShell});
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +16,8 @@ class ScaffoldWithNavBar extends StatelessWidget {
         centerTitle: true, // Centers "Sitemarker"
         scrolledUnderElevation: 3.0,
         surfaceTintColor: Colors.transparent, // Fixes the M3 color bleed
-        shadowColor: Theme.of(context).shadowColor.withOpacity(
-          0.4,
+        shadowColor: Theme.of(context).shadowColor.withValues(
+          alpha: 0.4,
         ), // Adds a clean separation line when scrolling
         leading: IconButton(
           icon: const Icon(Icons.account_circle_outlined),
@@ -26,7 +27,13 @@ class ScaffoldWithNavBar extends StatelessWidget {
           'Sitemarker',
           style: TextStyle(fontWeight: FontWeight.w600),
         ),
-        actions: [IconButton(icon: const Icon(Icons.add), onPressed: () {})],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            onPressed: () => showAddOptionsDialog(context),
+          ),
+          SizedBox(width: 15),
+        ],
       ),
 
       body: navigationShell,

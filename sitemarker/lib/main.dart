@@ -48,13 +48,51 @@ class SitemarkerApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final lightScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFFD0BCFF),
+      brightness: Brightness.light,
+    );
+
+    final darkScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFFD0BCFF),
+      brightness: Brightness.dark,
+    );
+
     return MaterialApp.router(
       title: 'Sitemarker',
 
       // TODO: Make thememode respect user preference through settings (shared pref)
-      themeMode: ThemeMode.system,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      themeMode: ThemeMode.dark,
+
+      theme: ThemeData(
+        colorSchemeSeed: const Color(0xFFD0BCFF),
+        brightness: Brightness.light,
+        useMaterial3: true,
+
+        dialogTheme: DialogThemeData(
+          backgroundColor: lightScheme.surface,
+        ),
+
+        bottomSheetTheme: BottomSheetThemeData(
+          backgroundColor: lightScheme.surface,
+        ),
+      ),
+
+      // Clean, unified Dark Theme
+      darkTheme: ThemeData(
+        colorSchemeSeed: const Color(0xFFD0BCFF),
+        brightness: Brightness.dark, // This is the crucial missing piece
+        useMaterial3: true,
+
+        dialogTheme: DialogThemeData(
+          backgroundColor: darkScheme.surface,
+        ),
+
+        bottomSheetTheme: BottomSheetThemeData(
+          backgroundColor: darkScheme.surface,
+        ),
+      ),
+
       routerConfig: appRouter,
       localizationsDelegates: [
         loc.GlobalMaterialLocalizations.delegate,
