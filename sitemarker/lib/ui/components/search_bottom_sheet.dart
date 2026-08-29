@@ -13,7 +13,7 @@ Future<void> showSearchBottomSheet(BuildContext context) async {
     backgroundColor: parentTheme.colorScheme.surface,
     showDragHandle: true,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
     ),
     builder: (ctx) =>
         Theme(data: parentTheme, child: const SearchBottomSheet()),
@@ -86,6 +86,8 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
   Widget build(BuildContext context) {
     final tagsProvider = context.watch<TagsProvider>();
     final availableTags = tagsProvider.allTags.expand((m) => m.values).toList();
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -102,78 +104,168 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
             children: [
               Text(
                 'Advanced Search',
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 24),
 
-              // Query Input
+              // Modern filled search input
               TextField(
                 controller: _queryController,
                 autofocus: true,
-                decoration: const InputDecoration(
-                  labelText: 'Search keywords...',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.search),
+                decoration: InputDecoration(
+                  hintText: 'Search keywords...',
+                  filled: true,
+                  fillColor: colorScheme.surfaceContainerHighest,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(16),
+                    borderSide: BorderSide.none,
+                  ),
+                  prefixIcon: Icon(Icons.search, color: colorScheme.primary),
                 ),
                 onSubmitted: (_) => _submitSearch(),
               ),
               const SizedBox(height: 16),
 
-              // Filter Toggles
-              Row(
-                children: [
-                  FilterChip(
-                    label: const Text('Name'),
-                    selected: _searchName,
-                    onSelected: (val) => setState(() => _searchName = val),
+              // Cardified Search Scope Section
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.5),
                   ),
-                  const SizedBox(width: 8),
-                  FilterChip(
-                    label: const Text('URL'),
-                    selected: _searchUrl,
-                    onSelected: (val) => setState(() => _searchUrl = val),
-                  ),
-                ],
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Search In',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: FilterChip(
+                            label: const Center(child: Text('Name')),
+                            selected: _searchName,
+                            onSelected: (val) =>
+                                setState(() => _searchName = val),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: FilterChip(
+                            label: const Center(child: Text('URL')),
+                            selected: _searchUrl,
+                            onSelected: (val) =>
+                                setState(() => _searchUrl = val),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 12),
 
-              // Tag Dropdown
-              DropdownMenu<String>(
-                expandedInsets: EdgeInsets.zero,
-                label: const Text('Filter by Tag'),
-                dropdownMenuEntries: availableTags.map((tag) {
-                  return DropdownMenuEntry<String>(value: tag, label: tag);
-                }).toList(),
-                onSelected: (String? newTag) {
-                  if (newTag != null && !_selectedTags.contains(newTag)) {
-                    setState(() => _selectedTags.add(newTag));
-                  }
-                },
-              ),
-
-              // Active Tag Chips
-              if (_selectedTags.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 12.0),
-                  child: Wrap(
-                    spacing: 8.0,
-                    children: _selectedTags.map((tag) {
-                      return InputChip(
-                        label: Text(tag),
-                        onDeleted: () =>
-                            setState(() => _selectedTags.remove(tag)),
-                      );
-                    }).toList(),
+              // Cardified Tag Filter Section
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: colorScheme.surfaceContainerLow,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(
+                    color: colorScheme.outlineVariant.withValues(alpha: 0.5),
                   ),
                 ),
-
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Filter by Tag',
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        color: colorScheme.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownMenu<String>(
+                      expandedInsets: EdgeInsets.zero,
+                      hintText: 'Select a tag...',
+                      inputDecorationTheme: InputDecorationTheme(
+                        filled: true,
+                        fillColor: colorScheme.surface,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: colorScheme.outlineVariant,
+                          ),
+                        ),
+                      ),
+                      dropdownMenuEntries: availableTags.map((tag) {
+                        return DropdownMenuEntry<String>(
+                          value: tag,
+                          label: tag,
+                        );
+                      }).toList(),
+                      onSelected: (String? newTag) {
+                        if (newTag != null && !_selectedTags.contains(newTag)) {
+                          setState(() => _selectedTags.add(newTag));
+                        }
+                      },
+                    ),
+                    if (_selectedTags.isNotEmpty) ...[
+                      const SizedBox(height: 16),
+                      Wrap(
+                        spacing: 8.0,
+                        runSpacing: 8.0,
+                        children: _selectedTags.map((tag) {
+                          return InputChip(
+                            label: Text(tag),
+                            onDeleted: () =>
+                                setState(() => _selectedTags.remove(tag)),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            backgroundColor: colorScheme.secondaryContainer,
+                            deleteIconColor: colorScheme.onSecondaryContainer,
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
               const SizedBox(height: 24),
+
+              // Prominent Action Button
               FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                ),
                 onPressed: _submitSearch,
                 icon: const Icon(Icons.search),
-                label: const Text('Show Results'),
+                label: const Text(
+                  'Show Results',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                ),
               ),
               const SizedBox(height: 16),
             ],
