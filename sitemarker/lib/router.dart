@@ -1,7 +1,8 @@
 import 'package:go_router/go_router.dart';
 
-import 'package:sitemarker/ui/screens/home_ui.dart';
-import 'package:sitemarker/ui/screens/search_ui.dart';
+import 'package:sitemarker/ui/screens/home_screen.dart';
+import 'package:sitemarker/ui/screens/profile_screen.dart';
+import 'package:sitemarker/ui/screens/search_screen.dart';
 import 'package:sitemarker/ui/screens/settings_screen.dart';
 import 'package:sitemarker/ui/screens/records_screen.dart';
 
@@ -38,6 +39,14 @@ final appRouter = GoRouter(
             GoRoute(
               path: '/settings',
               builder: (context, state) => const SettingsScreen(),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => ProfileScreen(),
             ),
           ],
         ),

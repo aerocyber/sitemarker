@@ -62,7 +62,7 @@ class SitemarkerApp extends StatelessWidget {
       title: 'Sitemarker',
 
       // TODO: Make thememode respect user preference through settings (shared pref)
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.system,
 
       theme: ThemeData(
         colorSchemeSeed: const Color(0xFFD0BCFF),
