@@ -1,6 +1,10 @@
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:material_ui/material_ui.dart';
+import 'package:provider/provider.dart';
 import 'package:sitemarker/core/data_types/sm_folder.dart';
+import 'package:sitemarker/core/providers/folders_provider.dart';
+import 'package:sitemarker/core/providers/records_provider.dart';
 
 class FolderContainer extends StatefulWidget {
   final SmFolder folder;
@@ -13,33 +17,57 @@ class FolderContainer extends StatefulWidget {
 class _FolderContainerState extends State<FolderContainer> {
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-      elevation: 0,
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
-      clipBehavior: Clip.antiAlias,
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16.0,
-          vertical: 4.0,
+    return InkWell(
+      onTap: () async {
+        // 1. Await the navigation to the subfolder
+        await context.push("/folder/${widget.folder.id}");
+
+        // 2. When the user pops back to this screen, immediately re-fetch THIS folder's data
+        if (context.mounted) {
+          // If we are navigating back to root (1), load root folders. Otherwise, load subfolders.
+          if (widget.folder.parentId == null || widget.folder.parentId == 1) {
+            context.read<FoldersProvider>().loadRootFolders();
+          } else {
+            context.read<FoldersProvider>().loadSubFolders(
+              widget.folder.parentId!,
+            );
+          }
+          // Reload the records for this specific folder
+          context.read<RecordsProvider>().loadRecordsByFolder(
+            widget.folder.parentId ?? 1,
+          );
+        }
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+        elevation: 0,
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16.0),
         ),
-        leading: CircleAvatar(
-          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-          child: Icon(
-            Icons.folder_outlined, // Swapped to a folder icon
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
+        clipBehavior: Clip.antiAlias,
+        child: ListTile(
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16.0,
+            vertical: 4.0,
           ),
-        ),
-        title: Text(
-          widget.folder.name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.w500),
-        ),
-        trailing: IconButton(
-          icon: const Icon(Icons.more_vert),
-          onPressed: () => _showBottomSheet(context),
+          leading: CircleAvatar(
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+            child: Icon(
+              Icons.folder_outlined, // Swapped to a folder icon
+              color: Theme.of(context).colorScheme.onPrimaryContainer,
+            ),
+          ),
+          title: Text(
+            widget.folder.name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontWeight: FontWeight.w500),
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () => _showBottomSheet(context),
+          ),
         ),
       ),
     );

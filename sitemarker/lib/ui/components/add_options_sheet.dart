@@ -5,7 +5,7 @@ import 'package:sitemarker/ui/components/create_record_sheet.dart';
 /// Helper launcher to display the options sheet
 Future<void> showAddOptionsDialog(
   BuildContext context, {
-  int currentFolderId = 1,
+  required int currentFolderId,
 }) async {
   final parentTheme = Theme.of(context);
 
