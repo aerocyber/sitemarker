@@ -125,26 +125,32 @@ class _HomeUIState extends State<HomeUI> {
                 ),
               ),
               clipBehavior: Clip.antiAlias,
-              // Reverted back to the BottomNavigationBar!
-              child: BottomNavigationBar(
-                currentIndex: widget.navigationShell.currentIndex,
-                onTap: (index) => widget.navigationShell.goBranch(
-                  index,
-                  initialLocation: index == widget.navigationShell.currentIndex,
-                ),
+              child: NavigationBar(
+                // You can control the height here so the pill isn't too thick
+                height: 60,
+                selectedIndex: widget.navigationShell.currentIndex,
+                onDestinationSelected: (index) =>
+                    widget.navigationShell.goBranch(
+                      index,
+                      initialLocation:
+                          index == widget.navigationShell.currentIndex,
+                    ),
                 elevation: 0,
                 backgroundColor: Colors.transparent,
-                showSelectedLabels: false,
-                showUnselectedLabels: false,
-                items: const [
-                  BottomNavigationBarItem(
+
+                labelBehavior:
+                    NavigationDestinationLabelBehavior.onlyShowSelected,
+
+                destinations: const [
+                  NavigationDestination(
                     icon: Icon(Icons.bookmarks_outlined),
-                    activeIcon: Icon(Icons.bookmarks),
-                    label: 'Records',
+                    selectedIcon: Icon(Icons.bookmarks),
+                    label:
+                        'Records', // Still required by the widget, even if hidden
                   ),
-                  BottomNavigationBarItem(
+                  NavigationDestination(
                     icon: Icon(Icons.settings_outlined),
-                    activeIcon: Icon(Icons.settings),
+                    selectedIcon: Icon(Icons.settings),
                     label: 'Settings',
                   ),
                 ],

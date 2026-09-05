@@ -1,4 +1,5 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -9,16 +10,50 @@ class ProfileScreen extends StatelessWidget {
     final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Profile'), centerTitle: true),
+      backgroundColor: colorScheme.surface,
+
+      // 1. Wrap in PreferredSize and Padding exactly like HomeUI
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(kToolbarHeight + 16.0),
+        child: Padding(
+          padding: const EdgeInsets.only(right: 30, left: 30, top: 16),
+          child: AppBar(
+            leadingWidth: 75,
+
+            // 2. Add the pill shape
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
+            ),
+            elevation: 5,
+
+            // 3. Match the colors and shadow perfectly
+            backgroundColor: colorScheme.onPrimary,
+            surfaceTintColor: Colors.transparent,
+            shadowColor: theme.shadowColor.withValues(alpha: 0.4),
+
+            centerTitle: true,
+            title: const Text(
+              'Profile',
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+
+            // 4. Dedicated back button
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => context.pop(),
+            ),
+          ),
+        ),
+      ),
+
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Cloud Sync Teaser Card
             Card(
               elevation: 0,
-              color: colorScheme.surfaceContainerHigh,
+              color: colorScheme.surfaceContainer,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(24),
               ),
@@ -40,7 +75,6 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 12),
 
-                    // "Coming in 4.0" Badge
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 12,
@@ -51,7 +85,7 @@ class ProfileScreen extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        'Coming in v4.0',
+                        'Coming soon',
                         style: TextStyle(
                           color: colorScheme.onPrimaryContainer,
                           fontWeight: FontWeight.w600,
@@ -71,7 +105,6 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Privacy Reassurance
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(

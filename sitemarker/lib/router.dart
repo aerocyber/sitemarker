@@ -13,6 +13,7 @@ final appRouter = GoRouter(
       builder: (context, state, navigationShell) {
         return HomeUI(navigationShell: navigationShell);
       },
+
       branches: [
         StatefulShellBranch(
           routes: [
@@ -34,6 +35,7 @@ final appRouter = GoRouter(
             ),
           ],
         ),
+
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -42,16 +44,14 @@ final appRouter = GoRouter(
             ),
           ],
         ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/profile',
-              builder: (context, state) => ProfileScreen(),
-            ),
-          ],
-        ),
       ],
     ),
+
+    GoRoute(
+      path: '/profile',
+      builder: (context, state) => const ProfileScreen(),
+    ),
+
     GoRoute(
       path: '/search',
       builder: (context, state) {
