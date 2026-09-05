@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
+import 'package:validators/validators.dart' as validators;
 
 import 'package:sitemarker/core/data_types/sm_record.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
@@ -22,7 +23,6 @@ Future<void> showCreateRecordDialog(
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
-
     builder: (dialogContext) => Theme(
       data: parentTheme,
       child: CreateRecordSheet(folderId: folderId),
@@ -58,13 +58,14 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
   Future<void> _showNewTagDialog() async {
     final tagController = TextEditingController();
 
-    await showDialog(
+    // 1. Await the dialog to return a String (or null if cancelled)
+    final String? newTag = await showDialog<String>(
       context: context,
       useRootNavigator: false,
       builder: (ctx) => AlertDialog(
         title: const Text('New Tag'),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadiusGeometry.all(Radius.circular(15)),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15)),
         ),
         content: TextField(
           controller: tagController,
@@ -74,40 +75,44 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
             hintText: 'e.g. flutter',
             border: OutlineInputBorder(),
           ),
-          onSubmitted: (value) => _addNewTagFromDialog(ctx, tagController.text),
+          onSubmitted: (value) => Navigator.pop(ctx, tagController.text),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(ctx),
+            onPressed: () => Navigator.pop(ctx), // Pops with null
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () => _addNewTagFromDialog(ctx, tagController.text),
+            onPressed: () => Navigator.pop(ctx, tagController.text),
             child: const Text('Add'),
           ),
         ],
       ),
     );
 
-    tagController.dispose();
+    // 2. Safely delay disposal so the dialog animation can finish
+    Future.delayed(const Duration(milliseconds: 300), () {
+      tagController.dispose();
+    });
+
+    // 3. Handle the DB insertion cleanly outside the dialog's lifecycle
+    if (newTag != null && newTag.trim().isNotEmpty) {
+      await _addNewTag(newTag.trim());
+    }
   }
 
-  Future<void> _addNewTagFromDialog(BuildContext ctx, String tagText) async {
+  Future<void> _addNewTag(String tagText) async {
     final cleanedTag = tagText.trim();
     if (cleanedTag.isEmpty) return;
 
     final tagsProvider = context.read<TagsProvider>();
 
-    // Check if tag already exists in the provider's memory
     final exists = tagsProvider.allTags.any(
       (map) => map.values.first.toLowerCase() == cleanedTag.toLowerCase(),
     );
 
-    // Persist to database if it's completely new
     if (!exists) {
       await tagsProvider.createTag(cleanedTag);
-      // If your provider requires a manual reload to fetch the new ID, call it here:
-      // await tagsProvider.loadTags();
     }
 
     setState(() {
@@ -117,10 +122,6 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
         _selectedTags.add(cleanedTag);
       }
     });
-
-    if (ctx.mounted) {
-      Navigator.pop(ctx);
-    }
   }
 
   Future<void> _handleSaveRecord() async {
@@ -327,33 +328,30 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
 
                     String input = value.trim();
 
-                    // Auto-prepend https:// if no protocol/scheme is provided
-                    if (!input.contains('://')) {
-                      input = 'https://$input';
+                    // 1. Email validation
+                    if (input.startsWith('mailto:')) {
+                      final email = input.substring(7);
+                      if (validators.isEmail(email)) {
+                        return null;
+                      }
+                      return 'Invalid email address';
                     }
 
-                    final uri = Uri.tryParse(input);
-                    if (uri == null || !uri.hasScheme || uri.host.isEmpty) {
-                      return 'Enter a valid URL or onion link';
+                    // 2. Strict TOR Onion validation (V3 Spec)
+                    if (input.contains('.onion')) {
+                      // Matches optional http/https, exactly 56 base32 chars (a-z, 2-7), .onion, and optional paths
+                      final onionRegex = RegExp(
+                        r'^(https?:\/\/)?([a-z2-7]{56})\.onion(\/.*)?$',
+                      );
+                      if (onionRegex.hasMatch(input)) {
+                        return null;
+                      }
+                      return 'Invalid TOR V3 onion link';
                     }
 
-                    // Allow standard schemes OR .onion hosts
-                    final bool isStandardScheme = [
-                      'http',
-                      'https',
-                      'ftp',
-                      'ftps',
-                      'mailto',
-                      'tel',
-                      'ssh',
-                      'file',
-                    ].contains(uri.scheme.toLowerCase());
-                    final bool isOnionHost = uri.host.toLowerCase().endsWith(
-                      '.onion',
-                    );
-
-                    if (!isStandardScheme && !isOnionHost) {
-                      return 'Unsupported protocol or URL format';
+                    // 3. Standard Web URL validation
+                    if (!validators.isURL(input, requireProtocol: false)) {
+                      return 'Enter a valid URL';
                     }
 
                     return null;
@@ -368,14 +366,12 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
                   },
                 ),
                 const SizedBox(height: 12),
-
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
                       child: DropdownMenu<String>(
-                        expandedInsets: EdgeInsets
-                            .zero, // Forces menu to exactly match the text field's width
+                        expandedInsets: EdgeInsets.zero,
                         label: const Text('Select Tag'),
                         dropdownMenuEntries: dropdownTags.map((tag) {
                           return DropdownMenuEntry<String>(
@@ -403,7 +399,6 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
                     ),
                   ],
                 ),
-
                 if (_selectedTags.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.only(top: 12.0),
@@ -422,7 +417,6 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
                       }).toList(),
                     ),
                   ),
-
                 const SizedBox(height: 12),
                 TextFormField(
                   controller: _notesController,

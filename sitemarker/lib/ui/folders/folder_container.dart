@@ -94,7 +94,7 @@ class _FolderContainerState extends State<FolderContainer> {
                 decoration: BoxDecoration(
                   color: Theme.of(
                     bottomSheetContext,
-                  ).colorScheme.onSurfaceVariant.withOpacity(0.4),
+                  ).colorScheme.onSurfaceVariant.withValues(alpha: 0.4),
                   borderRadius: BorderRadius.circular(2.0),
                 ),
               ),
@@ -139,7 +139,7 @@ class _FolderContainerState extends State<FolderContainer> {
                       height: 1,
                       color: Theme.of(
                         bottomSheetContext,
-                      ).colorScheme.outlineVariant.withOpacity(0.5),
+                      ).colorScheme.outlineVariant.withValues(alpha: 0.5),
                     ),
                     if (widget.folder.isDeleted) ...[
                       ListTile(
@@ -167,7 +167,7 @@ class _FolderContainerState extends State<FolderContainer> {
                         height: 1,
                         color: Theme.of(
                           bottomSheetContext,
-                        ).colorScheme.outlineVariant.withOpacity(0.5),
+                        ).colorScheme.outlineVariant.withValues(alpha: 0.5),
                       ),
                       ListTile(
                         leading: Icon(
@@ -184,12 +184,12 @@ class _FolderContainerState extends State<FolderContainer> {
                           ),
                         ),
                         subtitle: Text(
-                          'This will delete all contents inside.',
+                          'This will delete all contents inside, permanently.',
                           style: TextStyle(
                             fontSize: 12,
                             color: Theme.of(
                               bottomSheetContext,
-                            ).colorScheme.error.withOpacity(0.8),
+                            ).colorScheme.error.withValues(alpha: 0.8),
                           ),
                         ),
                         onTap: () {
@@ -210,6 +210,13 @@ class _FolderContainerState extends State<FolderContainer> {
                               bottomSheetContext,
                             ).colorScheme.error,
                             fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        subtitle: Text(
+                          'This will delete all contents but can be recovered from Recycle bin',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Theme.of(context).colorScheme.error,
                           ),
                         ),
                         onTap: () {

@@ -55,7 +55,6 @@ class _CreateFolderSheetState extends State<CreateFolderSheet> {
     final folderName = _nameController.text.trim();
     final foldersProvider = context.read<FoldersProvider>();
 
-    // --- INTEGRITY CHECK ---
     final isDuplicate = DataIntegrityHelpers.isFolderNameDuplicate(
       folderName,
       widget.parentId,
@@ -81,7 +80,6 @@ class _CreateFolderSheetState extends State<CreateFolderSheet> {
       return;
     }
 
-    // --- PROCEED WITH CREATION ---
     try {
       final now = DateTime.now();
       final folder = SmFolder(

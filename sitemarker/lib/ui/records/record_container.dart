@@ -111,6 +111,20 @@ class _RecordContainerState extends State<RecordContainer> {
                 child: Column(
                   children: [
                     ListTile(
+                      leading: const Icon(Icons.link),
+                      title: const Text("Open link in browser"),
+                      onTap: () {
+                        Navigator.pop(context);
+                        // TODO: Trigger open in url routine
+                      },
+                    ),
+                    Divider(
+                      height: 1,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    ),
+                    ListTile(
                       leading: const Icon(Icons.edit_outlined),
                       title: const Text('Edit'),
                       onTap: () {
@@ -122,7 +136,7 @@ class _RecordContainerState extends State<RecordContainer> {
                       height: 1,
                       color: Theme.of(
                         context,
-                      ).colorScheme.outlineVariant.withOpacity(0.5),
+                      ).colorScheme.outlineVariant.withValues(alpha: 0.5),
                     ),
                     ListTile(
                       leading: Icon(

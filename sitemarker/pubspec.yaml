@@ -33,6 +33,7 @@ dependencies:
   intl: ^0.20.3
   receive_sharing_intent: ^1.9.0
   sqlite3_flutter_libs: ^0.6.0+eol
+  validators: ^3.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
