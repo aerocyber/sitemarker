@@ -29,6 +29,8 @@ class _HomeUIState extends State<HomeUI> {
 
   @override
   Widget build(BuildContext context) {
+    int _currentFolderId = 1;
+
     final isSettings = widget.navigationShell.currentIndex == 1;
 
     // Check our current route location
@@ -39,6 +41,16 @@ class _HomeUIState extends State<HomeUI> {
     int activeFolderId = 1; // Default to root
     if (canGoBack && location.pathSegments.length == 2) {
       activeFolderId = int.tryParse(location.pathSegments[1]) ?? 1;
+    }
+
+    if (activeFolderId != _currentFolderId) {
+      _currentFolderId = activeFolderId;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.read<RecordsProvider>().loadRecordsByFolder(activeFolderId);
+        }
+      });
     }
 
     return SafeArea(
