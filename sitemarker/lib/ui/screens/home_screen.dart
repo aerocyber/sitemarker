@@ -29,7 +29,7 @@ class _HomeUIState extends State<HomeUI> {
 
   @override
   Widget build(BuildContext context) {
-    int _currentFolderId = 1;
+    int currentFolderId = 1;
 
     final isSettings = widget.navigationShell.currentIndex == 1;
 
@@ -43,8 +43,8 @@ class _HomeUIState extends State<HomeUI> {
       activeFolderId = int.tryParse(location.pathSegments[1]) ?? 1;
     }
 
-    if (activeFolderId != _currentFolderId) {
-      _currentFolderId = activeFolderId;
+    if (activeFolderId != currentFolderId) {
+      currentFolderId = activeFolderId;
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
