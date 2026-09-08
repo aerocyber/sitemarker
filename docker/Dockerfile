@@ -4,7 +4,7 @@ FROM fedora:40 AS base
 
 ARG SITEMARKER_PLATFORM=amd64
 ENV PATH="/opt/flutter/bin:${PATH}"
-ENV FLUTTER_VERSION="3.47.1"
+ENV FLUTTER_VERSION="3.47.2"
 # Required to run appimagetool inside a Docker container without FUSE
 ENV APPIMAGE_EXTRACT_AND_RUN=1 
 
