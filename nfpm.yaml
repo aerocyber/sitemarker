@@ -1,0 +1,65 @@
+# This is an example nfpm configuration file.
+# Make sure to check the documentation at https://nfpm.goreleaser.com
+#
+# The lines below are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/need to use them.
+# yaml-language-server: $schema=https://nfpm.goreleaser.com/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
+
+name: "sitemarker"
+arch: "amd64"
+platform: "linux"
+version: ${APP_VERSION}
+section: "default"
+priority: "extra"
+# replaces:
+#   - foobar
+# provides:
+#   - bar
+# depends:
+#   - foo
+#   - bar
+# recommends:
+#   - whatever
+# suggests:
+#   - something-else
+# conflicts:
+#   - not-foo
+#   - not-bar
+maintainer: "Aero"
+description: |
+  FooBar is the great foo and bar software.
+    And this can be in multiple lines!
+vendor: "Aero"
+homepage: "https://github.com/aerocyber/sitemarker"
+license: "Apache-2.0"
+# changelog: "changelog.yml"
+# contents:
+#   - src: ./foo
+#     dst: /usr/bin/foo
+#   - src: ./bar
+#     dst: /usr/bin/bar
+#   - src: ./foobar.conf
+#     dst: /etc/foobar.conf
+#     type: config
+#   - src: /usr/bin/foo
+#     dst: /sbin/foo
+#     type: symlink
+# overrides:
+#   rpm:
+#     scripts:
+#       preinstall: ./scripts/preinstall.sh
+#       postremove: ./scripts/postremove.sh
+#   deb:
+#     scripts:
+#       postinstall: ./scripts/postinstall.sh
+#       preremove: ./scripts/preremove.sh
+
+contents:
+  - dst: /opt/sitemarker
+    src: "build/linux/x64/release/bundle"
+    type: tree
+
+  - dst: /usr/bin/sitemarker
+    src: /opt/sitemarker/sitemarker
+    type: symlink
