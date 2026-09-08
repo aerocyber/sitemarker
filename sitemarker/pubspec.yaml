@@ -13,6 +13,7 @@ scripts:
 
 environment:
   sdk: ^3.12.1
+  flutter: 3.47.2
 
 dependencies:
   flutter:
