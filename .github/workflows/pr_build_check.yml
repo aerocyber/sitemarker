@@ -1,158 +1,145 @@
-name: PR Build & Lint Checks for All Platforms
+name: PR Build Check
 
 on:
+  push:
+    branches:
+      - main
+      - stable
+      - develop
   pull_request:
+    types:
+      - opened
+      - reopened
+      - review_requested
+      - synchronized
     branches:
       - main
       - develop
       - stable
 
+  workflow_dispatch:
+
 jobs:
-  android_pr_check:
+  build_check_android:
+    name: Check if Android APK build against the PR/Push is successful
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: sitemarker
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-      
-      - name: Set up Android SDK environment
-        run: |
-          # Install required Android cmdline-tools
-          mkdir -p "$ANDROID_SDK_ROOT/cmdline-tools"
-          cd "$ANDROID_SDK_ROOT/cmdline-tools"
-          curl -sSL https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -o cmdline-tools.zip
-          unzip cmdline-tools.zip
-          rm cmdline-tools.zip
-          mv cmdline-tools latest
+      - name: Checkout the code
+        uses: actions/checkout@v7
 
-          echo "ANDROID_HOME=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-          echo "ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT" >> $GITHUB_ENV
-          echo "$ANDROID_SDK_ROOT/emulator:$ANDROID_SDK_ROOT/platform-tools:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin" >> $GITHUB_PATH
+      - name: Set up Java 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
 
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --licenses
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          log-accepted-android-sdk-licenses: no
+          cache: "gradle"
 
-
-
-      - name: Setup Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.32.0"
-          channel: "stable"
+          channel: stable
+          flutter-version: pubspec.yaml
+          cache: true
 
-      - name: Get Flutter Dependencies
+      - name: Get flutter project dependencies
         run: flutter pub get
-        working-directory: sitemarker/
 
-      - name: Cache Flutter Dependencies
-        uses: actions/cache@v4
+      - name: Run flutter analyze
+        run: flutter analyze
+
+      - name: Run Build steps for APK
+        run: flutter build apk --release --flavor prod --shrink
+
+  build_check_linux:
+    name: Check if build for Linux against the PR/Push is Successful
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: sitemarker
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
         with:
-          path: |
-            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
-            ${{ env.FLUTTER_ROOT }}/.pub-cache
-          key: ${{ runner.os }}-flutter-pub-cache-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-pub-cache-
+          channel: stable
+          flutter-version: pubspec.yaml
+          cache: true
 
-      - name: Check Android Debug Build (Develop Flavor)
-        run: flutter build apk --debug --flavor develop
-        working-directory: sitemarker/
+      - name: Get flutter project dependencies
+        run: flutter pub get
 
-  windows_pr_check:
+      - name: Run flutter analyze
+        run: flutter analyze
+
+      - name: Run Build steps for linux
+        run: flutter build linux --release
+
+  build_check_windows:
+    name: Check if build for Linux against the PR/Push is Successful
     runs-on: windows-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
 
-      - name: Setup Flutter
+    defaults:
+      run:
+        working-directory: sitemarker
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v7
+
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.32.0"
-          channel: "stable"
+          channel: stable
+          flutter-version: pubspec.yaml
+          cache: true
 
-      - name: Get Flutter Dependencies
+      - name: Get flutter project dependencies
         run: flutter pub get
-        working-directory: sitemarker
 
-      - name: Cache Flutter Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
-            ${{ env.FLUTTER_ROOT }}/.pub-cache
-          key: ${{ runner.os }}-flutter-pub-cache-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-pub-cache-
+      - name: Run flutter analyze
+        run: flutter analyze
 
-      - name: Check Windows Debug Build
-        run: flutter build windows --debug
-        working-directory: sitemarker
-
-  linux_pr_check:
+      - name: Run Build steps for linux
+        run: flutter build windows --release
+  
+  build_check_web:
+    name: Check if build for Linux against the PR/Push is Successful
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: sitemarker
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout the code
+        uses: actions/checkout@v7
 
-      - name: Install Linux Dependencies for Flutter
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-          clang cmake ninja-build pkg-config \
-          libgtk-3-dev liblzma-dev \
-          libglib2.0-dev libgtk-3-dev \
-          libblkid-dev liblzma-dev libudev-dev \
-          libcurl4-openssl-dev libssl-dev unzip xz-utils zip
-
-
-      - name: Setup Flutter
+      - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.32.0'
-          channel: 'stable'
+          channel: stable
+          flutter-version: pubspec.yaml
+          cache: true
 
-      - name: Get Flutter Dependencies
+      - name: Get flutter project dependencies
         run: flutter pub get
-        working-directory: sitemarker
 
-      - name: Cache Flutter Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
-            ${{ env.FLUTTER_ROOT }}/.pub-cache
-          key: ${{ runner.os }}-flutter-pub-cache-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-pub-cache-
+      - name: Run flutter analyze
+        run: flutter analyze
 
-      - name: Check Linux Debug Build
-        run: flutter build linux --debug
-        working-directory: sitemarker
-
-  macos_pr_check:
-    runs-on: macos-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.32.0"
-          channel: "stable"
-
-      - name: Get Flutter Dependencies
-        run: flutter pub get
-        working-directory: sitemarker
-
-      - name: Cache Flutter Dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ${{ env.FLUTTER_ROOT }}/bin/cache/artifacts
-            ${{ env.FLUTTER_ROOT }}/.pub-cache
-          key: ${{ runner.os }}-flutter-pub-cache-${{ hashFiles('pubspec.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-flutter-pub-cache-
-
-      - name: Check macOS Debug Build
-        run: flutter build macos --debug
-        working-directory: sitemarker
+      - name: Run Build steps for linux
+        run: flutter build web --release --wasm

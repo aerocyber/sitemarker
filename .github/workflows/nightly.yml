@@ -1,13 +1,12 @@
 name: Nightly Build
 
-permissions: 
+permissions:
   contents: write
 
 on:
-  push: 
-    tags:
-      '*'
-  workflow_dispatch: 
+  schedule:
+    - cron: '0 0 * * *'
+  workflow_dispatch:
 
 jobs:
   create_release:
@@ -18,6 +17,38 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: develop
+          fetch-depth: 1
+
+      - name: Check for new commits
+        id: commit_check
+        run: |
+          CURRENT_SHA=$(git rev-parse HEAD)
+          CACHE_FILE=".last_nightly_sha"
+          
+          # Initialize the file with current SHA if it doesn't exist
+          if [ ! -f "$CACHE_FILE" ]; then
+            echo "$CURRENT_SHA" > "$CACHE_FILE"
+            echo "new_commits=true" >> $GITHUB_OUTPUT
+            echo "First time running or cache cleared. Proceeding with build."
+          else
+            LAST_SHA=$(cat "$CACHE_FILE")
+            if [ "$CURRENT_SHA" = "$LAST_SHA" ]; then
+              echo "new_commits=false" >> $GITHUB_OUTPUT
+              echo "No new commits on develop since last run. Skipping build."
+            else
+              echo "$CURRENT_SHA" > "$CACHE_FILE"
+              echo "new_commits=true" >> $GITHUB_OUTPUT
+              echo "New commits found. Proceeding with build."
+            fi
+          fi
+      
+      - name: Cache Last Commit SHA
+        uses: actions/cache@v4
+        with:
+          path: .last_nightly_sha
+          key: nightly-sha-${{ github.sha }}
+          restore-keys: |
+            nightly-sha-
 
       - name: Create release
         id: create_release
@@ -31,7 +62,7 @@ jobs:
           generate_release_notes: true
           make_latest: false
           tag_name: nightly-develop-${{ github.ref.commit }}
-  
+
   release:
     name: Build and release
     needs: create_release
@@ -41,22 +72,22 @@ jobs:
         config:
           - os: ubuntu-latest
           - os: windows-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           ref: develop
-      
+
       - name: Build
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: 3.24.5
-      
+          flutter-version: 3.47.2
+
       - name: Windows Build
         shell: pwsh
-        run: | 
+        run: |
           flutter clean
           flutter pub get
           flutter build windows --release --tree-shake-icons --no-obfuscate --pub --split-debug-info=sitemarker-nightly-${{ github.ref.commit }}-debug-windows
@@ -65,9 +96,9 @@ jobs:
           Compress-Archive -Path .\sitemarker-nightly-${{ github.ref.commit }}-debug-windows -DestinationPath .\sitemarker-nightly-${{ github.ref.commit }}-debug-windows.zip
           # TODO: Build windows installer - exe
           # TODO: Add to the upload assets
-      
+
         if: matrix.config.os == 'windows-latest'
-      
+
       - name: Upload Assets - Windows
         uses: softprops/action-gh-release@v2
         if: ${{ matrix.config.os }} == 'windows-latest'
@@ -77,7 +108,6 @@ jobs:
           files: |
             sitemarker-nightly-${{ github.ref.commit }}-debug-windows.zip
             sitemarker-nightly-${{ github.ref.commit }}-windows.zip
-        
 
       - name: Linux and Android builds
         shell: bash
@@ -93,7 +123,7 @@ jobs:
           tar -cJf sitemarker-nightly-${{ github.ref.commit }}-debug-linux.tar.xz sitemarker-nightly-${{ github.ref.commit }}-nightly
 
         if: matrix.config.os == 'ubuntu-latest'
-      
+
       - name: Upload Assets - Linux
         uses: softprops/action-gh-release@v2
         if: ${{ matrix.config.os }} == 'ubuntu-latest'
