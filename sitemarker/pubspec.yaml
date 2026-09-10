@@ -13,7 +13,7 @@ scripts:
 
 environment:
   sdk: ^3.12.1
-  flutter: 3.47.2
+  flutter: 3.47.3
 
 dependencies:
   flutter:
@@ -21,29 +21,29 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  drift: ^2.33.0
-  drift_flutter: ^0.3.0
-  path_provider: ^2.1.5
-  sqlite3: ^3.3.2
-  archive: ^4.0.9
+  path_provider: ^2.1.6
+  sqlite3: ^3.5.2
+  archive: ^4.2.0
   provider: ^6.1.5+1
-  go_router: ^18.0.0
-  material_ui: ^1.1.0
+  go_router: ^18.0.1
+  material_ui: ^1.2.0
 
-  path: any
+  path: ^1.9.1
   intl: ^0.20.3
   receive_sharing_intent: ^1.9.0
-  sqlite3_flutter_libs: ^0.6.0+eol
   validators: ^3.0.0
+  drift: ^2.35.0
+  drift_flutter: ^0.3.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^6.0.0
-  drift_dev: ^2.33.0
-  build_runner: ^2.15.0
+  build_runner: ^2.16.1
   rps: ^0.10.1
   remove_from_coverage: ^2.0.0
+  drift_dev: ^2.35.0
 
 flutter:
   uses-material-design: true
