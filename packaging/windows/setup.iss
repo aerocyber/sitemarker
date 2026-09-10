@@ -1,8 +1,12 @@
+#ifndef BuildArch
+  #define BuildArch "universal"
+#endif
+
 #define DistAppName "Sitemarker"
 #define DistAppVersion "4.0.0"
 #define DistAppPublisher "Aero"
 #define DistAppURL "https://aerocyber.github.io/sitemarker"
-#define DistAppSupportURL "https://github.com/aerocyber/sitemarker"
+#define DistAppSupportURL "https://github.com/aerocyber/sitemarker/issues"
 #define DistAppExeName "sitemarker.exe"
 #define DistAppAssocName "Osmata Input Output File"
 #define DistAppAssocExt ".omio"
@@ -13,7 +17,20 @@
 AppId={{30DE3E66-CE67-4040-ADD4-E164744A9DD3}
 
 ; Architecture Stuff
-ArchitecturesAllowed=x64 arm64
+#if BuildArch == "x64"
+  ArchitecturesAllowed=x64compatible
+  ArchitecturesInstallIn64BitMode=x64compatible
+  OutputBaseFilename={#DistAppName}-{#DistAppVersion}-x64-Setup
+#elif BuildArch == "arm64"
+  ArchitecturesAllowed=arm64
+  ArchitecturesInstallIn64BitMode=arm64
+  OutputBaseFilename={#DistAppName}-{#DistAppVersion}-arm64-Setup
+#else
+  ; Fallback to Universal
+  ArchitecturesAllowed=x64compatible arm64
+  ArchitecturesInstallIn64BitMode=x64compatible arm64
+  OutputBaseFilename={#DistAppName}-{#DistAppVersion}-universal-Setup
+#endif
 
 ; Branding
 SetupIconFile=..\..\sitemarker\windows\runner\resources\app_icon.ico
@@ -47,7 +64,6 @@ UsePreviousAppDir=yes
 
 ; Compiler stuff
 Output=yes
-OutputBaseFilename={#DistAppName}-{#DistAppVersion}-Setup
 OutputDir=..\build\windows\installer
 
 ; Installation Pages Control
@@ -72,12 +88,16 @@ Name: desktopicon; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm
 
 [Files]
 ; x64 binaries
+#if BuildArch == "x64" || BuildArch == "universal"
 Source: "..\..\sitemarker\build\windows\x64\runner\Release\{#DistAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: IsX64Compatible
 Source: "..\..\sitemarker\build\windows\x64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsX64Compatible
+#endif
 
 ; arm64 binaries
+#if BuildArch == "arm64" || BuildArch == "universal"
 Source: "..\..\sitemarker\build\windows\arm64\runner\Release\{#DistAppExeName}"; DestDir: "{app}"; Flags: ignoreversion; Check: IsArm64
 Source: "..\..\sitemarker\build\windows\arm64\runner\Release\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs; Check: IsArm64
+#endif
 
 [Icons]
 Name: "{autoprograms}\{#DistAppName}"; Filename: "{app}\{#DistAppExeName}"

@@ -2,3 +2,4 @@
 .cache/
 *.g.dart
 out/
+packaging/build
