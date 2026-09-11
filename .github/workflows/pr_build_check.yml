@@ -40,14 +40,14 @@ jobs:
       - name: Set up Android SDK
         uses: android-actions/setup-android@v4
         with:
-          log-accepted-android-sdk-licenses: no
-          accept-android-sdk-licenses: yes
+          log-accepted-android-sdk-licenses: false
+          accept-android-sdk-licenses: true
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          # flutter-version-file: pubspec.yaml
+          flutter-version-file: sitemarker/pubspec.yaml
           cache: true
 
       - name: Get flutter project dependencies
