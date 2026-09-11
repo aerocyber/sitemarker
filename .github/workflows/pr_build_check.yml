@@ -16,7 +16,6 @@ on:
       - main
       - develop
       - stable
-
   workflow_dispatch:
 
 jobs:
@@ -42,13 +41,13 @@ jobs:
         uses: android-actions/setup-android@v4
         with:
           log-accepted-android-sdk-licenses: no
-          cache: "gradle"
+          accept-android-sdk-licenses: yes
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
-          flutter-version: pubspec.yaml
+          flutter-version-file: pubspec.yaml
           cache: true
 
       - name: Get flutter project dependencies
@@ -115,7 +114,7 @@ jobs:
 
       - name: Run Build steps for linux
         run: flutter build windows --release
-  
+
   build_check_web:
     name: Check if build for Linux against the PR/Push is Successful
     runs-on: ubuntu-latest
