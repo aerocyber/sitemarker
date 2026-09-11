@@ -90,7 +90,7 @@ jobs:
         run: flutter build linux --release
 
   build_check_windows:
-    name: Check if build for Linux against the PR/Push is Successful
+    name: Check if build for Windows against the PR/Push is Successful
     runs-on: windows-latest
 
     defaults:
@@ -115,11 +115,11 @@ jobs:
       # - name: Run flutter analyze
       #   run: flutter analyze
 
-      - name: Run Build steps for linux
+      - name: Run Build steps for windows
         run: flutter build windows --release
 
   build_check_web:
-    name: Check if build for Linux against the PR/Push is Successful
+    name: Check if build for Web (WASM) against the PR/Push is Successful
     runs-on: ubuntu-latest
 
     defaults:
@@ -144,5 +144,5 @@ jobs:
       # - name: Run flutter analyze
       #   run: flutter analyze
 
-      - name: Run Build steps for linux
+      - name: Run Build steps for web
         run: flutter build web --release --wasm
