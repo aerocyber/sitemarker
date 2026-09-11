@@ -57,6 +57,9 @@ jobs:
       # - name: Run flutter analyze
       #   run: flutter analyze
 
+      - name: Run build_runner
+        run: dart run build_runner build
+
       - name: Run Build steps for APK
         run: flutter build apk --release --flavor prod --shrink
 
@@ -86,6 +89,9 @@ jobs:
       # - name: Run flutter analyze
       #   run: flutter analyze
 
+      - name: Run build_runner
+        run: dart run build_runner build
+
       - name: Run Build steps for linux
         run: flutter build linux --release
 
@@ -110,6 +116,9 @@ jobs:
 
       - name: Get flutter project dependencies
         run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build
 
       # TODO: Tests not ready :P
       # - name: Run flutter analyze
@@ -139,6 +148,9 @@ jobs:
 
       - name: Get flutter project dependencies
         run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build
 
       # TODO: Tests not ready :P
       # - name: Run flutter analyze
