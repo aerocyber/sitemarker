@@ -83,7 +83,7 @@ jobs:
       - name: Cleanup of secrets
         env:
           SIGNING_KEY_STORE_PATH: ${{ vars.SIGNING_KEY_STORE_PATH }}
-        run: rm keystore-b64.txt $SIGNING_KEY_STORE_PATH
+        run: rm $SIGNING_KEY_STORE_PATH
 
   build_check_linux:
     name: Check if build for Linux against the PR/Push is Successful
