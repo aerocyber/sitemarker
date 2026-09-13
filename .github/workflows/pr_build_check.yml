@@ -68,18 +68,22 @@ jobs:
         run: |
           echo $ENCODED_STRING > keystore-b64.txt
           base64 -d keystore-b64.txt > $SIGNING_KEY_STORE_PATH
-      
+
       - name: Generate key.properties File
+        working-directory: android/app
         run: |
           cat <<EOF > key.properties
           storePassword=${{ secrets.STORE_PASSWORD }}
           keyPassword=${{ secrets.KEY_PASSWORD }}
           keyAlias=${{ secrets.KEY_ALIAS }}
-          storeFile=my-release-key.jks
+          storeFile=sitemarkerAndroid.jks
           EOF
 
       - name: Run Build steps for APK
         run: flutter build apk --release --flavor prod --shrink
+
+      - name: Cleanup of secrets
+        run: rm keystore-b64.txt $SIGNING_KEY_STORE_PATH
 
   build_check_linux:
     name: Check if build for Linux against the PR/Push is Successful
