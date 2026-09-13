@@ -60,6 +60,24 @@ jobs:
       - name: Run build_runner
         run: dart run build_runner build
 
+      - name: Decode Keystore
+        env:
+          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+          SIGNING_KEY_STORE_PATH: ${{ secrets.SIGNING_KEY_STORE_PATH }}
+
+        run: |
+          echo $ENCODED_STRING > keystore-b64.txt
+          base64 -d keystore-b64.txt > $SIGNING_KEY_STORE_PATH
+      
+      - name: Generate key.properties File
+        run: |
+          cat <<EOF > key.properties
+          storePassword=${{ secrets.STORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=my-release-key.jks
+          EOF
+
       - name: Run Build steps for APK
         run: flutter build apk --release --flavor prod --shrink
 
@@ -87,10 +105,6 @@ jobs:
 
       - name: Get flutter project dependencies
         run: flutter pub get
-
-      # TODO: Tests not ready :P
-      # - name: Run flutter analyze
-      #   run: flutter analyze
 
       - name: Run build_runner
         run: dart run build_runner build
@@ -123,10 +137,6 @@ jobs:
       - name: Run build_runner
         run: dart run build_runner build
 
-      # TODO: Tests not ready :P
-      # - name: Run flutter analyze
-      #   run: flutter analyze
-
       - name: Run Build steps for windows
         run: flutter build windows --release
 
@@ -154,10 +164,6 @@ jobs:
 
       - name: Run build_runner
         run: dart run build_runner build
-
-      # TODO: Tests not ready :P
-      # - name: Run flutter analyze
-      #   run: flutter analyze
 
       - name: Run Build steps for web
         run: flutter build web --release --wasm
