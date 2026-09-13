@@ -66,8 +66,7 @@ jobs:
           SIGNING_KEY_STORE_PATH: ${{ vars.SIGNING_KEY_STORE_PATH }}
 
         run: |
-          echo $ENCODED_STRING > keystore-b64.txt
-          base64 -d keystore-b64.txt > $SIGNING_KEY_STORE_PATH
+          echo $ENCODED_STRING | base64 -d -i > $SIGNING_KEY_STORE_PATH
 
       - name: Generate key.properties File
         working-directory: android/app
