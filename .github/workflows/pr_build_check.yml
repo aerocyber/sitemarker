@@ -69,9 +69,8 @@ jobs:
           echo "$ENCODED_STRING" | base64 -d -i > $SIGNING_KEY_STORE_PATH
 
       - name: Generate key.properties File
-        working-directory: android/app
         run: |
-          cat <<EOF > key.properties
+          cat <<EOF > kandroid/app/key.properties
           storePassword=${{ secrets.STORE_PASSWORD }}
           keyPassword=${{ secrets.KEY_PASSWORD }}
           keyAlias=${{ secrets.KEY_ALIAS }}
