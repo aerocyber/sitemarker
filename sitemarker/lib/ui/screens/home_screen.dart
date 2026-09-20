@@ -16,6 +16,8 @@ class HomeUI extends StatefulWidget {
 }
 
 class _HomeUIState extends State<HomeUI> {
+  int currentFolderId = 1;
+
   @override
   void initState() {
     super.initState();
@@ -29,8 +31,6 @@ class _HomeUIState extends State<HomeUI> {
 
   @override
   Widget build(BuildContext context) {
-    int currentFolderId = 1;
-
     final isSettings = widget.navigationShell.currentIndex == 1;
 
     // Check our current route location
@@ -66,8 +66,10 @@ class _HomeUIState extends State<HomeUI> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadiusGeometry.circular(30),
               ),
-              elevation: 5,
-              backgroundColor: Theme.of(context).colorScheme.onPrimary,
+              // elevation: 5,
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerHigh,
               actionsPadding: EdgeInsets.all(10),
 
               centerTitle: true,
@@ -76,16 +78,19 @@ class _HomeUIState extends State<HomeUI> {
               shadowColor: Theme.of(context).shadowColor.withValues(alpha: 0.4),
 
               // Dynamically swap the leading icon!
-              leading: canGoBack
-                  ? IconButton(
-                      icon: const Icon(Icons.arrow_back),
-                      onPressed: () =>
-                          context.pop(), // Pop the nested folder route
-                    )
-                  : IconButton(
-                      icon: const Icon(Icons.account_circle_outlined),
-                      onPressed: () => context.push('/profile'),
-                    ),
+              leading: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 250),
+                child: canGoBack
+                    ? IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () =>
+                            context.pop(), // Pop the nested folder route
+                      )
+                    : IconButton(
+                        icon: const Icon(Icons.account_circle_outlined),
+                        onPressed: () => context.push('/profile'),
+                      ),
+              ),
 
               title: const Text(
                 'Sitemarker',

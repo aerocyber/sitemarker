@@ -17,57 +17,54 @@ class FolderContainer extends StatefulWidget {
 class _FolderContainerState extends State<FolderContainer> {
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () async {
-        // 1. Await the navigation to the subfolder
-        await context.push("/folder/${widget.folder.id}");
-
-        // 2. When the user pops back to this screen, immediately re-fetch THIS folder's data
-        if (context.mounted) {
-          // If we are navigating back to root (1), load root folders. Otherwise, load subfolders.
-          if (widget.folder.parentId == null || widget.folder.parentId == 1) {
-            context.read<FoldersProvider>().loadRootFolders();
-          } else {
-            context.read<FoldersProvider>().loadSubFolders(
-              widget.folder.parentId!,
-            );
-          }
-          // Reload the records for this specific folder
-          context.read<RecordsProvider>().loadRecordsByFolder(
-            widget.folder.parentId ?? 1,
-          );
-        }
-      },
-      child: Card(
-        margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-        elevation: 0,
-        color: Theme.of(context).colorScheme.surfaceContainerLow,
+    // Return the Card directly, removing the wrapping InkWell
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+      elevation: 0,
+      color: Theme.of(context).colorScheme.surfaceContainerLow,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
+      clipBehavior: Clip.antiAlias,
+      child: ListTile(
+        // 1. Apply the matching border radius to the tile itself
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
-        clipBehavior: Clip.antiAlias,
-        child: ListTile(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16.0,
-            vertical: 4.0,
+        // 2. Move the onTap logic here
+        onTap: () async {
+          await context.push("/folder/${widget.folder.id}");
+          if (context.mounted) {
+            if (widget.folder.parentId == null || widget.folder.parentId == 1) {
+              context.read<FoldersProvider>().loadRootFolders();
+            } else {
+              context.read<FoldersProvider>().loadSubFolders(
+                widget.folder.parentId!,
+              );
+            }
+            context.read<RecordsProvider>().loadRecordsByFolder(
+              widget.folder.parentId ?? 1,
+            );
+          }
+        },
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16.0,
+          vertical: 4.0,
+        ),
+        leading: CircleAvatar(
+          backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+          child: Icon(
+            Icons.folder_outlined,
+            color: Theme.of(context).colorScheme.onPrimaryContainer,
           ),
-          leading: CircleAvatar(
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            child: Icon(
-              Icons.folder_outlined, // Swapped to a folder icon
-              color: Theme.of(context).colorScheme.onPrimaryContainer,
-            ),
-          ),
-          title: Text(
-            widget.folder.name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontWeight: FontWeight.w500),
-          ),
-          trailing: IconButton(
-            icon: const Icon(Icons.more_vert),
-            onPressed: () => _showBottomSheet(context),
-          ),
+        ),
+        title: Text(
+          widget.folder.name,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontWeight: FontWeight.w500),
+        ),
+        trailing: IconButton(
+          icon: const Icon(Icons.more_vert),
+          onPressed: () => _showBottomSheet(context),
         ),
       ),
     );

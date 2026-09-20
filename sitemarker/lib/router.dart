@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:material_ui/material_ui.dart';
 
 import 'package:sitemarker/ui/screens/home_screen.dart';
 import 'package:sitemarker/ui/screens/profile_screen.dart';
@@ -23,12 +24,32 @@ final appRouter = GoRouter(
               routes: [
                 GoRoute(
                   path: 'folder/:id',
-                  builder: (context, state) {
+                  pageBuilder: (context, state) {
                     final folderId = int.parse(
                       state.pathParameters['id'] ?? '1',
                     );
-                    // Reusing the consolidated RecordsScreen!
-                    return RecordsScreen(folderId: folderId);
+
+                    return CustomTransitionPage(
+                      key: state.pageKey,
+                      child: RecordsScreen(folderId: folderId),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                            // Define the slide direction (start off-screen to the right)
+                            const begin = Offset(1.0, 0.0);
+                            const end = Offset.zero;
+
+                            // Use a smooth, native-feeling easing curve
+                            var tween = Tween(
+                              begin: begin,
+                              end: end,
+                            ).chain(CurveTween(curve: Curves.easeOutCubic));
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                    );
                   },
                 ),
               ],

@@ -12,32 +12,29 @@ class ProfileScreen extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         backgroundColor: colorScheme.surface,
-      
-        // 1. Wrap in PreferredSize and Padding exactly like HomeUI
+
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(kToolbarHeight + 16.0),
           child: Padding(
             padding: const EdgeInsets.only(right: 30, left: 30, top: 16),
             child: AppBar(
               leadingWidth: 75,
-      
-              // 2. Add the pill shape
+
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(30),
               ),
-              elevation: 5,
-      
-              // 3. Match the colors and shadow perfectly
-              backgroundColor: colorScheme.onPrimary,
+              // elevation: 5,
+
+              backgroundColor: colorScheme.surfaceContainerHigh,
               surfaceTintColor: Colors.transparent,
               shadowColor: theme.shadowColor.withValues(alpha: 0.4),
-      
+
               centerTitle: true,
               title: const Text(
                 'Profile',
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
-      
+
               // 4. Dedicated back button
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back),
@@ -46,7 +43,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           ),
         ),
-      
+
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -75,7 +72,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-      
+
                       Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
@@ -96,7 +93,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 24),
-      
+
                       Text(
                         'Seamlessly back up and sync your bookmarks across all your devices.',
                         textAlign: TextAlign.center,
@@ -105,7 +102,7 @@ class ProfileScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 16),
-      
+
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(

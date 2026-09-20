@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/providers/folders_provider.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
@@ -25,6 +25,9 @@ class _RecordsScreenState extends State<RecordsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return RecordUnion(folderId: widget.folderId);
+    return ColoredBox(
+      color: Theme.of(context).colorScheme.surface,
+      child: RecordUnion(folderId: widget.folderId),
+    );
   }
 }
