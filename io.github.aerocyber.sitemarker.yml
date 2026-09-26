@@ -29,11 +29,13 @@ modules:
       - type: git
         url: https://github.com/aerocyber/sitemarker.git
         tag: 4.0.0
-    
+
+      - generated-sources.json
+
     build-commands:
       - export PATH="$PWD/flutter_dir/flutter/bin:$PATH"
 
-      - cd sitemarker && flutter config --no-analytics && flutter build linux --release --offline
+      - cd sitemarker && flutter config --no-analytics && flutter build linux --release --offline && patchelf --remove-rpath build/linux/*/release/bundle/sitemarker/lib/libdartjni.so
       - install -D sitemarker/build/linux/*/release/bundle/sitemarker /app/bin/sitemarker
       - cp -r sitemarker/build/linux/*/release/bundle/* /app/bin/
 

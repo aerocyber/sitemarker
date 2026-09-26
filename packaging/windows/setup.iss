@@ -64,7 +64,7 @@ UsePreviousAppDir=yes
 
 ; Compiler stuff
 Output=yes
-OutputDir=..\build\windows\installer
+OutputDir=..\..\sitemarker\build\windows\installer
 
 ; Installation Pages Control
 AlwaysShowDirOnReadyPage=yes

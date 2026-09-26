@@ -1,10 +1,24 @@
 #!/usr/bin/make -f
 
-export DEB_BUILD_MAINT_OPTIONS = hardening=+all
-
 %:
 	dh $@
 
+override_dh_auto_build:
+
 override_dh_auto_install:
-	dh_auto_install
-	find ./debian -type f -name "LICENSE" -delete
+	mkdir -p debian/sitemarker/usr/lib/sitemarker
+	cp -r bundle/* debian/sitemarker/usr/lib/sitemarker/
+	mkdir -p debian/sitemarker/usr/bin
+	ln -s /usr/lib/sitemarker/sitemarker debian/sitemarker/usr/bin/sitemarker
+	
+	# Desktop Launcher
+	mkdir -p debian/sitemarker/usr/share/applications
+	cp io.github.aerocyber.sitemarker.desktop debian/sitemarker/usr/share/applications/
+	
+	# AppStream Metadata
+	mkdir -p debian/sitemarker/usr/share/metainfo
+	cp io.github.aerocyber.sitemarker.appdata.xml debian/sitemarker/usr/share/metainfo/
+	
+	# App Icon
+	mkdir -p debian/sitemarker/usr/share/icons/hicolor/512x512/apps
+	cp sitemarker.png debian/sitemarker/usr/share/icons/hicolor/512x512/apps/
