@@ -3,7 +3,7 @@
 ---
 app-id: io.github.aerocyber.sitemarker
 runtime: org.gnome.Platform
-runtime-version: "50"
+runtime-version: "51"
 sdk: org.gnome.Sdk
 command: sitemarker
 separate-locales: false
@@ -18,27 +18,26 @@ finish-args:
 modules:
   - name: Sitemarker
     buildsystem: simple
-    only-archs: x86_64
-    build-commands:
-      # - mkdir -p /app/bin
-      # - cd sitemarker-2.0.0; mkdir -p /app/sitemarker; cp -r ./* /app/sitemarker; ln -s /app/sitemarker/sitemarker /app/bin/sitemarker
-      # - cd sitemarker; mkdir -p /app/share/icons/hicolor/scalable/apps /app/share/icons/hicolor/symbolic/apps /app/share/applications /app/share/metainfo; cp -r data/icons/hicolor/scalable/apps/io.github.aerocyber.sitemarker.svg /app/share/icons/hicolor/scalable/apps; cp -r data/io.github.aerocyber.sitemarker.desktop /app/share/applications; cp data/icons/hicolor/symbolic/apps/io.github.aerocyber.sitemarker.svg /app/share/icons/hicolor/symbolic/apps/; cp -r data/io.github.aerocyber.sitemarker.appdata.xml /app/share/metainfo/
-      - "./build-flatpak.sh"
     sources:
-      - type: file
-        url: https://github.com/aerocyber/sitemarker/releases/download/3.1.0/sitemarker-3.1.0-linux.tar.xz
-        sha256: c628847545a41c05e3ef26f44b0a21ae7adecb11bf63196e39d71adff2d93c4c # TODO: Update this hash when the source changes
-      - type: file
-        path: packaging/linux/flatpak/flatpak/icons/hicolor/scalable/apps/io.github.aerocyber.sitemarker.svg
-        dest: flatpak/icons/hicolor/scalable/apps
-      - type: file
-        path: packaging/linux/flatpak/flatpak/icons/hicolor/symbolic/apps/io.github.aerocyber.sitemarker.svg
-        dest: flatpak/icons/hicolor/symbolic/apps
-      - type: file
-        path: packaging/linux/flatpak/flatpak/io.github.aerocyber.sitemarker.desktop
-        dest: flatpak/
-      - type: file
-        path: packaging/linux/flatpak/flatpak/io.github.aerocyber.sitemarker.appdata.xml
-        dest: flatpak/
-      - type: file
-        path: packaging/linux/flatpak/build-flatpak.sh
+      - type: archive
+        url: https://storage.googleapis.com/flutter_infra_release/releases/stable/linux/flutter_linux_3.47.5-stable.tar.xz # TODO: Update flutter download URL
+        sha256: 2132e990f236f8d22e7c6314b29a191a95b10d7cbcfec9b4e2e303d996652cbb # TODO: Update flutter tar.xz SHA256 checksum
+        dest-filename: flutter_sdk.tar.xz
+        strip-components: 0
+        dest: flutter_dir
+
+      - type: git
+        url: https://github.com/aerocyber/sitemarker.git
+        tag: 4.0.0
+    
+    build-commands:
+      - export PATH="$PWD/flutter_dir/flutter/bin:$PATH"
+
+      - cd sitemarker && flutter config --no-analytics && flutter build linux --release --offline
+      - install -D sitemarker/build/linux/*/release/bundle/sitemarker /app/bin/sitemarker
+      - cp -r sitemarker/build/linux/*/release/bundle/* /app/bin/
+
+      - install -Dm644 packaging/linux/flatpak/flatpak/io.github.aerocyber.sitemarker.desktop -t /app/share/applications/
+      - install -Dm644 packaging/linux/flatpak/flatpak/io.github.aerocyber.sitemarker.appdata.xml -t /app/share/metainfo/
+      - install -Dm644 packaging/linux/flatpak/flatpak/icons/hicolor/scalable/apps/io.github.aerocyber.sitemarker.svg -t /app/share/icons/hicolor/scalable/apps/
+      - install -Dm644 packaging/linux/flatpak/flatpak/icons/hicolor/symbolic/apps/io.github.aerocyber.sitemarker.svg -t /app/share/icons/hicolor/symbolic/apps/
