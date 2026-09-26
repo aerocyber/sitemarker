@@ -1,0 +1,326 @@
+name: Build release files on tagging
+
+on:
+  release:
+    types: [released]
+
+permissions:
+  contents: write
+
+jobs:
+  build-web-and-apk:
+    name: Build Android APK and Web bundle
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: sitemarker
+
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v7
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          log-accepted-android-sdk-licenses: false
+          accept-android-sdk-licenses: true
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get the drift wasm and worker files for web builds
+        run: |
+          SQLITE_VERSION=$(grep -A 7 "sqlite3:" pubspec.lock | grep version | awk '{print $2}' | tr -d '"')
+          echo "Detected sqlite3 version: $SQLITE_VERSION"
+
+          cd web
+          wget https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-$SQLITE_VERSION/sqlite3.wasm
+          wget -O drift_worker.dart.js https://github.com/simolus3/sqlite3.dart/releases/download/sqlite3-$SQLITE_VERSION/sqlite3_worker.js
+
+      - name: Get project dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build
+
+      # Build for web (wasm)
+
+      - name: Run build for web
+        run: |
+          flutter build web --release --wasm
+          cd build/web
+          zip -r ../sitemarker-web.zip .
+
+      # Android steps
+
+      - name: Decode Keystore
+        env:
+          ENCODED_STRING: ${{ secrets.SIGNING_KEY_STORE_BASE64 }}
+          SIGNING_KEY_STORE_PATH: ${{ vars.SIGNING_KEY_STORE_PATH }}
+
+        run: |
+          echo "$ENCODED_STRING" | base64 -d -i > $SIGNING_KEY_STORE_PATH
+
+      - name: Generate key.properties File
+        run: |
+          cat <<EOF > android/key.properties
+          storePassword=${{ secrets.STORE_PASSWORD }}
+          keyPassword=${{ secrets.KEY_PASSWORD }}
+          keyAlias=${{ secrets.KEY_ALIAS }}
+          storeFile=sitemarkerAndroid.jks
+          EOF
+
+      - name: Run Build steps for APK
+        run: flutter build apk --release --flavor prod --shrink
+
+      - name: Cleanup of secrets
+        env:
+          SIGNING_KEY_STORE_PATH: ${{ vars.SIGNING_KEY_STORE_PATH }}
+        run: rm $SIGNING_KEY_STORE_PATH
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            sitemarker/build/sitemarker-web.zip
+            sitemarker/build/app/outputs/flutter-apk/app-release.apk
+
+  build-windows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        working-directory: sitemarker
+
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v7
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get project dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build
+
+      - name: Run Build steps for windows
+        run: flutter build windows --release
+
+      - name: Use Inno Setup for Installer creation
+        uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+        with:
+          path: packaging/windows/setup.iss
+
+      - name: Pack the release as ZIP file
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath sitemarker-windows-x64.zip
+
+      - name: Upload to Github release
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            sitemarker-windows-x64.zip
+            sitemarker/build/windows/installer/Sitemarker-4.0.0-universal-Setup.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    env:
+      DEBIAN_FRONTEND: noninteractive
+
+    defaults:
+      run:
+        working-directory: sitemarker
+
+    steps:
+      - name: Code checkout
+        uses: actions/checkout@v7
+
+      - name: Set up the build env
+        run: |
+          echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
+          sudo apt update && sudo apt upgrade -y
+          sudo apt install nfpm patchelf -y
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get project dependencies
+        run: flutter pub get
+
+      - name: Run build_runner
+        run: dart run build_runner build
+
+      - name: Run Build steps for Linux
+        run: |
+          flutter build linux --release
+          patchelf --remove-rpath build/linux/*/release/bundle/sitemarker/lib/libdartjni.so
+
+      - name: Create tar.xz file
+        run: tar -cJf sitemarker.tar.xz build/linux/x64/release/bundle
+
+      - name: Extract build rpm/srpm via nFPM
+        run: |
+          export APP_VERSION=$(grep version pubspec.yaml | awk '{print $2}' | cut -d '+' -f1)
+          echo "Building rpm and srpm for $APP_VERSION"
+          nfpm package --config ../nfpm.yaml --packager rpm,srpm --target ./build/linux/x64/release
+          nfpm package --config ../nfpm.yaml --packager deb --target ./build/linux/x64/release
+
+      - name: Import GPG Key
+        run: |
+          echo "${{ secrets.GPG_PRIVATE_KEY }}" | gpg --batch --import
+
+      - name: Create source package DEB files
+        env:
+          GPG_KEY_ID: ${{ secrets.GPG_KEY_ID }}
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+
+          cat <<EOF > ../packaging/linux/deb/debian/changelog
+          sitemarker (${VERSION}-1) jammy; urgency=medium
+
+            * Automated release ${VERSION}.
+
+           -- Aero <aerocyberdev@proton.me>  $(date -R)
+          EOF
+
+          mkdir -p ../sitemarker-${VERSION}/bundle
+          cp -r build/linux/x64/release/bundle/* ../sitemarker-${VERSION}/bundle/
+
+          cp ../packaging/linux/flatpak/flatpak/io.github.aerocyber.sitemarker.desktop ../sitemarker-${VERSION}/
+          cp ../packaging/linux/flatpak/flatpak/io.github.aerocyber.sitemarker.appdata.xml ../sitemarker-${VERSION}/
+          cp ../sitemarker/windows/runner/resources/app_icon.png ../sitemarker-${VERSION}/sitemarker.png
+
+          cp -r ../packaging/linux/deb/debian ../sitemarker-${VERSION}/
+
+          tar -czf ../sitemarker_${VERSION}.orig.tar.gz -C .. sitemarker-${VERSION}
+
+          cd ../sitemarker-${VERSION}
+          dpkg-buildpackage -S -k"$GPG_KEY_ID"
+
+      - name: Upload to Launchpad PPA
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+          sudo apt-get update && sudo apt-get install -y dput
+
+          # dput pushes the signed .changes file and its associated tarballs to Launchpad
+          dput ppa:aerodev/sitemarker ../sitemarker_${VERSION}-1_source.changes
+
+      - name: Upload and Build SRPM in Fedora Copr
+        env:
+          COPR_LOGIN: ${{ secrets.COPR_LOGIN }}
+          COPR_USERNAME: ${{ secrets.COPR_USERNAME }}
+          COPR_TOKEN: ${{ secrets.COPR_TOKEN }}
+        run: |
+          # Install copr-cli on the runner
+          pipx install copr-cli
+
+          # Create the Copr config directory and write the API credentials
+          mkdir -p ~/.config
+          cat <<EOF > ~/.config/copr
+          [copr-cli]
+          login = $COPR_LOGIN
+          username = $COPR_USERNAME
+          token = $COPR_TOKEN
+          copr_url = https://copr.fedorainfracloud.org
+          EOF
+
+          # Upload the SRPM and trigger the build process
+          # This command automatically adds the resulting binary to your repo
+          copr-cli build aerocyber/sitemarker ./build/linux/x64/release/*.src.rpm
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v3
+        with:
+          files: |
+            sitemarker/sitemarker.tar.xz
+            sitemarker/build/linux/x64/release/*.rpm
+            sitemarker/build/linux/x64/release/*.deb
+
+  build-linux-appimage:
+    name: Build AppImage (Older glibc)
+
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu:20.04
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Install system build dependencies
+        run: |
+          apt-get update
+          apt-get install -y curl git wget unzip xz-utils zip libglu1-mesa \
+            clang cmake ninja-build pkg-config libgtk-3-dev file patchelf
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Get project dependencies
+        working-directory: sitemarker
+        run: flutter pub get
+
+      - name: Run build_runner
+        working-directory: sitemarker
+        run: dart run build_runner build
+
+      - name: Run Build steps for Linux
+        working-directory: sitemarker
+        run: |
+          flutter build linux --release
+          patchelf --remove-rpath build/linux/*/release/bundle/sitemarker/lib/libdartjni.so
+
+      - name: Build AppImage
+        env:
+          # Bypasses the FUSE requirement in CI/Docker environments
+          APPIMAGE_EXTRACT_AND_RUN: 1
+        run: |
+          wget -q "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-x86_64.AppImage"
+          chmod +x appimagetool-x86_64.AppImage
+
+          mkdir -p AppDir/usr/bin AppDir/usr/lib AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/256x256/apps
+
+          cp -r sitemarker/build/linux/x64/release/bundle/* AppDir/usr/bin/
+
+          # (Adjust the source paths if your Flatpak files are located elsewhere or use a reverse-DNS name)
+          cp packaging/linux/flatpak/flatpak/io.github.aerocyber.sitemarker.desktop AppDir/io.github.aerocyber.sitemarker.desktop
+          cp packaging/linux/flatpak/flatpak/icons/hicolor/scalable/apps/io.github.aerocyber.sitemarker.svg AppDir/io.github.aerocyber.sitemarker.svg 
+
+          echo -e "#!/bin/sh\nHERE=\"\$(dirname \"\$(readlink -f \"\${0}\")\")\"\nexport LD_LIBRARY_PATH=\"\${HERE}/usr/bin/lib:\${LD_LIBRARY_PATH}\"\nexec \"\${HERE}/usr/bin/sitemarker\" \"\$@\"" > AppDir/AppRun
+          chmod +x AppDir/AppRun
+
+          # 6. Build the AppImage
+          ./appimagetool-x86_64.AppImage \
+            -u "gh-releases-zsync|aerocyber|sitemarker|latest|sitemarker-amd64.AppImage.zsync" \
+            AppDir sitemarker-amd64.AppImage
+
+      - name: Upload AppImage to release
+        uses: softprops/action-gh-release@v3
+        with:
+          name: appimage-binary
+          path: |
+            sitemarker-amd64.AppImage
+            sitemarker-amd64.AppImage.zsync
