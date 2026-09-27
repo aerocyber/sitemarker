@@ -10,8 +10,12 @@ class RecordsProvider extends ChangeNotifier {
 
   RecordsProvider(this._repo);
 
-  List<SmRecord> _currentRecords = [];
-  List<SmRecord> get currentRecords => _currentRecords;
+  // List<SmRecord> _currentRecords = [];
+  // List<SmRecord> get currentRecords => _currentRecords;
+
+  final Map<int, List<SmRecord>> _recordsCache = {};
+  List<SmRecord> getRecordsForFolder(int folderId) =>
+      _recordsCache[folderId] ?? [];
 
   List<SmRecord> _trashRecords = [];
   List<SmRecord> get trashRecords => _trashRecords;
@@ -19,18 +23,22 @@ class RecordsProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  Future<void> loadActiveRecords() async {
-    _isLoading = true;
-    notifyListeners();
-    _currentRecords = await _repo.getActiveRecords();
-    _isLoading = false;
-    notifyListeners();
-  }
+  // Future<void> loadActiveRecords() async {
+  //   _isLoading = true;
+  //   notifyListeners();
+  //   _currentRecords = await _repo.getActiveRecords();
+  //   _isLoading = false;
+  //   notifyListeners();
+  // }
 
   Future<void> loadRecordsByFolder(int folderId) async {
-    _isLoading = true;
-    notifyListeners();
-    _currentRecords = await _repo.getRecordsByFolder(folderId);
+    if (!_recordsCache.containsKey(folderId)) {
+      _isLoading = true;
+      notifyListeners();
+    }
+
+    _recordsCache[folderId] = await _repo.getRecordsByFolder(folderId);
+
     _isLoading = false;
     notifyListeners();
   }

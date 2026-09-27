@@ -11,7 +11,7 @@ class DataIntegrityHelpers {
     // If parentId is 1 (root), check rootFolders. Otherwise, check currentSubDirs.
     final targetList = parentId == 1
         ? provider.rootFolders
-        : provider.currentSubDirs;
+        : provider.getSubDirs(parentId);
 
     return targetList.any(
       (f) => f.name.toLowerCase() == folderName.toLowerCase() && !f.isDeleted,
@@ -25,7 +25,7 @@ class DataIntegrityHelpers {
     int folderId,
     RecordsProvider provider,
   ) {
-    return provider.currentRecords.any(
+    return provider.getRecordsForFolder(folderId).any(
       (r) => r.name.toLowerCase() == recordName.toLowerCase() && !r.isDeleted,
     );
   }
@@ -37,7 +37,7 @@ class DataIntegrityHelpers {
     int folderId,
     RecordsProvider provider,
   ) {
-    return provider.currentRecords.any(
+    return provider.getRecordsForFolder(folderId).any(
       (r) => r.url.toLowerCase() == url.toLowerCase() && !r.isDeleted,
     );
   }

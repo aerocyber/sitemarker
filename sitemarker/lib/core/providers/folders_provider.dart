@@ -9,8 +9,11 @@ class FoldersProvider extends ChangeNotifier {
   List<SmFolder> _rootFolders = [];
   List<SmFolder> get rootFolders => _rootFolders;
 
-  List<SmFolder> _currentSubDirs = [];
-  List<SmFolder> get currentSubDirs => _currentSubDirs;
+  // List<SmFolder> _currentSubDirs = [];
+  // List<SmFolder> get currentSubDirs => _currentSubDirs;
+
+  final Map<int, List<SmFolder>> _subDirsCache = {};
+  List<SmFolder> getSubDirs(int parentId) => _subDirsCache[parentId] ?? [];
 
   List<SmFolder> _trashFolders = [];
   List<SmFolder> get trashFolders => _trashFolders;
@@ -33,10 +36,14 @@ class FoldersProvider extends ChangeNotifier {
 
   /// Load sub folders
   Future<void> loadSubFolders(int parentId) async {
-    toggleLoading();
-    notifyListeners();
-    _currentSubDirs = await _repo.getSubfolders(parentId);
-    toggleLoading();
+    if (!_subDirsCache.containsKey(parentId)) {
+      _isLoading = true;
+      notifyListeners();
+    }
+
+    _subDirsCache[parentId] = await _repo.getSubfolders(parentId);
+
+    _isLoading = false;
     notifyListeners();
   }
 

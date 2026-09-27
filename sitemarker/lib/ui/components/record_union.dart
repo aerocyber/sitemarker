@@ -69,9 +69,18 @@ class _RecordUnionState extends State<RecordUnion> with RouteAware {
     // Pull from the correct getter based on your provider logic
     final List<SmFolder> subfolders = widget.folderId == 1
         ? foldersProvider.rootFolders
-        : foldersProvider.currentSubDirs;
+        : foldersProvider.getSubDirs(widget.folderId);
 
-    final List<SmRecord> records = recordsProvider.currentRecords;
+    final List<SmRecord> records = recordsProvider.getRecordsForFolder(
+      widget.folderId,
+    );
+
+    final bool isFetching =
+        foldersProvider.isLoading || recordsProvider.isLoading;
+
+    if (isFetching && subfolders.isEmpty && records.isEmpty) {
+      return Center(child: const CircularProgressIndicator());
+    }
 
     // Handle empty state gracefully
     if (subfolders.isEmpty && records.isEmpty) {
