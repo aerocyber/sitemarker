@@ -30,20 +30,20 @@ class _FolderContainerState extends State<FolderContainer> {
           borderRadius: BorderRadius.circular(16.0),
         ),
         // 2. Move the onTap logic here
-        onTap: () async {
-          await context.push("/folder/${widget.folder.id}");
-          if (context.mounted) {
-            if (widget.folder.parentId == null || widget.folder.parentId == 1) {
-              context.read<FoldersProvider>().loadRootFolders();
-            } else {
-              context.read<FoldersProvider>().loadSubFolders(
-                widget.folder.parentId!,
-              );
-            }
-            context.read<RecordsProvider>().loadRecordsByFolder(
-              widget.folder.parentId ?? 1,
-            );
-          }
+        onTap: () {
+          context.push("/folder/${widget.folder.id}");
+          // if (context.mounted) {
+          //   if (widget.folder.parentId == null || widget.folder.parentId == 1) {
+          //     context.read<FoldersProvider>().loadRootFolders();
+          //   } else {
+          //     context.read<FoldersProvider>().loadSubFolders(
+          //       widget.folder.parentId!,
+          //     );
+          //   }
+          //   context.read<RecordsProvider>().loadRecordsByFolder(
+          //     widget.folder.parentId ?? 1,
+          //   );
+          // }
         },
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16.0,

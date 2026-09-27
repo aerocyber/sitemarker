@@ -4,6 +4,7 @@ import 'package:sitemarker/core/data_types/sm_folder.dart';
 import 'package:sitemarker/core/data_types/sm_record.dart';
 import 'package:sitemarker/core/providers/folders_provider.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
+import 'package:sitemarker/router.dart';
 import 'package:sitemarker/ui/components/collapsable_section.dart';
 import 'package:sitemarker/ui/folders/folder_container.dart';
 import 'package:sitemarker/ui/records/record_container.dart';
@@ -16,26 +17,43 @@ class RecordUnion extends StatefulWidget {
   State<RecordUnion> createState() => _RecordUnionState();
 }
 
-class _RecordUnionState extends State<RecordUnion> {
+class _RecordUnionState extends State<RecordUnion> with RouteAware {
   @override
   void initState() {
     super.initState();
 
-    // Fetch data as soon as the screen is rendered
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final foldersProvider = context.read<FoldersProvider>();
-      final recordsProvider = context.read<RecordsProvider>();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _fetchData());
+  }
 
-      // Fetch folders based on whether we are at root or inside a subfolder
-      if (widget.folderId == 1) {
-        foldersProvider.loadRootFolders();
-      } else {
-        foldersProvider.loadSubFolders(widget.folderId);
-      }
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-      // Fetch records for this specific folder
-      recordsProvider.loadRecordsByFolder(widget.folderId);
-    });
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+    _fetchData();
+  }
+
+  void _fetchData() {
+    final foldersProvider = context.read<FoldersProvider>();
+    final recordsProvider = context.read<RecordsProvider>();
+
+    if (widget.folderId == 1) {
+      foldersProvider.loadRootFolders();
+    } else {
+      foldersProvider.loadSubFolders(widget.folderId);
+    }
+    recordsProvider.loadRecordsByFolder(widget.folderId);
   }
 
   @override

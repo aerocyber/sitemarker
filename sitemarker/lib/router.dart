@@ -7,7 +7,11 @@ import 'package:sitemarker/ui/screens/search_screen.dart';
 import 'package:sitemarker/ui/screens/settings_screen.dart';
 import 'package:sitemarker/ui/screens/records_screen.dart';
 
+final RouteObserver<ModalRoute<void>> routeObserver =
+    RouteObserver<ModalRoute<void>>();
+
 final appRouter = GoRouter(
+  observers: [routeObserver],
   initialLocation: '/',
   routes: [
     StatefulShellRoute.indexedStack(
