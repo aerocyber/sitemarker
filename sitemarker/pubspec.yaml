@@ -34,6 +34,7 @@ dependencies:
   validators: ^3.0.0
   drift: ^2.35.0
   drift_flutter: ^0.3.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

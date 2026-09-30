@@ -27,9 +27,13 @@ class FoldersProvider extends ChangeNotifier {
 
   /// Load all root folders
   Future<void> loadRootFolders() async {
-    toggleLoading();
-    notifyListeners();
+    if (_rootFolders.isEmpty) {
+      _isLoading = true;
+      notifyListeners();
+    }
+
     _rootFolders = await _repo.getRootFolders();
+
     _isLoading = false;
     notifyListeners();
   }
@@ -80,7 +84,11 @@ class FoldersProvider extends ChangeNotifier {
   /// Soft delete
   Future<void> sendToTrash(SmFolder folder) async {
     await _repo.sendFolderToTrash(folder);
-    // Refresh to reflect the recursive removal
+
+    // Evict ONLY the deleted folder's cache so it doesn't take up memory
+    _subDirsCache.remove(folder.id);
+
+    // This naturally replaces the current entry for the parent, preserving nav history
     if (folder.parentId == null || folder.parentId == 1) {
       await loadRootFolders();
     } else {
@@ -91,7 +99,28 @@ class FoldersProvider extends ChangeNotifier {
   /// Undo soft delete
   Future<void> restoreFromTrash(SmFolder folder) async {
     await _repo.restoreFolderFromTrash(folder);
+
+    if (folder.parentId == null || folder.parentId == 1) {
+      await loadRootFolders();
+    } else {
+      // Force a targeted refresh of the parent to show the restored folder
+      await loadSubFolders(folder.parentId!);
+    }
+
     await loadTrash();
-    await loadRootFolders();
+  }
+
+  /// Perma Delete
+  Future<void> permaDelete(SmFolder folder) async {
+    await _repo.permaDeleteFolder(folder);
+
+    // Evict ONLY the deleted folder's cache
+    _subDirsCache.remove(folder.id);
+
+    if (folder.parentId == null || folder.parentId == 1) {
+      await loadRootFolders();
+    } else {
+      await loadSubFolders(folder.parentId!);
+    }
   }
 }

@@ -5,7 +5,7 @@ import 'package:drift/drift.dart';
 class FolderRecords extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get parentId =>
-      integer().nullable().references(FolderRecords, #id)();
+      integer().nullable().references(FolderRecords, #id, onDelete: KeyAction.cascade)();
   TextColumn get name => text()();
   BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
 

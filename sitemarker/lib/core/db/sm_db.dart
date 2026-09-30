@@ -150,9 +150,8 @@ class SitemarkerDB extends _$SitemarkerDB {
               ),
             ),
           );
-
-          await customStatement('PRAGMA foreign_keys = ON');
         }
+        await customStatement('PRAGMA foreign_keys = ON');
       },
     );
   }

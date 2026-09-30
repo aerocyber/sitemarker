@@ -65,11 +65,13 @@ class RecordsProvider extends ChangeNotifier {
   Future<void> sendToTrash(SmRecord record) async {
     await _repo.sendRecordToTrash(record);
     await loadRecordsByFolder(record.folderId);
+    await loadTrash();
   }
 
   Future<void> restoreFromTrash(SmRecord record) async {
     await _repo.restoreRecordFromTrash(record);
-    await loadTrash(); // Refresh the recycle bin view
+    await loadRecordsByFolder(record.folderId);
+    await loadTrash();
   }
 
   Future<void> permaDelete(SmRecord record) async {
@@ -94,5 +96,11 @@ class RecordsProvider extends ChangeNotifier {
       tags: tags,
       folderId: folderId,
     );
+  }
+
+  // Add this targeted eviction method
+  void removeFolderFromCache(int folderId) {
+    _recordsCache.remove(folderId);
+    notifyListeners();
   }
 }

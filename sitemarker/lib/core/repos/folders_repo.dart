@@ -116,26 +116,8 @@ class FoldersRepository {
     );
 
     try {
-      // Soft delete this folder
-      if (!folder.isDeleted) {
-        await _folderDao.toggleSoftDeleteFolderById(folder);
-      }
-
-      // Soft delete all bookmarks directly inside this folder
-      final recordsInFolder = await _recordsDao.getRecordByFolderId(folder.id!);
-      for (final record in recordsInFolder) {
-        if (!record.isDeleted) {
-          await _recordsDao.toggleSoftDeleteStatus(record);
-        }
-      }
-
-      // Find subfolders and recursively soft delete them
-      final allFolders = await _folderDao.getNonDeletedFolders();
-      final subfolders = allFolders.where((f) => f.parentId == folder.id);
-
-      for (final subfolder in subfolders) {
-        await sendFolderToTrash(subfolder);
-      }
+      // Unconditionally trigger the recursive SQL deletion
+      await _folderDao.setFolderDeletedStatus(folder, true);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
@@ -152,7 +134,6 @@ class FoldersRepository {
     LogManager.instance.log(LogLevel.info, 'Restoring folder ID: ${folder.id}');
 
     try {
-      // Check if parent folder exists and is active
       int? targetParentId = folder.parentId;
       if (targetParentId != null && targetParentId != 1) {
         final parentFolder = await _folderDao.getFolderById(targetParentId);
@@ -162,43 +143,44 @@ class FoldersRepository {
         }
       }
 
-      // Restore folder state (and update parent ID if fallback occurred)
-      if (folder.isDeleted || targetParentId != folder.parentId) {
+      if (targetParentId != folder.parentId) {
         final updatedFolder = SmFolder(
           id: folder.id,
           name: folder.name,
           parentId: targetParentId,
-          isDeleted: false,
+          isDeleted: true,
           dateAdded: folder.dateAdded,
           dateModified: DateTime.now(),
           lastSynced: folder.lastSynced,
         );
         await _folderDao.updateFolderById(updatedFolder, updatedFolder.name);
-        if (folder.isDeleted) {
-          await _folderDao.toggleSoftDeleteFolderById(folder);
-        }
       }
 
-      // Restore all bookmarks directly inside this folder
-      final recordsInFolder = await _recordsDao.getRecordByFolderId(folder.id!);
-      for (final record in recordsInFolder) {
-        if (record.isDeleted) {
-          await _recordsDao.toggleSoftDeleteStatus(record);
-        }
-      }
-
-      // Find deleted subfolders and recursively restore them
-      final deletedFolders = await _folderDao.getDeletedFolders();
-      final subfolders = deletedFolders.where((f) => f.parentId == folder.id);
-
-      for (final subfolder in subfolders) {
-        await restoreFolderFromTrash(subfolder);
-      }
+      await _folderDao.setFolderDeletedStatus(folder, false);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
         'Failed recursive restore on folder ${folder.id}: $e\n$stack',
       );
+      rethrow;
+    }
+  }
+
+  /// Permanently wipe a folder from DB
+  Future<void> permaDeleteFolder(SmFolder folder) async {
+    // TODO: Logging stuff
+    // LogManager.instance.log(
+    //   LogLevel.info,
+    //   'Permanently deleting folder ID: ${folder.id}',
+    // );
+    try {
+      // Calls the new recursive method you added to FolderDao
+      await _folderDao.setFolderDeletedStatus(folder, true);
+    } catch (e, stack) {
+      // LogManager.instance.log(
+      //   LogLevel.error,
+      //   'Failed perma-deleting folder ${folder.id}: $e\n$stack',
+      // );
       rethrow;
     }
   }

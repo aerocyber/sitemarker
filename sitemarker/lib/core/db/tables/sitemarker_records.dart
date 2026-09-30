@@ -23,7 +23,7 @@ class SitemarkerRecords extends Table {
   // DB v4: Added the folderId column
   // 1 is root
   IntColumn get folderId =>
-      integer().references(FolderRecords, #id).withDefault(const Constant(1))();
+      integer().references(FolderRecords, #id, onDelete: KeyAction.cascade).withDefault(const Constant(1))();
 
   @override
   List<String> get customConstraints => [

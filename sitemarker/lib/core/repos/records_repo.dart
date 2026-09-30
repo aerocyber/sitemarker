@@ -30,7 +30,7 @@ class RecordsRepository {
       'Fetching records for folder: $folderId',
     );
     try {
-      return await _recordsDao.getRecordByFolderId(folderId);
+      return await _recordsDao.getAllNonDeletedRecordsInFolder(folderId);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,

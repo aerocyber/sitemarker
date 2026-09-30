@@ -78,6 +78,52 @@ class FolderDao extends DatabaseAccessor<SitemarkerDB> with _$FolderDaoMixin {
     return (await delete(folderRecords).delete(folder.toFolderRecord()));
   }
 
+  /// Recursively soft-deletes or restores a folder, all its nested subfolders,
+  /// and all contained bookmarks.
+  /// Throws `IdCannotBeNullException` if folderInfo.id is null
+  Future<void> setFolderDeletedStatus(
+    SmFolder folderInfo,
+    bool isDeleted,
+  ) async {
+    if (folderInfo.id == null) throw IdCannotBeNullException();
+
+    final folderId = folderInfo.id!;
+
+    await db.transaction(() async {
+      await customUpdate(
+        '''
+        WITH RECURSIVE subfolders(id) AS (
+          SELECT id FROM folder_records WHERE id = ?
+          UNION ALL
+          SELECT f.id FROM folder_records f
+          INNER JOIN subfolders s ON f.parent_id = s.id
+        )
+        UPDATE folder_records
+        SET is_deleted = ?
+        WHERE id IN (SELECT id FROM subfolders);
+        ''',
+        variables: [Variable.withInt(folderId), Variable.withBool(isDeleted)],
+        updates: {folderRecords},
+      );
+
+      await customUpdate(
+        '''
+        WITH RECURSIVE subfolders(id) AS (
+          SELECT id FROM folder_records WHERE id = ?
+          UNION ALL
+          SELECT f.id FROM folder_records f
+          INNER JOIN subfolders s ON f.parent_id = s.id
+        )
+        UPDATE sitemarker_records
+        SET is_deleted = ?
+        WHERE folder_id IN (SELECT id FROM subfolders);
+        ''',
+        variables: [Variable.withInt(folderId), Variable.withBool(isDeleted)],
+        updates: {db.sitemarkerRecords},
+      );
+    });
+  }
+
   /// Soft delete a folder by Id
   /// Throws `FolderDoesNotExistException` if not found
   /// Throws `IdCannotBeNullException` if folderInfo.id is null
@@ -91,9 +137,9 @@ class FolderDao extends DatabaseAccessor<SitemarkerDB> with _$FolderDaoMixin {
       throw FolderDoesNotExistException(parentId: folderInfo.id!);
     }
 
-    return (await update(
-      folderRecords,
-    ).replace(folder.toFolderRecord().copyWith(isDeleted: !folder.isDeleted)));
+    final newStatus = !folder.isDeleted;
+    await setFolderDeletedStatus(folder, newStatus);
+    return true;
   }
 
   /// Update name of the folder by Id

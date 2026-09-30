@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:sitemarker/core/data_types/sm_folder.dart';
 import 'package:sitemarker/core/providers/folders_provider.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
+import 'package:sitemarker/helpers/helpers_data_integrity.dart';
 
 class FolderContainer extends StatefulWidget {
   final SmFolder folder;
@@ -124,21 +125,8 @@ class _FolderContainerState extends State<FolderContainer> {
                 clipBehavior: Clip.antiAlias,
                 child: Column(
                   children: [
-                    ListTile(
-                      leading: const Icon(Icons.edit_outlined),
-                      title: const Text('Edit'),
-                      onTap: () {
-                        Navigator.pop(bottomSheetContext);
-                        // TODO: Edit folder
-                      },
-                    ),
-                    Divider(
-                      height: 1,
-                      color: Theme.of(
-                        bottomSheetContext,
-                      ).colorScheme.outlineVariant.withValues(alpha: 0.5),
-                    ),
                     if (widget.folder.isDeleted) ...[
+                      // DELETED STATE ACTIONS
                       ListTile(
                         leading: Icon(
                           Icons.restore,
@@ -157,7 +145,9 @@ class _FolderContainerState extends State<FolderContainer> {
                         ),
                         onTap: () {
                           Navigator.pop(bottomSheetContext);
-                          // TODO: Restore folder
+                          context.read<FoldersProvider>().restoreFromTrash(
+                            widget.folder,
+                          );
                         },
                       ),
                       Divider(
@@ -191,10 +181,64 @@ class _FolderContainerState extends State<FolderContainer> {
                         ),
                         onTap: () {
                           Navigator.pop(bottomSheetContext);
-                          // TODO: Perma delete the folder
+                          // Show confirmation dialog before permanent deletion
+                          showDialog(
+                            context: context,
+                            builder: (dialogContext) => AlertDialog(
+                              title: const Text('Delete permanently?'),
+                              content: const Text(
+                                'This action cannot be undone and will destroy all contents.',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(dialogContext),
+                                  child: const Text('Cancel'),
+                                ),
+                                FilledButton(
+                                  style: FilledButton.styleFrom(
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.error,
+                                    foregroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.onError,
+                                  ),
+                                  onPressed: () {
+                                    Navigator.pop(dialogContext);
+                                    context.read<FoldersProvider>().permaDelete(
+                                      widget.folder,
+                                    );
+                                    if (context.mounted) {
+                                      context
+                                          .read<RecordsProvider>()
+                                          .removeFolderFromCache(
+                                            widget.folder.id!,
+                                          );
+                                    }
+                                  },
+                                  child: const Text('Delete'),
+                                ),
+                              ],
+                            ),
+                          );
                         },
                       ),
-                    ] else
+                    ] else ...[
+                      // ACTIVE STATE ACTIONS
+                      ListTile(
+                        leading: const Icon(Icons.edit_outlined),
+                        title: const Text('Edit'),
+                        onTap: () {
+                          Navigator.pop(bottomSheetContext);
+                          _showEditDialog(context);
+                        },
+                      ),
+                      Divider(
+                        height: 1,
+                        color: Theme.of(
+                          bottomSheetContext,
+                        ).colorScheme.outlineVariant.withValues(alpha: 0.5),
+                      ),
                       ListTile(
                         leading: Icon(
                           Icons.delete_outline,
@@ -216,11 +260,42 @@ class _FolderContainerState extends State<FolderContainer> {
                             color: Theme.of(context).colorScheme.error,
                           ),
                         ),
-                        onTap: () {
+                        onTap: () async {
                           Navigator.pop(bottomSheetContext);
-                          // TODO: Soft delete the folder
+
+                          final foldersProvider = context
+                              .read<FoldersProvider>();
+                          final recordsProvider = context
+                              .read<RecordsProvider>();
+                          final targetFolder = widget.folder;
+
+                          await foldersProvider.sendToTrash(targetFolder);
+
+                          recordsProvider.removeFolderFromCache(
+                            targetFolder.id!,
+                          );
+
+                          // M3 Floating SnackBar with Undo Action
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: const Text('Folder moved to trash'),
+                                behavior: SnackBarBehavior.floating,
+                                action: SnackBarAction(
+                                  label: 'Undo',
+                                  onPressed: () {
+                                    // 4. Use the cached provider reference here, NOT context.read()
+                                    foldersProvider.restoreFromTrash(
+                                      targetFolder,
+                                    );
+                                  },
+                                ),
+                              ),
+                            );
+                          }
                         },
                       ),
+                    ],
                   ],
                 ),
               ),
@@ -301,5 +376,75 @@ class _FolderContainerState extends State<FolderContainer> {
   String formatDate(DateTime? date) {
     if (date == null) return 'Never';
     return DateFormat('MMM d, yyyy • h:mm a').format(date);
+  }
+
+  void _showEditDialog(BuildContext context) {
+    final TextEditingController nameController = TextEditingController(
+      text: widget.folder.name,
+    );
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Edit Folder'),
+        content: Form(
+          key: formKey,
+          child: TextFormField(
+            controller: nameController,
+            autofocus: true,
+            decoration: const InputDecoration(
+              labelText: 'Folder Name',
+              border: OutlineInputBorder(),
+            ),
+            validator: (value) {
+              final newName = value?.trim();
+              if (newName == null || newName.isEmpty) {
+                return 'Name cannot be empty';
+              }
+
+              // Only check for duplicates if the name actually changed
+              if (newName.toLowerCase() != widget.folder.name.toLowerCase()) {
+                final isDuplicate = DataIntegrityHelpers.isFolderNameDuplicate(
+                  newName,
+                  widget.folder.parentId ?? 1,
+                  context.read<FoldersProvider>(),
+                );
+                if (isDuplicate)
+                  return 'A folder with this name already exists';
+              }
+
+              return null;
+            },
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () async {
+              if (formKey.currentState!.validate()) {
+                final newName = nameController.text.trim();
+
+                // Only trigger a DB update if the name actually changed
+                if (newName != widget.folder.name) {
+                  await context.read<FoldersProvider>().renameFolder(
+                    widget.folder,
+                    newName,
+                  );
+                }
+
+                if (dialogContext.mounted) {
+                  Navigator.pop(dialogContext);
+                }
+              }
+            },
+            child: const Text('Save'),
+          ),
+        ],
+      ),
+    );
   }
 }

@@ -90,6 +90,33 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
     return finalRecords;
   }
 
+  /// Get all non deleted records in a folder
+  Future<List<SmRecord>> getAllNonDeletedRecordsInFolder(int folderId) async {
+    TagMappingDao tagMappingDao = TagMappingDao(db);
+    TagsDao tagsDao = TagsDao(db);
+
+    List<SitemarkerRecord> records = await (select(
+      sitemarkerRecords,
+    )..where((rec) => rec.isDeleted.equals(false) & rec.folderId.equals(folderId))).get();
+    List<SmRecord> finalRecords = [];
+
+    for (SitemarkerRecord record in records) {
+      List<TagMapping> tagMapping = await tagMappingDao
+          .getTagMappingByBookmarkId(record.id);
+
+      List<String> tags = [];
+
+      for (TagMapping mapping in tagMapping) {
+        var tag = await tagsDao.getTagById(mapping.tagId);
+        if (tag != null) tags.add(tag.name);
+      }
+
+      finalRecords.add(SmRecord.fromSitemarkerRecord(record, tags));
+    }
+
+    return finalRecords;
+  }
+
   /// Get record by id
   Future<List<SmRecord>> getRecordById(int recordId) async {
     TagMappingDao tagMappingDao = TagMappingDao(db);
