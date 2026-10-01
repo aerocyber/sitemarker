@@ -63,14 +63,35 @@ class RecordsProvider extends ChangeNotifier {
   }
 
   Future<void> sendToTrash(SmRecord record) async {
+    if (_recordsCache.containsKey(record.folderId)) {
+      _recordsCache[record.folderId] = _recordsCache[record.folderId]!
+          .where((r) => r.id != record.id)
+          .toList();
+      notifyListeners();
+    }
+
     await _repo.sendRecordToTrash(record);
-    await loadRecordsByFolder(record.folderId);
+    _recordsCache[record.folderId] = await _repo.getRecordsByFolder(
+      record.folderId,
+    );
+    notifyListeners();
     await loadTrash();
   }
 
   Future<void> restoreFromTrash(SmRecord record) async {
+    if (_recordsCache.containsKey(record.folderId)) {
+      _recordsCache[record.folderId] = [
+        ..._recordsCache[record.folderId]!,
+        record,
+      ];
+      notifyListeners();
+    }
+
     await _repo.restoreRecordFromTrash(record);
-    await loadRecordsByFolder(record.folderId);
+    _recordsCache[record.folderId] = await _repo.getRecordsByFolder(
+      record.folderId,
+    );
+    notifyListeners();
     await loadTrash();
   }
 

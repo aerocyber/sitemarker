@@ -249,7 +249,7 @@ class _RecordContainerState extends State<RecordContainer> {
                           final targetRecord = widget.record;
 
                           // 2. Now it is safe to pop the bottom sheet
-                          Navigator.pop(context);
+                          Navigator.pop(bottomSheetContext);
 
                           // 3. The delete command will now successfully execute
                           await recordsProvider.sendToTrash(targetRecord);

@@ -62,9 +62,9 @@ class _RecordUnionState extends State<RecordUnion> with RouteAware {
     final recordsProvider = context.watch<RecordsProvider>();
 
     // Show a loading spinner if either provider is fetching data
-    if (foldersProvider.isLoading || recordsProvider.isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
+    // if (foldersProvider.isLoading || recordsProvider.isLoading) {
+    //   return const Center(child: CircularProgressIndicator());
+    // }
 
     // Pull from the correct getter based on your provider logic
     final List<SmFolder> subfolders = widget.folderId == 1
@@ -102,7 +102,10 @@ class _RecordUnionState extends State<RecordUnion> with RouteAware {
             title: 'Folders',
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) => FolderContainer(folder: subfolders[index]),
+                (context, index) => FolderContainer(
+                  key: ValueKey('folder_${subfolders[index].id}'),
+                  folder: subfolders[index],
+                ),
                 childCount: subfolders.length,
               ),
             ),
@@ -116,7 +119,10 @@ class _RecordUnionState extends State<RecordUnion> with RouteAware {
             title: 'Bookmarks',
             sliver: SliverList(
               delegate: SliverChildBuilderDelegate(
-                (context, index) => RecordContainer(record: records[index]),
+                (context, index) => RecordContainer(
+                  key: ValueKey('record_${records[index].id}'),
+                  record: records[index],
+                ),
                 childCount: records.length,
               ),
             ),

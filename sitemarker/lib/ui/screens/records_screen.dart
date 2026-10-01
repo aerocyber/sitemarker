@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
-import 'package:provider/provider.dart';
-import 'package:sitemarker/core/providers/folders_provider.dart';
-import 'package:sitemarker/core/providers/records_provider.dart';
+// import 'package:provider/provider.dart';
+// import 'package:sitemarker/core/providers/folders_provider.dart';
+// import 'package:sitemarker/core/providers/records_provider.dart';
 import 'package:sitemarker/ui/components/record_union.dart';
 
 class RecordsScreen extends StatefulWidget {
@@ -13,15 +13,15 @@ class RecordsScreen extends StatefulWidget {
 }
 
 class _RecordsScreenState extends State<RecordsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Fetch the data for this specific directory
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<RecordsProvider>().loadRecordsByFolder(widget.folderId);
-      context.read<FoldersProvider>().loadSubFolders(widget.folderId);
-    });
-  }
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   // Fetch the data for this specific directory
+  //   WidgetsBinding.instance.addPostFrameCallback((_) {
+  //     context.read<RecordsProvider>().loadRecordsByFolder(widget.folderId);
+  //     context.read<FoldersProvider>().loadSubFolders(widget.folderId);
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

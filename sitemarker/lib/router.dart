@@ -16,7 +16,7 @@ final appRouter = GoRouter(
   routes: [
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
-        return HomeUI(navigationShell: navigationShell);
+        return HomeScreen(navigationShell: navigationShell);
       },
 
       branches: [

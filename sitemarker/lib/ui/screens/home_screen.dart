@@ -6,16 +6,16 @@ import 'package:sitemarker/core/providers/records_provider.dart';
 import 'package:sitemarker/ui/components/add_options_sheet.dart';
 import 'package:sitemarker/ui/components/search_bottom_sheet.dart';
 
-class HomeUI extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   final StatefulNavigationShell navigationShell;
 
-  const HomeUI({super.key, required this.navigationShell});
+  const HomeScreen({super.key, required this.navigationShell});
 
   @override
-  State<HomeUI> createState() => _HomeUIState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeUIState extends State<HomeUI> {
+class _HomeScreenState extends State<HomeScreen> {
   int currentFolderId = 1;
 
   @override
@@ -46,11 +46,11 @@ class _HomeUIState extends State<HomeUI> {
     if (activeFolderId != currentFolderId) {
       currentFolderId = activeFolderId;
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          context.read<RecordsProvider>().loadRecordsByFolder(activeFolderId);
-        }
-      });
+      // WidgetsBinding.instance.addPostFrameCallback((_) {
+      //   if (mounted) {
+      //     context.read<RecordsProvider>().loadRecordsByFolder(activeFolderId);
+      //   }
+      // });
     }
 
     return SafeArea(
@@ -64,7 +64,7 @@ class _HomeUIState extends State<HomeUI> {
               leadingWidth: 75,
 
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadiusGeometry.circular(30),
+                borderRadius: BorderRadius.circular(30),
               ),
               // elevation: 5,
               backgroundColor: Theme.of(
@@ -82,11 +82,13 @@ class _HomeUIState extends State<HomeUI> {
                 duration: const Duration(milliseconds: 250),
                 child: canGoBack
                     ? IconButton(
+                        key: const ValueKey('nav_back'),
                         icon: const Icon(Icons.arrow_back),
                         onPressed: () =>
                             context.pop(), // Pop the nested folder route
                       )
                     : IconButton(
+                        key: const ValueKey('nav_profile'),
                         icon: const Icon(Icons.account_circle_outlined),
                         onPressed: () => context.push('/profile'),
                       ),
