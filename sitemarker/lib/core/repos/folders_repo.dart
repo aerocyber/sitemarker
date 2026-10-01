@@ -1,13 +1,13 @@
 import 'package:sitemarker/core/data_types/sm_folder.dart';
 import 'package:sitemarker/core/db/daos/folder_dao.dart';
-import 'package:sitemarker/core/db/daos/records_dao.dart';
+// import 'package:sitemarker/core/db/daos/records_dao.dart';
 import 'package:sitemarker/core/logging/logger.dart';
 
 class FoldersRepository {
   final FolderDao _folderDao;
-  final RecordsDao _recordsDao;
+  // final RecordsDao _recordsDao;
 
-  FoldersRepository(this._folderDao, this._recordsDao);
+  FoldersRepository(this._folderDao);
 
   /// Fetch all active folders
   Future<List<SmFolder>> getAllFolders() async {

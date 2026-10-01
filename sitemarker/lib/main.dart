@@ -23,7 +23,7 @@ void main() async {
   final tagsDao = database.tagsDao;
   final tagMappingDao = database.tagMappingDao;
 
-  final foldersRepo = FoldersRepository(folderDao, recordsDao);
+  final foldersRepo = FoldersRepository(folderDao);
   final recordsRepo = RecordsRepository(recordsDao, folderDao);
   final tagsRepo = TagsRepository(tagsDao, tagMappingDao);
 
@@ -69,9 +69,7 @@ class SitemarkerApp extends StatelessWidget {
         brightness: Brightness.light,
         useMaterial3: true,
 
-        dialogTheme: DialogThemeData(
-          backgroundColor: lightScheme.surface,
-        ),
+        dialogTheme: DialogThemeData(backgroundColor: lightScheme.surface),
 
         bottomSheetTheme: BottomSheetThemeData(
           backgroundColor: lightScheme.surface,
@@ -84,9 +82,7 @@ class SitemarkerApp extends StatelessWidget {
         brightness: Brightness.dark, // This is the crucial missing piece
         useMaterial3: true,
 
-        dialogTheme: DialogThemeData(
-          backgroundColor: darkScheme.surface,
-        ),
+        dialogTheme: DialogThemeData(backgroundColor: darkScheme.surface),
 
         bottomSheetTheme: BottomSheetThemeData(
           backgroundColor: darkScheme.surface,
