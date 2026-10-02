@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/data_types/sm_record.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
+import 'package:sitemarker/ui/components/edit_record_sheet.dart';
 import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -91,7 +92,7 @@ class _RecordContainerState extends State<RecordContainer> {
                   ),
                 ),
                 const SizedBox(height: 16.0),
-            
+
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
                   child: Text(
@@ -105,7 +106,7 @@ class _RecordContainerState extends State<RecordContainer> {
                   ),
                 ),
                 const SizedBox(height: 24.0),
-            
+
                 Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),
                   elevation: 0,
@@ -121,7 +122,7 @@ class _RecordContainerState extends State<RecordContainer> {
                         title: const Text("Open link in browser"),
                         onTap: () async {
                           final url = Uri.parse(widget.record.url);
-            
+
                           if (!(await launchUrl(url))) {
                             debugPrint(
                               "Failed to launch url: ${widget.record.url}",
@@ -139,7 +140,7 @@ class _RecordContainerState extends State<RecordContainer> {
                           context,
                         ).colorScheme.outlineVariant.withValues(alpha: 0.5),
                       ),
-            
+
                       if (widget.record.isDeleted) ...[
                         // DELETED STATE ACTIONS
                         ListTile(
@@ -147,9 +148,10 @@ class _RecordContainerState extends State<RecordContainer> {
                           leading: Icon(
                             Icons.restore,
                             color: widget.disableRestore
-                                ? Theme.of(
-                                    bottomSheetContext,
-                                  ).colorScheme.onSurface.withValues(alpha: 0.38)
+                                ? Theme.of(bottomSheetContext)
+                                      .colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.38)
                                 : Theme.of(context).colorScheme.primary,
                           ),
                           title: Text(
@@ -175,18 +177,20 @@ class _RecordContainerState extends State<RecordContainer> {
                                   final recordsProvider = context
                                       .read<RecordsProvider>();
                                   final targetRecord = widget.record;
-            
+
                                   Navigator.pop(bottomSheetContext);
-            
+
                                   toastification.show(
                                     type: ToastificationType.info,
                                     style: ToastificationStyle.simple,
                                     title: const Text('Bookmark restored'),
-                                    autoCloseDuration: const Duration(seconds: 3),
+                                    autoCloseDuration: const Duration(
+                                      seconds: 3,
+                                    ),
                                     alignment: Alignment.bottomCenter,
                                     icon: const Icon(Icons.restore),
                                   );
-            
+
                                   await recordsProvider.restoreFromTrash(
                                     targetRecord,
                                   );
@@ -221,7 +225,8 @@ class _RecordContainerState extends State<RecordContainer> {
                                 ),
                                 actions: [
                                   TextButton(
-                                    onPressed: () => Navigator.pop(dialogContext),
+                                    onPressed: () =>
+                                        Navigator.pop(dialogContext),
                                     child: const Text('Cancel'),
                                   ),
                                   FilledButton(
@@ -237,9 +242,9 @@ class _RecordContainerState extends State<RecordContainer> {
                                       final recordsProvider = context
                                           .read<RecordsProvider>();
                                       final targetRecord = widget.record;
-            
+
                                       Navigator.pop(dialogContext);
-            
+
                                       toastification.show(
                                         type: ToastificationType.success,
                                         style: ToastificationStyle.simple,
@@ -252,7 +257,7 @@ class _RecordContainerState extends State<RecordContainer> {
                                         alignment: Alignment.bottomCenter,
                                         icon: const Icon(Icons.delete_forever),
                                       );
-            
+
                                       await recordsProvider.permaDelete(
                                         targetRecord,
                                       );
@@ -271,7 +276,10 @@ class _RecordContainerState extends State<RecordContainer> {
                           title: const Text('Edit'),
                           onTap: () {
                             Navigator.pop(bottomSheetContext);
-                            // TODO: Trigger edit form bottom sheet
+                            showEditRecordDialog(
+                              context,
+                              record: widget.record,
+                            );
                           },
                         ),
                         Divider(
@@ -296,9 +304,9 @@ class _RecordContainerState extends State<RecordContainer> {
                             final recordsProvider = context
                                 .read<RecordsProvider>();
                             final targetRecord = widget.record;
-            
+
                             Navigator.pop(bottomSheetContext);
-            
+
                             if (context.mounted) {
                               toastification.show(
                                 type: ToastificationType.success,
@@ -318,7 +326,7 @@ class _RecordContainerState extends State<RecordContainer> {
                                 ),
                               );
                             }
-            
+
                             await recordsProvider.sendToTrash(targetRecord);
                           },
                         ),
@@ -326,9 +334,9 @@ class _RecordContainerState extends State<RecordContainer> {
                     ],
                   ),
                 ),
-            
+
                 const SizedBox(height: 16.0),
-            
+
                 // Notes and tags
                 if (widget.record.notes != null &&
                     widget.record.notes!.trim().isNotEmpty) ...[
@@ -372,7 +380,7 @@ class _RecordContainerState extends State<RecordContainer> {
                   ),
                   const SizedBox(height: 16.0),
                 ],
-            
+
                 if (widget.record.tags.isNotEmpty) ...[
                   Card(
                     margin: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -429,7 +437,7 @@ class _RecordContainerState extends State<RecordContainer> {
                   ),
                   const SizedBox(height: 16.0),
                 ],
-            
+
                 // 5. Card-ified Dynamic Metadata Block
                 Card(
                   margin: const EdgeInsets.symmetric(horizontal: 16.0),

@@ -6,6 +6,7 @@ import 'package:sitemarker/core/data_types/sm_folder.dart';
 import 'package:sitemarker/core/providers/folders_provider.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
 import 'package:sitemarker/helpers/helpers_data_integrity.dart';
+import 'package:sitemarker/ui/components/edit_folder_sheet.dart';
 import 'package:toastification/toastification.dart';
 
 class FolderContainer extends StatefulWidget {
@@ -282,7 +283,7 @@ class _FolderContainerState extends State<FolderContainer> {
                         title: const Text('Edit'),
                         onTap: () {
                           Navigator.pop(bottomSheetContext);
-                          _showEditDialog(context);
+                          showEditFolderDialog(context, folder: widget.folder);
                         },
                       ),
                       Divider(
@@ -429,74 +430,5 @@ class _FolderContainerState extends State<FolderContainer> {
   String formatDate(DateTime? date) {
     if (date == null) return 'Never';
     return DateFormat('MMM d, yyyy • h:mm a').format(date);
-  }
-
-  void _showEditDialog(BuildContext context) {
-    final TextEditingController nameController = TextEditingController(
-      text: widget.folder.name,
-    );
-    final formKey = GlobalKey<FormState>();
-
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: const Text('Edit Folder'),
-        content: Form(
-          key: formKey,
-          child: TextFormField(
-            controller: nameController,
-            autofocus: true,
-            decoration: const InputDecoration(
-              labelText: 'Folder Name',
-              border: OutlineInputBorder(),
-            ),
-            validator: (value) {
-              final newName = value?.trim();
-              if (newName == null || newName.isEmpty) {
-                return 'Name cannot be empty';
-              }
-
-              if (newName.toLowerCase() != widget.folder.name.toLowerCase()) {
-                final isDuplicate = DataIntegrityHelpers.isFolderNameDuplicate(
-                  newName,
-                  widget.folder.parentId ?? 1,
-                  context.read<FoldersProvider>(),
-                );
-                if (isDuplicate) {
-                  return 'A folder with this name already exists';
-                }
-              }
-
-              return null;
-            },
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate()) {
-                final newName = nameController.text.trim();
-
-                if (newName != widget.folder.name) {
-                  await context.read<FoldersProvider>().renameFolder(
-                    widget.folder,
-                    newName,
-                  );
-                }
-
-                if (dialogContext.mounted) {
-                  Navigator.pop(dialogContext);
-                }
-              }
-            },
-            child: const Text('Save'),
-          ),
-        ],
-      ),
-    );
   }
 }
