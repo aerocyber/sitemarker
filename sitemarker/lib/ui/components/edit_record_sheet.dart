@@ -1,10 +1,12 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
+import 'package:sitemarker/core/data_types/sm_tag.dart';
 import 'package:toastification/toastification.dart';
 import 'package:validators/validators.dart' as validators;
 
 import 'package:sitemarker/core/data_types/sm_record.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
+import 'package:sitemarker/core/providers/tags_provider.dart';
 import 'package:sitemarker/helpers/helpers_data_integrity.dart';
 
 Future<void> showEditRecordDialog(
@@ -44,12 +46,15 @@ class _EditRecordSheetState extends State<EditRecordSheet> {
   late final TextEditingController _notesController;
   final _formKey = GlobalKey<FormState>();
 
+  final List<SmTag> _selectedTags = [];
+
   @override
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.record.name);
     _urlController = TextEditingController(text: widget.record.url);
     _notesController = TextEditingController(text: widget.record.notes ?? '');
+    _selectedTags.addAll(widget.record.tags);
   }
 
   @override
@@ -60,16 +65,83 @@ class _EditRecordSheetState extends State<EditRecordSheet> {
     super.dispose();
   }
 
-  Future<void> _handleSaveRecord() async {
-    if (!(_formKey.currentState?.validate() ?? false)) {
-      return;
+  Future<void> _showNewTagDialog() async {
+    final tagController = TextEditingController();
+
+    final String? newTag = await showDialog<String>(
+      context: context,
+      useRootNavigator: false,
+      builder: (ctx) => AlertDialog(
+        title: const Text('New Tag'),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+        ),
+        content: TextField(
+          controller: tagController,
+          autofocus: true,
+          decoration: const InputDecoration(
+            labelText: 'Tag Name',
+            hintText: 'e.g. flutter',
+            border: OutlineInputBorder(),
+          ),
+          onSubmitted: (value) => Navigator.pop(ctx, tagController.text),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, tagController.text),
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      tagController.dispose();
+    });
+
+    if (newTag != null && newTag.trim().isNotEmpty) {
+      await _addNewTag(newTag.trim());
     }
+  }
+
+  Future<void> _addNewTag(String tagText) async {
+    final cleanedTag = tagText.trim();
+    if (cleanedTag.isEmpty) return;
+
+    final tagsProvider = context.read<TagsProvider>();
+
+    SmTag? existingTag;
+    try {
+      existingTag = tagsProvider.allTags.firstWhere(
+        (t) => t.name.toLowerCase() == cleanedTag.toLowerCase(),
+      );
+    } catch (_) {}
+
+    if (existingTag == null) {
+      final newId = await tagsProvider.createTag(cleanedTag);
+      existingTag = SmTag(id: newId, name: cleanedTag);
+    }
+
+    setState(() {
+      if (!_selectedTags.any((t) => t.id == existingTag!.id)) {
+        _selectedTags.add(existingTag!);
+      }
+    });
+  }
+
+  Future<void> _handleSaveRecord() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
 
     final recordName = _nameController.text.trim();
     final urlText = _urlController.text.trim();
-    final recordsProvider = context.read<RecordsProvider>();
 
-    // Duplicate Name Check (Only if changed)
+    final recordsProvider = context.read<RecordsProvider>();
+    final tagsProvider = context.read<TagsProvider>();
+
     if (recordName != widget.record.name &&
         DataIntegrityHelpers.isRecordNameDuplicate(
           recordName,
@@ -96,7 +168,6 @@ class _EditRecordSheetState extends State<EditRecordSheet> {
       return;
     }
 
-    // Duplicate URL Check (Only if changed)
     if (urlText != widget.record.url &&
         DataIntegrityHelpers.isRecordUrlDuplicate(
           urlText,
@@ -123,38 +194,84 @@ class _EditRecordSheetState extends State<EditRecordSheet> {
       return;
     }
 
-    final updatedRecord = SmRecord(
-      id: widget.record.id,
-      name: recordName,
-      url: urlText,
-      notes: _notesController.text.trim().isEmpty
-          ? null
-          : _notesController.text.trim(),
-      tags: widget.record.tags, // Keep existing tags untouched
-      folderId: widget.record.folderId,
-      isDeleted: widget.record.isDeleted,
-      dateAdded: widget.record.dateAdded, // Keep original creation date
-      dateModified: DateTime.now(), // Bump the modified date
-      lastSynced: widget.record.lastSynced,
-    );
+    try {
+      final addedTags = _selectedTags
+          .where(
+            (selected) => !widget.record.tags.any(
+              (original) => original.id == selected.id,
+            ),
+          )
+          .toList();
 
-    await recordsProvider.updateRecord(updatedRecord);
+      final removedTags = widget.record.tags
+          .where(
+            (original) =>
+                !_selectedTags.any((selected) => selected.id == original.id),
+          )
+          .toList();
 
-    if (mounted) {
-      Navigator.pop(context);
-      toastification.show(
-        type: ToastificationType.success,
-        style: ToastificationStyle.flatColored,
-        title: const Text('Bookmark updated'),
-        autoCloseDuration: const Duration(seconds: 3),
-        alignment: Alignment.bottomCenter,
+      final updatedRecord = SmRecord(
+        id: widget.record.id,
+        name: recordName,
+        url: urlText,
+        notes: _notesController.text.trim().isEmpty
+            ? null
+            : _notesController.text.trim(),
+        tags: _selectedTags,
+        folderId: widget.record.folderId,
+        isDeleted: widget.record.isDeleted,
+        dateAdded: widget.record.dateAdded,
+        dateModified: DateTime.now(),
+        lastSynced: widget.record.lastSynced,
       );
+
+      await recordsProvider.updateRecord(updatedRecord);
+
+      for (final tag in addedTags) {
+        await tagsProvider.attachTag(tag.id, updatedRecord.id!);
+      }
+
+      for (final tag in removedTags) {
+        await tagsProvider.removeMapping(tag.id);
+      }
+
+      if (mounted) {
+        Navigator.pop(context);
+        toastification.show(
+          type: ToastificationType.success,
+          style: ToastificationStyle.flatColored,
+          title: const Text('Bookmark updated'),
+          autoCloseDuration: const Duration(seconds: 3),
+          alignment: Alignment.bottomCenter,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        await showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Error'),
+            content: const Text('Failed to update bookmark. Please try again.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final parentTheme = Theme.of(context);
+    final tagsProvider = context.watch<TagsProvider>();
+
+    final dropdownTags = tagsProvider.allTags
+        .where((tag) => !_selectedTags.any((selected) => selected.id == tag.id))
+        .toList();
 
     return Padding(
       padding: EdgeInsets.only(
@@ -180,9 +297,27 @@ class _EditRecordSheetState extends State<EditRecordSheet> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _nameController,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Title',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: _nameController,
+                      builder: (context, value, child) {
+                        final canUndo = value.text != widget.record.name;
+                        return IconButton(
+                          icon: const Icon(Icons.undo),
+                          tooltip: 'Restore original title',
+                          color: canUndo
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.3),
+                          onPressed: canUndo
+                              ? () => _nameController.text = widget.record.name
+                              : null,
+                        );
+                      },
+                    ),
                   ),
                   validator: (value) => value == null || value.trim().isEmpty
                       ? 'Enter a title'
@@ -192,13 +327,32 @@ class _EditRecordSheetState extends State<EditRecordSheet> {
                 TextFormField(
                   controller: _urlController,
                   keyboardType: TextInputType.url,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'URL',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: _urlController,
+                      builder: (context, value, child) {
+                        final canUndo = value.text != widget.record.url;
+                        return IconButton(
+                          icon: const Icon(Icons.undo),
+                          tooltip: 'Restore original URL',
+                          color: canUndo
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.3),
+                          onPressed: canUndo
+                              ? () => _urlController.text = widget.record.url
+                              : null,
+                        );
+                      },
+                    ),
                   ),
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty)
+                    if (value == null || value.trim().isEmpty) {
                       return 'Enter a URL';
+                    }
 
                     String input = value.trim();
                     final uri = Uri.tryParse(input);
@@ -221,46 +375,99 @@ class _EditRecordSheetState extends State<EditRecordSheet> {
                       return 'Invalid TOR V3 onion link';
                     }
 
-                    if (!validators.isURL(input, requireProtocol: true))
+                    if (!validators.isURL(input, requireProtocol: true)) {
                       return 'Enter a valid URL';
+                    }
                     return null;
                   },
                 ),
+                const SizedBox(height: 8),
+                FilledButton.tonalIcon(
+                  icon: const Icon(Icons.auto_awesome, size: 20),
+                  label: const Text('Fetch title from URL'),
+                  onPressed: () {
+                    // TODO: Implement title fetch from URL
+                  },
+                ),
                 const SizedBox(height: 12),
-
-                // Show existing tags as read-only chips so the user knows they are preserved
-                if (widget.record.tags.isNotEmpty) ...[
-                  Text(
-                    'Tags (Editing coming soon)',
-                    style: parentTheme.textTheme.labelMedium?.copyWith(
-                      color: parentTheme.colorScheme.onSurfaceVariant,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: DropdownMenu<SmTag>(
+                        expandedInsets: EdgeInsets.zero,
+                        label: const Text('Select Tag'),
+                        dropdownMenuEntries: dropdownTags.map((tag) {
+                          return DropdownMenuEntry<SmTag>(
+                            value: tag,
+                            label: tag.name,
+                          );
+                        }).toList(),
+                        onSelected: (SmTag? newValue) {
+                          if (newValue != null) {
+                            setState(() {
+                              _selectedTags.add(newValue);
+                            });
+                          }
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4.0),
+                      child: FilledButton.tonalIcon(
+                        icon: const Icon(Icons.add),
+                        label: const Text('New'),
+                        onPressed: _showNewTagDialog,
+                      ),
+                    ),
+                  ],
+                ),
+                if (_selectedTags.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 12.0),
+                    child: Wrap(
+                      spacing: 8.0,
+                      runSpacing: 4.0,
+                      children: _selectedTags.map((tag) {
+                        return Chip(
+                          label: Text(tag.name),
+                          onDeleted: () {
+                            setState(() {
+                              _selectedTags.remove(tag);
+                            });
+                          },
+                        );
+                      }).toList(),
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8.0,
-                    runSpacing: 4.0,
-                    children: widget.record.tags.map((tag) {
-                      return Chip(
-                        label: Text(tag),
-                        visualDensity: VisualDensity.compact,
-                        backgroundColor:
-                            parentTheme.colorScheme.surfaceContainerHighest,
-                        side: BorderSide(
-                          color: parentTheme.colorScheme.outlineVariant,
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 12),
-                ],
-
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: _notesController,
                   maxLines: 3,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Notes (Optional)',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: _notesController,
+                      builder: (context, value, child) {
+                        final canUndo =
+                            value.text != (widget.record.notes ?? '');
+                        return IconButton(
+                          icon: const Icon(Icons.undo),
+                          tooltip: 'Restore original notes',
+                          color: canUndo
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.3),
+                          onPressed: canUndo
+                              ? () => _notesController.text =
+                                    (widget.record.notes ?? '')
+                              : null,
+                        );
+                      },
+                    ),
                   ),
                 ),
                 const SizedBox(height: 24),

@@ -1,3 +1,4 @@
+import 'package:sitemarker/core/data_types/sm_tag.dart';
 import 'package:sitemarker/core/db/sm_db.dart';
 
 /// Assisting data structure for DB to application and application to DB data passing
@@ -11,7 +12,7 @@ class SmRecord {
   DateTime dateModified;
   String name;
   String url;
-  List<String> tags;
+  List<SmTag> tags;
 
   SmRecord({
     required this.id,
@@ -27,7 +28,9 @@ class SmRecord {
   });
 
   static SmRecord fromSitemarkerRecord(
-      SitemarkerRecord record, List<String> tags) {
+    SitemarkerRecord record,
+    List<SmTag> tags,
+  ) {
     return SmRecord(
       id: record.id,
       name: record.name,

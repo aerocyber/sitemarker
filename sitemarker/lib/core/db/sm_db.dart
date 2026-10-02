@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:sitemarker/core/data_types/sm_record.dart';
+import 'package:sitemarker/core/data_types/sm_tag.dart';
 import 'package:sitemarker/core/db/dbio/shared_db.dart' as impl;
 import 'package:sitemarker/core/db/sm_db.steps.dart';
 
@@ -169,14 +170,14 @@ class SitemarkerDB extends _$SitemarkerDB {
       record.id = recordId;
 
       if (record.tags.isNotEmpty) {
-        for (String tag in record.tags) {
-          if (tag.trim().isEmpty) {
+        for (SmTag tag in record.tags) {
+          if (tag.name.trim().isEmpty) {
             // Empty tag
             continue;
           }
           final existingTag = await (select(
             recordTags,
-          )..where((t) => t.name.equals(tag))).getSingleOrNull();
+          )..where((t) => t.name.equals(tag.name))).getSingleOrNull();
 
           int tagId;
           if (existingTag != null) {
@@ -184,7 +185,7 @@ class SitemarkerDB extends _$SitemarkerDB {
           } else {
             tagId = await into(
               recordTags,
-            ).insert(RecordTagsCompanion.insert(name: tag));
+            ).insert(RecordTagsCompanion.insert(name: tag.name));
           }
 
           await into(tagMappings).insert(

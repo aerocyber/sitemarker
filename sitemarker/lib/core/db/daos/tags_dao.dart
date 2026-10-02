@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:sitemarker/core/data_types/sm_tag.dart';
 import 'package:sitemarker/core/db/sm_db.dart';
 import 'package:sitemarker/core/db/tables/record_tags.dart';
 import 'package:sitemarker/core/errors/db_error/tag_not_found.dart';
@@ -9,11 +10,11 @@ part 'tags_dao.g.dart';
 class TagsDao extends DatabaseAccessor<SitemarkerDB> with _$TagsDaoMixin {
   TagsDao(super.db);
 
-  /// Get all tags
-  /// This is a list of Tag Id : Tag Name mappings
-  Future<List<Map<int, String>>> get getAllTags async => (await select(
+  /// Get all tags as List of SmTag objects
+
+  Future<List<SmTag>> get getAllTags async => (await (select(
     recordTags,
-  ).get()).map((tag) => {tag.id: tag.name}).toList();
+  )).get()).map(((e) => SmTag.fromRecordTag(e))).toList();
 
   /// Get tag by Id
   /// Returns null if not found

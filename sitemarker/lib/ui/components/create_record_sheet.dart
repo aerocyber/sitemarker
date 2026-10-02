@@ -1,5 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
+import 'package:sitemarker/core/data_types/sm_tag.dart';
 import 'package:validators/validators.dart' as validators;
 
 import 'package:sitemarker/core/data_types/sm_record.dart';
@@ -45,7 +46,7 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
   final _notesController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  final List<String> _selectedTags = [];
+  final List<SmTag> _selectedTags = [];
 
   @override
   void dispose() {
@@ -107,19 +108,21 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
 
     final tagsProvider = context.read<TagsProvider>();
 
-    final exists = tagsProvider.allTags.any(
-      (map) => map.values.first.toLowerCase() == cleanedTag.toLowerCase(),
-    );
+    SmTag? existingTag;
+    try {
+      existingTag = tagsProvider.allTags.firstWhere(
+        (t) => t.name.toLowerCase() == cleanedTag.toLowerCase(),
+      );
+    } catch (_) {}
 
-    if (!exists) {
-      await tagsProvider.createTag(cleanedTag);
+    if (existingTag == null) {
+      final newId = await tagsProvider.createTag(cleanedTag);
+      existingTag = SmTag(id: newId, name: cleanedTag);
     }
 
     setState(() {
-      if (!_selectedTags.any(
-        (t) => t.toLowerCase() == cleanedTag.toLowerCase(),
-      )) {
-        _selectedTags.add(cleanedTag);
+      if (!_selectedTags.any((t) => t.id == existingTag!.id)) {
+        _selectedTags.add(existingTag!);
       }
     });
   }
@@ -190,24 +193,6 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
 
     try {
       final now = DateTime.now();
-      List<int> resolvedTagIds = [];
-
-      // If present, take original ID; otherwise, create new.
-      for (final tagText in _selectedTags) {
-        final existingTagMap = tagsProvider.allTags.firstWhere(
-          (map) => map.values.first.toLowerCase() == tagText.toLowerCase(),
-          orElse: () => {},
-        );
-
-        if (existingTagMap.isNotEmpty) {
-          // Original one is taken
-          resolvedTagIds.add(existingTagMap.keys.first);
-        } else {
-          // New created
-          final newTagId = await tagsProvider.createTag(tagText);
-          resolvedTagIds.add(newTagId);
-        }
-      }
 
       final record = SmRecord(
         id: null,
@@ -225,15 +210,12 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
       );
 
       await recordsProvider.addRecord(record);
-      int recordId;
-      if (!recordsProvider.isLoading && recordsProvider.creationId != -1) {
-        recordId = recordsProvider.creationId;
-      } else {
-        recordId = -1;
-      }
 
-      for (final tagId in resolvedTagIds) {
-        await tagsProvider.attachTag(tagId, recordId);
+      int recordId = recordsProvider.creationId;
+      if (recordId != -1) {
+        for (final tag in _selectedTags) {
+          await tagsProvider.attachTag(tag.id, recordId);
+        }
       }
 
       if (mounted) {
@@ -264,15 +246,9 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
     final parentTheme = Theme.of(context);
     final tagsProvider = context.watch<TagsProvider>();
 
-    // Safely extract tag names and filter out ones we've already selected
-    final allAvailableTags = tagsProvider.allTags
-        .expand((map) => map.values)
-        .toList();
-    final dropdownTags = allAvailableTags
+    final dropdownTags = tagsProvider.allTags
         .where(
-          (tag) => !_selectedTags.any(
-            (selected) => selected.toLowerCase() == tag.toLowerCase(),
-          ),
+          (tags) => !_selectedTags.any((selected) => selected.id == tags.id),
         )
         .toList();
 
@@ -376,16 +352,16 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                      child: DropdownMenu<String>(
+                      child: DropdownMenu<SmTag>(
                         expandedInsets: EdgeInsets.zero,
                         label: const Text('Select Tag'),
                         dropdownMenuEntries: dropdownTags.map((tag) {
-                          return DropdownMenuEntry<String>(
+                          return DropdownMenuEntry<SmTag>(
                             value: tag,
-                            label: tag,
+                            label: tag.name,
                           );
                         }).toList(),
-                        onSelected: (String? newValue) {
+                        onSelected: (SmTag? newValue) {
                           if (newValue != null) {
                             setState(() {
                               _selectedTags.add(newValue);
@@ -413,10 +389,10 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
                       runSpacing: 4.0,
                       children: _selectedTags.map((tag) {
                         return Chip(
-                          label: Text(tag),
+                          label: Text(tag.name),
                           onDeleted: () {
                             setState(() {
-                              _selectedTags.remove(tag);
+                              _selectedTags.removeWhere((t) => t.id == tag.id);
                             });
                           },
                         );

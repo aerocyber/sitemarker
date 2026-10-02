@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import 'package:sitemarker/core/data_types/sm_record.dart';
+import 'package:sitemarker/core/data_types/sm_tag.dart';
 import 'package:sitemarker/core/db/sm_db.dart';
 import 'package:sitemarker/core/db/tables/sitemarker_records.dart';
 import 'package:sitemarker/core/db/daos/tag_mapping_dao.dart';
@@ -23,11 +24,11 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
       List<TagMapping> tagMapping = await tagMappingDao
           .getTagMappingByBookmarkId(record.id);
 
-      List<String> tags = [];
+      List<SmTag> tags = [];
 
       for (TagMapping mapping in tagMapping) {
         var tag = await tagsDao.getTagById(mapping.tagId);
-        if (tag != null) tags.add(tag.name);
+        if (tag != null) tags.add(SmTag.fromRecordTag(tag));
       }
 
       finalRecords.add(SmRecord.fromSitemarkerRecord(record, tags));
@@ -50,11 +51,11 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
       List<TagMapping> tagMapping = await tagMappingDao
           .getTagMappingByBookmarkId(record.id);
 
-      List<String> tags = [];
+      List<SmTag> tags = [];
 
       for (TagMapping mapping in tagMapping) {
         var tag = await tagsDao.getTagById(mapping.tagId);
-        if (tag != null) tags.add(tag.name);
+        if (tag != null) tags.add(SmTag.fromRecordTag(tag));
       }
 
       finalRecords.add(SmRecord.fromSitemarkerRecord(record, tags));
@@ -77,11 +78,11 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
       List<TagMapping> tagMapping = await tagMappingDao
           .getTagMappingByBookmarkId(record.id);
 
-      List<String> tags = [];
+      List<SmTag> tags = [];
 
       for (TagMapping mapping in tagMapping) {
         var tag = await tagsDao.getTagById(mapping.tagId);
-        if (tag != null) tags.add(tag.name);
+        if (tag != null) tags.add(SmTag.fromRecordTag(tag));
       }
 
       finalRecords.add(SmRecord.fromSitemarkerRecord(record, tags));
@@ -107,11 +108,11 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
       List<TagMapping> tagMapping = await tagMappingDao
           .getTagMappingByBookmarkId(record.id);
 
-      List<String> tags = [];
+      List<SmTag> tags = [];
 
       for (TagMapping mapping in tagMapping) {
         var tag = await tagsDao.getTagById(mapping.tagId);
-        if (tag != null) tags.add(tag.name);
+        if (tag != null) tags.add(SmTag.fromRecordTag(tag));
       }
 
       finalRecords.add(SmRecord.fromSitemarkerRecord(record, tags));
@@ -134,11 +135,11 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
       List<TagMapping> tagMapping = await tagMappingDao
           .getTagMappingByBookmarkId(record.id);
 
-      List<String> tags = [];
+      List<SmTag                                    > tags = [];
 
       for (TagMapping mapping in tagMapping) {
         var tag = await tagsDao.getTagById(mapping.tagId);
-        if (tag != null) tags.add(tag.name);
+        if (tag != null) tags.add(SmTag.fromRecordTag(tag));
       }
 
       finalRecords.add(SmRecord.fromSitemarkerRecord(record, tags));
@@ -162,11 +163,11 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
       List<TagMapping> tagMapping = await tagMappingDao
           .getTagMappingByBookmarkId(record.id);
 
-      List<String> tags = [];
+      List<SmTag> tags = [];
 
       for (TagMapping mapping in tagMapping) {
         var tag = await tagsDao.getTagById(mapping.tagId);
-        if (tag != null) tags.add(tag.name);
+        if (tag != null) tags.add(SmTag.fromRecordTag(tag));
       }
 
       finalRecords.add(SmRecord.fromSitemarkerRecord(record, tags));
@@ -189,11 +190,11 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
       List<TagMapping> tagMapping = await tagMappingDao
           .getTagMappingByBookmarkId(record.id);
 
-      List<String> tags = [];
+      List<SmTag> tags = [];
 
       for (TagMapping mapping in tagMapping) {
         var tag = await tagsDao.getTagById(mapping.tagId);
-        if (tag != null) tags.add(tag.name);
+        if (tag != null) tags.add(SmTag.fromRecordTag(tag));
       }
 
       finalRecords.add(SmRecord.fromSitemarkerRecord(record, tags));
@@ -279,10 +280,12 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
     for (var record in records) {
       List<TagMapping> tagMapping = await tagMappingDao
           .getTagMappingByBookmarkId(record.r.id);
-      List<String> tags = [];
+
+      List<SmTag> tags = [];
+
       for (var mapping in tagMapping) {
         var tag = await tagsDao.getTagById(mapping.tagId);
-        if (tag != null) tags.add(tag.name);
+        if (tag != null) tags.add(SmTag.fromRecordTag(tag));
       }
       finalRecords.add(SmRecord.fromSitemarkerRecord(record.r, tags));
     }
@@ -390,18 +393,21 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
 
     final tagRows = await tagQuery.get();
 
-    final tagsByRecord = <int, List<String>>{};
+    final tagsByRecord = <int, List<SmTag>>{};
     for (var row in tagRows) {
       final bookmarkId = row.readTable(tagMappingDao.tagMappings).bookmarkId;
-      final tagName = row.readTable(tagsDao.recordTags).name;
-      tagsByRecord.putIfAbsent(bookmarkId, () => []).add(tagName);
+
+      final recordTag = row.readTable(tagsDao.recordTags);
+      final smTag = SmTag.fromRecordTag(recordTag);
+
+      tagsByRecord.putIfAbsent(bookmarkId, () => []).add(smTag);
     }
 
     // 6. Construct the final models
     return matchingRecords.map((record) {
       return SmRecord.fromSitemarkerRecord(
         record,
-        tagsByRecord[record.id] ?? [],
+        tagsByRecord[record.id] ?? [], // Now correctly passes List<SmTag>
       );
     }).toList();
   }

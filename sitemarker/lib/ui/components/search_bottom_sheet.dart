@@ -85,7 +85,7 @@ class _SearchBottomSheetState extends State<SearchBottomSheet> {
   @override
   Widget build(BuildContext context) {
     final tagsProvider = context.watch<TagsProvider>();
-    final availableTags = tagsProvider.allTags.expand((m) => m.values).toList();
+    final availableTags = tagsProvider.allTags.map((m) => m.name).toList();
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 

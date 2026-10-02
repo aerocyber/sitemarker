@@ -61,7 +61,6 @@ class _EditFolderSheetState extends State<EditFolderSheet> {
     final newName = _nameController.text.trim();
     final foldersProvider = context.read<FoldersProvider>();
 
-    // Only check duplicates and run DB update if the name actually changed
     if (newName != widget.folder.name) {
       final isDuplicate = DataIntegrityHelpers.isFolderNameDuplicate(
         newName,
@@ -132,9 +131,28 @@ class _EditFolderSheetState extends State<EditFolderSheet> {
                 child: TextFormField(
                   controller: _nameController,
                   autofocus: true,
-                  decoration: const InputDecoration(
+                  decoration: InputDecoration(
                     labelText: 'Folder Name',
-                    border: OutlineInputBorder(),
+                    border: const OutlineInputBorder(),
+                    // Inline Undo Button
+                    suffixIcon: ValueListenableBuilder<TextEditingValue>(
+                      valueListenable: _nameController,
+                      builder: (context, value, child) {
+                        final canUndo = value.text != widget.folder.name;
+                        return IconButton(
+                          icon: const Icon(Icons.undo),
+                          tooltip: 'Restore original name',
+                          color: canUndo
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(
+                                  context,
+                                ).colorScheme.onSurface.withValues(alpha: 0.3),
+                          onPressed: canUndo
+                              ? () => _nameController.text = widget.folder.name
+                              : null,
+                        );
+                      },
+                    ),
                   ),
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {

@@ -417,7 +417,7 @@ class _RecordContainerState extends State<RecordContainer> {
                             runSpacing: 8.0,
                             children: widget.record.tags.map((tag) {
                               return Chip(
-                                label: Text(tag),
+                                label: Text(tag.name),
                                 visualDensity: VisualDensity.compact,
                                 padding: EdgeInsets.zero,
                                 side: BorderSide(

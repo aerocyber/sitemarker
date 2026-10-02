@@ -1,3 +1,4 @@
+import 'package:sitemarker/core/data_types/sm_tag.dart';
 import 'package:sitemarker/core/db/daos/tags_dao.dart';
 import 'package:sitemarker/core/db/daos/tag_mapping_dao.dart';
 import 'package:sitemarker/core/logging/logger.dart';
@@ -9,7 +10,7 @@ class TagsRepository {
   TagsRepository(this._tagsDao, this._mappingDao);
 
   /// Get all tags
-  Future<List<Map<int, String>>> getAllTags() async {
+  Future<List<SmTag>> getAllTags() async {
     LogManager.instance.log(LogLevel.debug, 'Fetching all tags');
     try {
       return await _tagsDao.getAllTags;
