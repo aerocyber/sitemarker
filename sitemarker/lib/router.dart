@@ -6,6 +6,7 @@ import 'package:sitemarker/ui/screens/profile_screen.dart';
 import 'package:sitemarker/ui/screens/search_screen.dart';
 import 'package:sitemarker/ui/screens/settings_screen.dart';
 import 'package:sitemarker/ui/screens/records_screen.dart';
+import 'package:sitemarker/ui/screens/trash_screen.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver =
     RouteObserver<ModalRoute<void>>();
@@ -75,6 +76,21 @@ final appRouter = GoRouter(
     GoRoute(
       path: '/profile',
       builder: (context, state) => const ProfileScreen(),
+    ),
+
+    GoRoute(
+      path: '/trash',
+      builder: (context, state) => const TrashScreen(),
+      routes: [
+        GoRoute(
+          path: '/folder/:id',
+          builder: (context, state) {
+            final folderId = int.parse(state.pathParameters['id']!);
+            final folderName = state.extra as String?;
+            return TrashScreen(folderId: folderId, folderName: folderName);
+          },
+        ),
+      ],
     ),
 
     GoRoute(

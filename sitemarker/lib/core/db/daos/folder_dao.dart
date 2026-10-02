@@ -159,4 +159,41 @@ class FolderDao extends DatabaseAccessor<SitemarkerDB> with _$FolderDaoMixin {
       folderRecords,
     ).replace(folder.toFolderRecord().copyWith(name: newName)));
   }
+
+  /// Recursively and permanently deletes a folder, its subfolders, and all contained bookmarks
+  Future<void> wipeFolderTree(int folderId) async {
+    await db.transaction(() async {
+      // Destroy all nested bookmarks
+      await customUpdate(
+        '''
+        WITH RECURSIVE subfolders(id) AS (
+          SELECT id FROM folder_records WHERE id = ?
+          UNION ALL
+          SELECT f.id FROM folder_records f
+          INNER JOIN subfolders s ON f.parent_id = s.id
+        )
+        DELETE FROM sitemarker_records
+        WHERE folder_id IN (SELECT id FROM subfolders);
+        ''',
+        variables: [Variable.withInt(folderId)],
+        updates: {db.sitemarkerRecords},
+      );
+
+      // Destroy the folders themselves
+      await customUpdate(
+        '''
+        WITH RECURSIVE subfolders(id) AS (
+          SELECT id FROM folder_records WHERE id = ?
+          UNION ALL
+          SELECT f.id FROM folder_records f
+          INNER JOIN subfolders s ON f.parent_id = s.id
+        )
+        DELETE FROM folder_records
+        WHERE id IN (SELECT id FROM subfolders);
+        ''',
+        variables: [Variable.withInt(folderId)],
+        updates: {folderRecords},
+      );
+    });
+  }
 }

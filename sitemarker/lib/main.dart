@@ -12,6 +12,8 @@ import 'package:sitemarker/core/providers/records_provider.dart';
 import 'package:sitemarker/core/providers/tags_provider.dart';
 import 'package:sitemarker/router.dart';
 
+import 'package:toastification/toastification.dart';
+
 void main() async {
   // Required for asynchronous DB and platform channel setup
   WidgetsFlutterBinding.ensureInitialized();
@@ -97,6 +99,7 @@ class SitemarkerApp extends StatelessWidget {
       ],
       supportedLocales: const [Locale('en', 'US')],
       debugShowCheckedModeBanner: false,
+      builder: (context, child) => ToastificationWrapper(child: child!),
     );
   }
 }

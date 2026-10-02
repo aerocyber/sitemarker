@@ -95,9 +95,12 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
     TagMappingDao tagMappingDao = TagMappingDao(db);
     TagsDao tagsDao = TagsDao(db);
 
-    List<SitemarkerRecord> records = await (select(
-      sitemarkerRecords,
-    )..where((rec) => rec.isDeleted.equals(false) & rec.folderId.equals(folderId))).get();
+    List<SitemarkerRecord> records =
+        await (select(sitemarkerRecords)..where(
+              (rec) =>
+                  rec.isDeleted.equals(false) & rec.folderId.equals(folderId),
+            ))
+            .get();
     List<SmRecord> finalRecords = [];
 
     for (SitemarkerRecord record in records) {
@@ -250,7 +253,8 @@ class RecordsDao extends DatabaseAccessor<SitemarkerDB> with _$RecordsDaoMixin {
       );
     }
 
-    return delete(sitemarkerRecords)..where((rec) => rec.id.equals(record.id!));
+    return (delete(sitemarkerRecords)
+      ..where((rec) => rec.id.equals(record.id!))).go();
   }
 
   Future<void> purgeOldRecords() async {

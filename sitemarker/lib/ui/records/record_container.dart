@@ -3,11 +3,18 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/data_types/sm_record.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
+import 'package:toastification/toastification.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RecordContainer extends StatefulWidget {
   final SmRecord record;
-  const RecordContainer({super.key, required this.record});
+  final bool disableRestore;
+
+  const RecordContainer({
+    super.key,
+    required this.record,
+    this.disableRestore = false,
+  });
 
   @override
   State<RecordContainer> createState() => _RecordContainerState();
@@ -27,7 +34,7 @@ class _RecordContainerState extends State<RecordContainer> {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16.0,
-          vertical: 4.0,
+          vertical: 6.0,
         ),
         leading: CircleAvatar(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -66,13 +73,11 @@ class _RecordContainerState extends State<RecordContainer> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28.0)),
       ),
-      // 1. Rename to bottomSheetContext to prevent shadowing the main context
       builder: (bottomSheetContext) {
         return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 1. The M3 Drag Handle
               const SizedBox(height: 16.0),
               Container(
                 width: 32.0,
@@ -86,7 +91,6 @@ class _RecordContainerState extends State<RecordContainer> {
               ),
               const SizedBox(height: 16.0),
 
-              // 2. Centered Title
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Text(
@@ -101,7 +105,6 @@ class _RecordContainerState extends State<RecordContainer> {
               ),
               const SizedBox(height: 24.0),
 
-              // 3. Card-ified Actions Block
               Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16.0),
                 elevation: 0,
@@ -117,7 +120,11 @@ class _RecordContainerState extends State<RecordContainer> {
                       title: const Text("Open link in browser"),
                       onTap: () async {
                         final url = Uri.parse(widget.record.url);
-                        if (!await launchUrl(url)) {
+
+                        if (!(await launchUrl(url))) {
+                          debugPrint(
+                            "Failed to launch url: ${widget.record.url}",
+                          );
                           // TODO: Log failed to launch url
                         }
                         if (bottomSheetContext.mounted) {
@@ -135,26 +142,54 @@ class _RecordContainerState extends State<RecordContainer> {
                     if (widget.record.isDeleted) ...[
                       // DELETED STATE ACTIONS
                       ListTile(
+                        enabled: !widget.disableRestore,
                         leading: Icon(
                           Icons.restore,
-                          color: Theme.of(context).colorScheme.primary,
+                          color: widget.disableRestore
+                              ? Theme.of(
+                                  bottomSheetContext,
+                                ).colorScheme.onSurface.withValues(alpha: 0.38)
+                              : Theme.of(context).colorScheme.primary,
                         ),
                         title: Text(
                           'Restore',
                           style: TextStyle(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: widget.disableRestore
+                                ? Theme.of(bottomSheetContext)
+                                      .colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.38)
+                                : Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        onTap: () async {
-                          // 2. Cache references BEFORE popping
-                          final recordsProvider = context
-                              .read<RecordsProvider>();
-                          final targetRecord = widget.record;
+                        subtitle: widget.disableRestore
+                            ? const Text(
+                                'Restore parent folder to recover this bookmark',
+                              )
+                            : null,
+                        onTap: widget.disableRestore
+                            ? null
+                            : () async {
+                                final recordsProvider = context
+                                    .read<RecordsProvider>();
+                                final targetRecord = widget.record;
 
-                          Navigator.pop(bottomSheetContext);
-                          await recordsProvider.restoreFromTrash(targetRecord);
-                        },
+                                Navigator.pop(bottomSheetContext);
+
+                                toastification.show(
+                                  type: ToastificationType.info,
+                                  style: ToastificationStyle.simple,
+                                  title: const Text('Bookmark restored'),
+                                  autoCloseDuration: const Duration(seconds: 3),
+                                  alignment: Alignment.bottomCenter,
+                                  icon: const Icon(Icons.restore),
+                                );
+
+                                await recordsProvider.restoreFromTrash(
+                                  targetRecord,
+                                );
+                              },
                       ),
                       Divider(
                         height: 1,
@@ -203,6 +238,20 @@ class _RecordContainerState extends State<RecordContainer> {
                                     final targetRecord = widget.record;
 
                                     Navigator.pop(dialogContext);
+
+                                    toastification.show(
+                                      type: ToastificationType.success,
+                                      style: ToastificationStyle.simple,
+                                      title: const Text(
+                                        'Bookmark permanently deleted',
+                                      ),
+                                      autoCloseDuration: const Duration(
+                                        seconds: 3,
+                                      ),
+                                      alignment: Alignment.bottomCenter,
+                                      icon: const Icon(Icons.delete_forever),
+                                    );
+
                                     await recordsProvider.permaDelete(
                                       targetRecord,
                                     );
@@ -243,34 +292,33 @@ class _RecordContainerState extends State<RecordContainer> {
                           ),
                         ),
                         onTap: () async {
-                          // 1. Capture the provider reference BEFORE destroying the context
                           final recordsProvider = context
                               .read<RecordsProvider>();
                           final targetRecord = widget.record;
 
-                          // 2. Now it is safe to pop the bottom sheet
                           Navigator.pop(bottomSheetContext);
 
-                          // 3. The delete command will now successfully execute
-                          await recordsProvider.sendToTrash(targetRecord);
-
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text('Bookmark moved to trash'),
-                                behavior: SnackBarBehavior.floating,
-                                action: SnackBarAction(
-                                  label: 'Undo',
-                                  onPressed: () {
-                                    // Use the safe cached provider here as well
-                                    recordsProvider.restoreFromTrash(
-                                      targetRecord,
-                                    );
-                                  },
-                                ),
+                            toastification.show(
+                              type: ToastificationType.success,
+                              style: ToastificationStyle.simple,
+                              title: const Text('Bookmark moved to trash'),
+                              autoCloseDuration: const Duration(seconds: 4),
+                              alignment: Alignment.bottomCenter,
+                              icon: const Icon(Icons.delete_outline),
+                              callbacks: ToastificationCallbacks(
+                                onTap: (toastItem) {
+                                  // Clicking the toast acts as an undo
+                                  recordsProvider.restoreFromTrash(
+                                    targetRecord,
+                                  );
+                                  toastification.dismiss(toastItem);
+                                },
                               ),
                             );
                           }
+
+                          await recordsProvider.sendToTrash(targetRecord);
                         },
                       ),
                     ],

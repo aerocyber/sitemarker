@@ -6,10 +6,17 @@ import 'package:sitemarker/core/data_types/sm_folder.dart';
 import 'package:sitemarker/core/providers/folders_provider.dart';
 import 'package:sitemarker/core/providers/records_provider.dart';
 import 'package:sitemarker/helpers/helpers_data_integrity.dart';
+import 'package:toastification/toastification.dart';
 
 class FolderContainer extends StatefulWidget {
   final SmFolder folder;
-  const FolderContainer({super.key, required this.folder});
+  final bool disableRestore;
+
+  const FolderContainer({
+    super.key,
+    required this.folder,
+    this.disableRestore = false,
+  });
 
   @override
   State<FolderContainer> createState() => _FolderContainerState();
@@ -18,7 +25,6 @@ class FolderContainer extends StatefulWidget {
 class _FolderContainerState extends State<FolderContainer> {
   @override
   Widget build(BuildContext context) {
-    // Return the Card directly, removing the wrapping InkWell
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
       elevation: 0,
@@ -26,29 +32,22 @@ class _FolderContainerState extends State<FolderContainer> {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16.0)),
       clipBehavior: Clip.antiAlias,
       child: ListTile(
-        // 1. Apply the matching border radius to the tile itself
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16.0),
         ),
-        // 2. Move the onTap logic here
         onTap: () {
-          context.push("/folder/${widget.folder.id}");
-          // if (context.mounted) {
-          //   if (widget.folder.parentId == null || widget.folder.parentId == 1) {
-          //     context.read<FoldersProvider>().loadRootFolders();
-          //   } else {
-          //     context.read<FoldersProvider>().loadSubFolders(
-          //       widget.folder.parentId!,
-          //     );
-          //   }
-          //   context.read<RecordsProvider>().loadRecordsByFolder(
-          //     widget.folder.parentId ?? 1,
-          //   );
-          // }
+          if (widget.folder.isDeleted) {
+            context.push(
+              '/trash/folder/${widget.folder.id}',
+              extra: widget.folder.name,
+            );
+          } else {
+            context.push('/folder/${widget.folder.id}');
+          }
         },
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16.0,
-          vertical: 4.0,
+          vertical: 6.0,
         ),
         leading: CircleAvatar(
           backgroundColor: Theme.of(context).colorScheme.primaryContainer,
@@ -84,7 +83,6 @@ class _FolderContainerState extends State<FolderContainer> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // 1. The M3 Drag Handle
               const SizedBox(height: 16.0),
               Container(
                 width: 32.0,
@@ -97,8 +95,6 @@ class _FolderContainerState extends State<FolderContainer> {
                 ),
               ),
               const SizedBox(height: 16.0),
-
-              // 2. Centered Title
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Text(
@@ -112,7 +108,6 @@ class _FolderContainerState extends State<FolderContainer> {
               ),
               const SizedBox(height: 24.0),
 
-              // 3. Card-ified Actions Block
               Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16.0),
                 elevation: 0,
@@ -128,27 +123,61 @@ class _FolderContainerState extends State<FolderContainer> {
                     if (widget.folder.isDeleted) ...[
                       // DELETED STATE ACTIONS
                       ListTile(
+                        enabled: !widget.disableRestore,
                         leading: Icon(
                           Icons.restore,
-                          color: Theme.of(
-                            bottomSheetContext,
-                          ).colorScheme.primary,
+                          color: widget.disableRestore
+                              ? Theme.of(
+                                  bottomSheetContext,
+                                ).colorScheme.onSurface.withValues(alpha: 0.38)
+                              : Theme.of(
+                                  bottomSheetContext,
+                                ).colorScheme.primary,
                         ),
                         title: Text(
                           'Restore',
                           style: TextStyle(
-                            color: Theme.of(
-                              bottomSheetContext,
-                            ).colorScheme.primary,
+                            color: widget.disableRestore
+                                ? Theme.of(bottomSheetContext)
+                                      .colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.38)
+                                : Theme.of(
+                                    bottomSheetContext,
+                                  ).colorScheme.primary,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        onTap: () {
-                          Navigator.pop(bottomSheetContext);
-                          context.read<FoldersProvider>().restoreFromTrash(
-                            widget.folder,
-                          );
-                        },
+                        subtitle: widget.disableRestore
+                            ? const Text(
+                                'Restore parent folder to recover this subfolder',
+                              )
+                            : null,
+                        onTap: widget.disableRestore
+                            ? null
+                            : () async {
+                                final foldersProvider = context
+                                    .read<FoldersProvider>();
+                                final recordsProvider = context
+                                    .read<RecordsProvider>();
+                                final targetFolder = widget.folder;
+
+                                Navigator.pop(bottomSheetContext);
+
+                                toastification.show(
+                                  type: ToastificationType.info,
+                                  style: ToastificationStyle.simple,
+                                  title: const Text('Folder restored'),
+                                  autoCloseDuration: const Duration(seconds: 3),
+                                  alignment: Alignment.bottomCenter,
+                                  icon: const Icon(Icons.restore),
+                                );
+
+                                await foldersProvider.restoreFolderFromTrash(
+                                  targetFolder,
+                                );
+                                await recordsProvider.loadTrash(); // Sync cache
+                              },
                       ),
                       Divider(
                         height: 1,
@@ -181,7 +210,6 @@ class _FolderContainerState extends State<FolderContainer> {
                         ),
                         onTap: () {
                           Navigator.pop(bottomSheetContext);
-                          // Show confirmation dialog before permanent deletion
                           showDialog(
                             context: context,
                             builder: (dialogContext) => AlertDialog(
@@ -203,18 +231,42 @@ class _FolderContainerState extends State<FolderContainer> {
                                       context,
                                     ).colorScheme.onError,
                                   ),
-                                  onPressed: () {
+                                  onPressed: () async {
+                                    final foldersProvider = context
+                                        .read<FoldersProvider>();
+                                    final recordsProvider = context
+                                        .read<RecordsProvider>();
+                                    final targetFolder = widget.folder;
+
                                     Navigator.pop(dialogContext);
-                                    context.read<FoldersProvider>().permaDelete(
-                                      widget.folder,
+
+                                    toastification.show(
+                                      type: ToastificationType.success,
+                                      style: ToastificationStyle.simple,
+                                      title: const Text(
+                                        'Folder and its contents permanently deleted',
+                                      ),
+                                      autoCloseDuration: const Duration(
+                                        seconds: 3,
+                                      ),
+                                      alignment: Alignment.bottomCenter,
+                                      icon: const Icon(Icons.delete_forever),
                                     );
-                                    if (context.mounted) {
-                                      context
-                                          .read<RecordsProvider>()
-                                          .removeFolderFromCache(
-                                            widget.folder.id!,
-                                          );
-                                    }
+
+                                    // Prevent Scaffold geometry crash during dialog pop animation
+                                    await Future.delayed(
+                                      const Duration(milliseconds: 250),
+                                    );
+
+                                    await foldersProvider.permaDeleteFolder(
+                                      targetFolder,
+                                    );
+
+                                    recordsProvider.removeFolderFromCache(
+                                      targetFolder.id!,
+                                    );
+                                    await recordsProvider
+                                        .loadTrash(); // Sync cache
                                   },
                                   child: const Text('Delete'),
                                 ),
@@ -275,21 +327,23 @@ class _FolderContainerState extends State<FolderContainer> {
                             targetFolder.id!,
                           );
 
-                          // M3 Floating SnackBar with Undo Action
                           if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: const Text('Folder moved to trash'),
-                                behavior: SnackBarBehavior.floating,
-                                action: SnackBarAction(
-                                  label: 'Undo',
-                                  onPressed: () {
-                                    // 4. Use the cached provider reference here, NOT context.read()
-                                    foldersProvider.restoreFromTrash(
-                                      targetFolder,
-                                    );
-                                  },
-                                ),
+                            toastification.show(
+                              type: ToastificationType.success,
+                              style: ToastificationStyle.simple,
+                              title: const Text('Folder moved to trash'),
+                              autoCloseDuration: const Duration(seconds: 4),
+                              alignment: Alignment.bottomCenter,
+                              icon: const Icon(Icons.delete_outline),
+                              callbacks: ToastificationCallbacks(
+                                onTap: (toastItem) {
+                                  // Clicking the toast acts as an undo
+                                  foldersProvider.restoreFolderFromTrash(
+                                    targetFolder,
+                                  );
+
+                                  toastification.dismiss(toastItem);
+                                },
                               ),
                             );
                           }
@@ -302,7 +356,6 @@ class _FolderContainerState extends State<FolderContainer> {
 
               const SizedBox(height: 16.0),
 
-              // 4. Card-ified Metadata Block
               Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16.0),
                 elevation: 0,
@@ -403,15 +456,15 @@ class _FolderContainerState extends State<FolderContainer> {
                 return 'Name cannot be empty';
               }
 
-              // Only check for duplicates if the name actually changed
               if (newName.toLowerCase() != widget.folder.name.toLowerCase()) {
                 final isDuplicate = DataIntegrityHelpers.isFolderNameDuplicate(
                   newName,
                   widget.folder.parentId ?? 1,
                   context.read<FoldersProvider>(),
                 );
-                if (isDuplicate)
+                if (isDuplicate) {
                   return 'A folder with this name already exists';
+                }
               }
 
               return null;
@@ -428,7 +481,6 @@ class _FolderContainerState extends State<FolderContainer> {
               if (formKey.currentState!.validate()) {
                 final newName = nameController.text.trim();
 
-                // Only trigger a DB update if the name actually changed
                 if (newName != widget.folder.name) {
                   await context.read<FoldersProvider>().renameFolder(
                     widget.folder,

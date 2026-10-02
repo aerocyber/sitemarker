@@ -175,7 +175,7 @@ class FoldersRepository {
     // );
     try {
       // Calls the new recursive method you added to FolderDao
-      await _folderDao.setFolderDeletedStatus(folder, true);
+      await _folderDao.wipeFolderTree(folder.id!);
     } catch (e, stack) {
       // LogManager.instance.log(
       //   LogLevel.error,

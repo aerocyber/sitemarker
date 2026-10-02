@@ -21,10 +21,6 @@ class FoldersProvider extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  /// Helper function
-  /// Toggles (updates) the loading state
-  void toggleLoading() => _isLoading = !_isLoading;
-
   /// Load all root folders
   Future<void> loadRootFolders() async {
     if (_rootFolders.isEmpty) {
@@ -97,30 +93,24 @@ class FoldersProvider extends ChangeNotifier {
   }
 
   /// Undo soft delete
-  Future<void> restoreFromTrash(SmFolder folder) async {
+  Future<void> restoreFolderFromTrash(SmFolder folder) async {
+    _isLoading = true;
+    notifyListeners();
     await _repo.restoreFolderFromTrash(folder);
+    await loadTrash();
 
     if (folder.parentId == null || folder.parentId == 1) {
       await loadRootFolders();
     } else {
-      // Force a targeted refresh of the parent to show the restored folder
       await loadSubFolders(folder.parentId!);
     }
-
-    await loadTrash();
   }
 
-  /// Perma Delete
-  Future<void> permaDelete(SmFolder folder) async {
+  /// Perma delete
+  Future<void> permaDeleteFolder(SmFolder folder) async {
+    _isLoading = true;
+    notifyListeners();
     await _repo.permaDeleteFolder(folder);
-
-    // Evict ONLY the deleted folder's cache
-    _subDirsCache.remove(folder.id);
-
-    if (folder.parentId == null || folder.parentId == 1) {
-      await loadRootFolders();
-    } else {
-      await loadSubFolders(folder.parentId!);
-    }
+    await loadTrash();
   }
 }

@@ -328,7 +328,13 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
 
                     String input = value.trim();
 
-                    // 1. Email validation
+                    // 1. Enforce that the user provided a scheme
+                    final uri = Uri.tryParse(input);
+                    if (uri == null || !uri.hasScheme || uri.scheme.isEmpty) {
+                      return 'URL must include a scheme (e.g., https://)';
+                    }
+
+                    // 2. Email validation
                     if (input.startsWith('mailto:')) {
                       final email = input.substring(7);
                       if (validators.isEmail(email)) {
@@ -337,11 +343,11 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
                       return 'Invalid email address';
                     }
 
-                    // 2. Strict TOR Onion validation (V3 Spec)
+                    // 3. Strict TOR Onion validation (V3 Spec)
                     if (input.contains('.onion')) {
-                      // Matches optional http/https, exactly 56 base32 chars (a-z, 2-7), .onion, and optional paths
+                      // Requires scheme://, exactly 56 base32 chars, .onion, optional path
                       final onionRegex = RegExp(
-                        r'^(https?:\/\/)?([a-z2-7]{56})\.onion(\/.*)?$',
+                        r'^([a-zA-Z]+:\/\/)([a-z2-7]{56})\.onion(\/.*)?$',
                       );
                       if (onionRegex.hasMatch(input)) {
                         return null;
@@ -349,8 +355,8 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
                       return 'Invalid TOR V3 onion link';
                     }
 
-                    // 3. Standard Web URL validation
-                    if (!validators.isURL(input, requireProtocol: false)) {
+                    // 4. Standard Web URL validation (enforce protocol)
+                    if (!validators.isURL(input, requireProtocol: true)) {
                       return 'Enter a valid URL';
                     }
 

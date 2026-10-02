@@ -54,7 +54,15 @@ class RecordsProvider extends ChangeNotifier {
   Future<void> addRecord(SmRecord record) async {
     _isLoading = true;
     _creationId = await _repo.addRecord(record);
+
+    if (_recordsCache.containsKey(record.folderId)) {
+      _recordsCache[record.folderId] = await _repo.getRecordsByFolder(
+        record.folderId,
+      );
+    }
+
     _isLoading = false;
+    notifyListeners();
   }
 
   Future<void> updateRecord(SmRecord record) async {
@@ -79,19 +87,19 @@ class RecordsProvider extends ChangeNotifier {
   }
 
   Future<void> restoreFromTrash(SmRecord record) async {
-    if (_recordsCache.containsKey(record.folderId)) {
-      _recordsCache[record.folderId] = [
-        ..._recordsCache[record.folderId]!,
-        record,
-      ];
-      notifyListeners();
-    }
+    _isLoading = true;
+    notifyListeners();
 
     await _repo.restoreRecordFromTrash(record);
+
     _recordsCache[record.folderId] = await _repo.getRecordsByFolder(
       record.folderId,
     );
-    notifyListeners();
+
+    if (record.folderId != 1) {
+      _recordsCache[1] = await _repo.getRecordsByFolder(1);
+    }
+    
     await loadTrash();
   }
 

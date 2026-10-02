@@ -35,6 +35,7 @@ dependencies:
   drift: ^2.35.0
   drift_flutter: ^0.3.1
   url_launcher: ^6.3.2
+  toastification: ^3.2.0
 
 dev_dependencies:
   flutter_test:
