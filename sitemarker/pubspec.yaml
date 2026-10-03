@@ -38,6 +38,7 @@ dependencies:
   toastification: ^3.2.0
   http: ^1.6.0
   html: ^0.15.7
+  crypto: ^3.0.7
 
 dev_dependencies:
   flutter_test:
