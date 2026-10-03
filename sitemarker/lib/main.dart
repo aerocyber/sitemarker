@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart' as loc;
+// import 'package:flutter_localizations/flutter_localizations.dart' as loc;
 
 import 'package:sitemarker/core/db/sm_db.dart';
 import 'package:sitemarker/core/repos/folders_repo.dart';
@@ -92,11 +92,8 @@ class SitemarkerApp extends StatelessWidget {
       ),
 
       routerConfig: appRouter,
-      localizationsDelegates: [
-        loc.GlobalMaterialLocalizations.delegate,
-        loc.GlobalWidgetsLocalizations.delegate,
-        loc.GlobalCupertinoLocalizations.delegate,
-      ],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+
       supportedLocales: const [Locale('en', 'US')],
       debugShowCheckedModeBanner: false,
       builder: (context, child) => ToastificationWrapper(child: child!),
