@@ -23,7 +23,7 @@ dependencies:
 
   path_provider: ^2.1.6
   sqlite3: ^3.5.2
-  archive: ^4.2.0
+  archive: ^4.3.0
   provider: ^6.1.5+1
   go_router: ^18.0.1
   material_ui: ^1.2.0
@@ -39,6 +39,8 @@ dependencies:
   http: ^1.6.0
   html: ^0.15.7
   crypto: ^3.0.7
+  uuid: ^4.6.0
+  toml: ^0.18.0
 
 dev_dependencies:
   flutter_test:
