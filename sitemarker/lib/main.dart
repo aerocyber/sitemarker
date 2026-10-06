@@ -1,6 +1,5 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
-// import 'package:flutter_localizations/flutter_localizations.dart' as loc;
 
 import 'package:sitemarker/core/db/sm_db.dart';
 import 'package:sitemarker/core/repos/folders_repo.dart';
