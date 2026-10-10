@@ -11,13 +11,13 @@ class FoldersRepository {
 
   /// Fetch all active folders
   Future<List<SmFolder>> getAllFolders() async {
-    LogManager.instance.log(LogLevel.debug, 'Fetching all non-deleted folders');
+    LogManager.instance.log(LogLevel.debug, '[FOLDERS REPO]: Fetching all non-deleted folders');
     try {
       return await _folderDao.getNonDeletedFolders();
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to fetch folders: $e\n$stack',
+        '[FOLDERS REPO]: Failed to fetch folders: $e\n$stack',
       );
       rethrow;
     }
@@ -25,7 +25,7 @@ class FoldersRepository {
 
   /// Fetch root folders (parentId is null or home ID 1)
   Future<List<SmFolder>> getRootFolders() async {
-    LogManager.instance.log(LogLevel.debug, 'Fetching root folders');
+    LogManager.instance.log(LogLevel.debug, '[FOLDERS REPO]: Fetching root folders');
     try {
       final allFolders = await _folderDao.getNonDeletedFolders();
       return allFolders
@@ -34,7 +34,7 @@ class FoldersRepository {
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to fetch root folders: $e\n$stack',
+        '[FOLDERS REPO]: Failed to fetch root folders: $e\n$stack',
       );
       rethrow;
     }
@@ -44,7 +44,7 @@ class FoldersRepository {
   Future<List<SmFolder>> getSubfolders(int parentId) async {
     LogManager.instance.log(
       LogLevel.debug,
-      'Fetching subfolders for parent: $parentId',
+      '[FOLDERS REPO]: Fetching subfolders for parent: $parentId',
     );
     try {
       final allFolders = await _folderDao.getNonDeletedFolders();
@@ -52,7 +52,7 @@ class FoldersRepository {
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to fetch subfolders for $parentId: $e\n$stack',
+        '[FOLDERS REPO]: Failed to fetch subfolders for $parentId: $e\n$stack',
       );
       rethrow;
     }
@@ -60,13 +60,13 @@ class FoldersRepository {
 
   /// Fetch folders in trash
   Future<List<SmFolder>> getDeletedFolders() async {
-    LogManager.instance.log(LogLevel.debug, 'Fetching deleted folders');
+    LogManager.instance.log(LogLevel.debug, '[FOLDERS REPO]: Fetching deleted folders');
     try {
       return await _folderDao.getDeletedFolders();
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to fetch deleted folders: $e\n$stack',
+        '[FOLDERS REPO]: Failed to fetch deleted folders: $e\n$stack',
       );
       rethrow;
     }
@@ -75,15 +75,15 @@ class FoldersRepository {
   /// Create new folder
   Future<int> createFolder(SmFolder folder) async {
     LogManager.instance.log(
-      LogLevel.info,
-      'Creating folder: ${folder.name} under parent: ${folder.parentId}',
+      LogLevel.debug,
+      '[FOLDERS REPO]: Creating folder: ${folder.name} under parent: ${folder.parentId}',
     );
     try {
       return await _folderDao.createFolder(folder);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to create folder ${folder.name}: $e\n$stack',
+        '[FOLDERS REPO]: Failed to create folder ${folder.name}: $e\n$stack',
       );
       rethrow;
     }
@@ -92,15 +92,15 @@ class FoldersRepository {
   /// Rename folder
   Future<bool> renameFolder(SmFolder folder, String newName) async {
     LogManager.instance.log(
-      LogLevel.info,
-      'Renaming folder ID ${folder.id} to $newName',
+      LogLevel.debug,
+      '[FOLDERS REPO]: Renaming folder ID ${folder.id} to $newName',
     );
     try {
       return await _folderDao.updateFolderById(folder, newName);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to rename folder: $e\n$stack',
+        '[FOLDERS REPO]: Failed to rename folder: $e\n$stack',
       );
       rethrow;
     }
@@ -111,8 +111,8 @@ class FoldersRepository {
   Future<void> sendFolderToTrash(SmFolder folder) async {
     if (folder.id == null) return;
     LogManager.instance.log(
-      LogLevel.info,
-      'Recursively deleting folder ID: ${folder.id}',
+      LogLevel.debug,
+      '[FOLDERS REPO]: Recursively deleting folder ID: ${folder.id}',
     );
 
     try {
@@ -121,7 +121,7 @@ class FoldersRepository {
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed recursive delete on folder ${folder.id}: $e\n$stack',
+        '[FOLDERS REPO]: Failed recursive delete on folder ${folder.id}: $e\n$stack',
       );
       rethrow;
     }
@@ -131,7 +131,7 @@ class FoldersRepository {
   /// Restores a folder tree. If its original parent is deleted/missing, it falls back to root (ID 1).
   Future<void> restoreFolderFromTrash(SmFolder folder) async {
     if (folder.id == null) return;
-    LogManager.instance.log(LogLevel.info, 'Restoring folder ID: ${folder.id}');
+    LogManager.instance.log(LogLevel.debug, '[FOLDERS REPO]: Restoring folder ID: ${folder.id}');
 
     try {
       int? targetParentId = folder.parentId;
@@ -160,7 +160,7 @@ class FoldersRepository {
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed recursive restore on folder ${folder.id}: $e\n$stack',
+        '[FOLDERS REPO]: Failed recursive restore on folder ${folder.id}: $e\n$stack',
       );
       rethrow;
     }
@@ -168,19 +168,18 @@ class FoldersRepository {
 
   /// Permanently wipe a folder from DB
   Future<void> permaDeleteFolder(SmFolder folder) async {
-    // TODO: Logging stuff
-    // LogManager.instance.log(
-    //   LogLevel.info,
-    //   'Permanently deleting folder ID: ${folder.id}',
-    // );
+    LogManager.instance.log(
+      LogLevel.debug,
+      '[FOLDERS REPO]: Permanently deleting folder ID from repo: ${folder.id}',
+    );
     try {
       // Calls the new recursive method you added to FolderDao
       await _folderDao.wipeFolderTree(folder.id!);
     } catch (e, stack) {
-      // LogManager.instance.log(
-      //   LogLevel.error,
-      //   'Failed perma-deleting folder ${folder.id}: $e\n$stack',
-      // );
+      LogManager.instance.log(
+        LogLevel.error,
+        '[FOLDERS REPO]: Failed perma-deleting folder ${folder.id} from repo: $e\n$stack',
+      );
       rethrow;
     }
   }

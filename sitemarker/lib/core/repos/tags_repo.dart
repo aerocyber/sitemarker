@@ -11,13 +11,13 @@ class TagsRepository {
 
   /// Get all tags
   Future<List<SmTag>> getAllTags() async {
-    LogManager.instance.log(LogLevel.debug, 'Fetching all tags');
+    LogManager.instance.log(LogLevel.debug, '[TAGS REPO]: Fetching all tags');
     try {
       return await _tagsDao.getAllTags;
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to fetch tags: $e\n$stack',
+        '[TAGS REPO]: Failed to fetch tags: $e\n$stack',
       );
       rethrow;
     }
@@ -25,13 +25,16 @@ class TagsRepository {
 
   /// Create a new tag
   Future<int> createTag(String name) async {
-    LogManager.instance.log(LogLevel.info, 'Creating new tag: $name');
+    LogManager.instance.log(
+      LogLevel.debug,
+      '[TAGS REPO]: Creating new tag: $name',
+    );
     try {
       return await _tagsDao.addNewTag(name);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to create tag $name: $e\n$stack',
+        '[TAGS REPO]: Failed to create tag $name: $e\n$stack',
       );
       rethrow;
     }
@@ -39,13 +42,16 @@ class TagsRepository {
 
   /// Rename an existing tag
   Future<bool> renameTag(int tagId, String newName) async {
-    LogManager.instance.log(LogLevel.info, 'Renaming tag $tagId to $newName');
+    LogManager.instance.log(
+      LogLevel.debug,
+      '[TAGS REPO]: Renaming tag $tagId to $newName',
+    );
     try {
       return await _tagsDao.updateTag(tagId, newName);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to update tag $tagId: $e\n$stack',
+        '[TAGS REPO]: Failed to update tag $tagId: $e\n$stack',
       );
       rethrow;
     }
@@ -54,15 +60,15 @@ class TagsRepository {
   /// Attach a tag to a bookmark record
   Future<int> attachTagToRecord(int tagId, int bookmarkId) async {
     LogManager.instance.log(
-      LogLevel.info,
-      'Mapping tag $tagId to bookmark $bookmarkId',
+      LogLevel.debug,
+      '[TAGS REPO]: Mapping tag $tagId to bookmark $bookmarkId',
     );
     try {
       return await _mappingDao.createMapping(tagId, bookmarkId);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed mapping tag to bookmark: $e\n$stack',
+        '[TAGS REPO]: Failed mapping tag to bookmark: $e\n$stack',
       );
       rethrow;
     }
@@ -71,15 +77,15 @@ class TagsRepository {
   /// Remove a tag-to-bookmark mapping
   Future<int> removeMapping(int mappingId) async {
     LogManager.instance.log(
-      LogLevel.info,
-      'Removing tag mapping ID: $mappingId',
+      LogLevel.debug,
+      '[TAGS REPO]: Removing tag mapping ID: $mappingId',
     );
     try {
       return await _mappingDao.deleteMapping(mappingId);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed deleting mapping $mappingId: $e\n$stack',
+        '[TAGS REPO]: Failed deleting mapping $mappingId: $e\n$stack',
       );
       rethrow;
     }

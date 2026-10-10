@@ -11,13 +11,16 @@ class RecordsRepository {
 
   /// Fetch active bookmarks
   Future<List<SmRecord>> getActiveRecords() async {
-    LogManager.instance.log(LogLevel.debug, 'Fetching active records');
+    LogManager.instance.log(
+      LogLevel.debug,
+      '[RECORDS REPO]: Fetching active records',
+    );
     try {
       return await _recordsDao.getAllNonDeletedRecords();
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed fetching active records: $e\n$stack',
+        '[RECORDS REPO]: Failed fetching active records: $e\n$stack',
       );
       rethrow;
     }
@@ -27,14 +30,14 @@ class RecordsRepository {
   Future<List<SmRecord>> getRecordsByFolder(int folderId) async {
     LogManager.instance.log(
       LogLevel.debug,
-      'Fetching records for folder: $folderId',
+      '[RECORDS REPO]: Fetching records for folder: $folderId',
     );
     try {
       return await _recordsDao.getAllNonDeletedRecordsInFolder(folderId);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to fetch records for folder $folderId: $e\n$stack',
+        '[RECORDS REPO]: Failed to fetch records for folder $folderId: $e\n$stack',
       );
       rethrow;
     }
@@ -42,13 +45,16 @@ class RecordsRepository {
 
   /// Fetch bookmarks in trash
   Future<List<SmRecord>> getDeletedRecords() async {
-    LogManager.instance.log(LogLevel.debug, 'Fetching deleted records');
+    LogManager.instance.log(
+      LogLevel.debug,
+      '[RECORDS REPO]: Fetching deleted records',
+    );
     try {
       return await _recordsDao.getAllDeletedRecords();
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed fetching deleted records: $e\n$stack',
+        '[RECORDS REPO]: Failed fetching deleted records: $e\n$stack',
       );
       rethrow;
     }
@@ -56,13 +62,16 @@ class RecordsRepository {
 
   /// Insert a new bookmark
   Future<int> addRecord(SmRecord record) async {
-    LogManager.instance.log(LogLevel.info, 'Adding record: ${record.url}');
+    LogManager.instance.log(
+      LogLevel.debug,
+      '[RECORDS REPO]: Adding record: ${record.url}',
+    );
     try {
       return await _recordsDao.addRecord(record);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to add record ${record.url}: $e\n$stack',
+        '[RECORDS REPO]: Failed to add record ${record.url}: $e\n$stack',
       );
       rethrow;
     }
@@ -70,13 +79,16 @@ class RecordsRepository {
 
   /// Update existing bookmark
   Future<bool> updateRecord(SmRecord record) async {
-    LogManager.instance.log(LogLevel.info, 'Updating record ID: ${record.id}');
+    LogManager.instance.log(
+      LogLevel.debug,
+      '[RECORDS REPO]: Updating record ID: ${record.id}',
+    );
     try {
       return await _recordsDao.replaceRecordWithNew(record);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed to update record ${record.id}: $e\n$stack',
+        '[RECORDS REPO]: Failed to update record ${record.id}: $e\n$stack',
       );
       rethrow;
     }
@@ -85,15 +97,15 @@ class RecordsRepository {
   /// Soft-delete an individual bookmark
   Future<bool> sendRecordToTrash(SmRecord record) async {
     LogManager.instance.log(
-      LogLevel.info,
-      'Sending record ${record.id} to trash',
+      LogLevel.debug,
+      '[RECORDS REPO]: Sending record ${record.id} to trash',
     );
     try {
       return await _recordsDao.toggleSoftDeleteStatus(record);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed deleting record ${record.id}: $e\n$stack',
+        '[RECORDS REPO]: Failed deleting record ${record.id}: $e\n$stack',
       );
       rethrow;
     }
@@ -102,7 +114,10 @@ class RecordsRepository {
   /// Restore an individual bookmark with Orphan Protection
   /// If the target folder is deleted or missing, reassigns folderId to root (ID 1).
   Future<bool> restoreRecordFromTrash(SmRecord record) async {
-    LogManager.instance.log(LogLevel.info, 'Restoring record ID: ${record.id}');
+    LogManager.instance.log(
+      LogLevel.debug,
+      '[RECORDS REPO]: Restoring record ID: ${record.id}',
+    );
     try {
       int targetFolderId = record.folderId;
 
@@ -113,7 +128,7 @@ class RecordsRepository {
         targetFolderId = 1;
         LogManager.instance.log(
           LogLevel.warning,
-          'Parent folder $record.folderId for record ${record.id} is deleted/missing. Falling back to root (ID 1).',
+          '[RECORDS REPO]: Parent folder $record.folderId for record ${record.id} is deleted/missing. Falling back to root (ID 1).',
         );
       }
 
@@ -135,7 +150,7 @@ class RecordsRepository {
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed restoring record ${record.id}: $e\n$stack',
+        '[RECORDS REPO]: Failed restoring record ${record.id}: $e\n$stack',
       );
       rethrow;
     }
@@ -144,15 +159,15 @@ class RecordsRepository {
   /// Permanently wipe a record from DB
   Future<void> permaDeleteRecord(SmRecord record) async {
     LogManager.instance.log(
-      LogLevel.info,
-      'Permanently deleting record ID: ${record.id}',
+      LogLevel.debug,
+      '[RECORDS REPO]: Permanently deleting record ID: ${record.id}',
     );
     try {
       await _recordsDao.permaDeleteRecord(record);
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Failed perma-deleting record ${record.id}: $e\n$stack',
+        '[RECORDS REPO]: Failed perma-deleting record ${record.id}: $e\n$stack',
       );
       rethrow;
     }
@@ -160,10 +175,17 @@ class RecordsRepository {
 
   /// Search for entry
   Future<List<SmRecord>> searchRecords(String query) async {
+    LogManager.instance.log(
+      LogLevel.debug,
+      '[RECORDS REPO]: Searching for $query',
+    );
     try {
       return await _recordsDao.searchActive(query);
     } catch (e) {
-      LogManager.instance.log(LogLevel.error, 'Search failed: $e');
+      LogManager.instance.log(
+        LogLevel.error,
+        '[RECORDS REPO]: Search failed: $e',
+      );
       return [];
     }
   }
@@ -176,7 +198,7 @@ class RecordsRepository {
   }) async {
     LogManager.instance.log(
       LogLevel.debug,
-      'Executing advanced search via DAO',
+      '[RECORDS REPO]: Executing advanced search via DAO',
     );
     try {
       return await _recordsDao.advancedSearch(
@@ -188,7 +210,7 @@ class RecordsRepository {
     } catch (e, stack) {
       LogManager.instance.log(
         LogLevel.error,
-        'Advanced search failed: $e\n$stack',
+        '[RECORDS REPO]: Advanced search failed: $e\n$stack',
       );
       return [];
     }
