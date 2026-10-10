@@ -2,6 +2,7 @@ import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
 import 'package:sitemarker/core/db/sm_db.dart';
+import 'package:sitemarker/core/logging/logger.dart';
 import 'package:sitemarker/core/repos/folders_repo.dart';
 import 'package:sitemarker/core/repos/records_repo.dart';
 import 'package:sitemarker/core/repos/tags_repo.dart';
@@ -12,6 +13,12 @@ import 'package:sitemarker/core/providers/tags_provider.dart';
 import 'package:sitemarker/router.dart';
 
 import 'package:toastification/toastification.dart';
+
+Future<LogLevel> _loadUserLogLevel() async {
+  // TODO: Update to read value from settings saved files/shared_preferences
+  Future.delayed(Duration(seconds: 10));
+  return LogLevel.info;
+}
 
 void main() async {
   // Required for asynchronous DB and platform channel setup
@@ -27,6 +34,15 @@ void main() async {
   final foldersRepo = FoldersRepository(folderDao);
   final recordsRepo = RecordsRepository(recordsDao, folderDao);
   final tagsRepo = TagsRepository(tagsDao, tagMappingDao);
+
+  final userLogLevel = await _loadUserLogLevel();
+  await LogManager.instance.initialize(userLogLevel);
+
+  // Hook Flutter errors
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    LogManager.instance.log(LogLevel.error, details.toString());
+  };
 
   runApp(
     MultiProvider(
