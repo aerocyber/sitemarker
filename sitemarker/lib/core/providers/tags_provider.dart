@@ -46,6 +46,7 @@ class TagsProvider extends ChangeNotifier {
         LogLevel.error,
         '[TAG PROVIDER]: Failed to create tag. Error: $e\n$stack',
       );
+      return null;
     }
   }
 
