@@ -123,7 +123,7 @@ class _EditRecordSheetState extends State<EditRecordSheet> {
 
     if (existingTag == null) {
       final newId = await tagsProvider.createTag(cleanedTag);
-      existingTag = SmTag(id: newId, name: cleanedTag);
+      existingTag = SmTag(id: newId!, name: cleanedTag);
     }
 
     setState(() {
