@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:archive/archive_io.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
@@ -46,11 +47,22 @@ class LogManager {
       await _logsDir.create(recursive: true);
     }
 
-    _currentLog = File('${_logsDir.path}/sitemarker.log');
-    _bkpLog = File('${_logsDir.path}/sitemarker.log.bkp');
+    String fname = 'sitemarker';
+    if (kDebugMode) {
+      fname += '-DEBUG';
+    }
+
+    _currentLog = File('${_logsDir.path}/$fname.log');
+    _bkpLog = File('${_logsDir.path}/$fname.log.bkp');
 
     // Startup rotation (keep exactly 2 files - current log and the previous log)
     await _rotateLogs();
+
+    if (kDebugMode) {
+      debugPrint('Logs location: ${_currentLog.absolute}');
+      debugPrint('Backup logs location: ${_bkpLog.absolute}');
+      debugPrint('Logging level: $_currentLogLevel');
+    }
 
     // Start listening to the UI-safe queue
     _logStreamController.stream.listen(_onLogReceived);
