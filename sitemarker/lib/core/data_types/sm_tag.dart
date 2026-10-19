@@ -1,7 +1,7 @@
 import 'package:sitemarker/core/db/sm_db.dart';
 
 class SmTag {
-  final int id;
+  final int? id;
   final String name;
 
   SmTag({required this.id, required this.name});
@@ -9,5 +9,5 @@ class SmTag {
   static SmTag fromRecordTag(RecordTag recTag) =>
       SmTag(id: recTag.id, name: recTag.name);
 
-  RecordTag toRecTag() => RecordTag(id: id, name: name);
+  RecordTag toRecTag() => RecordTag(id: id ?? -1, name: name);
 }

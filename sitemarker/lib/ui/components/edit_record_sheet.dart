@@ -228,11 +228,11 @@ class _EditRecordSheetState extends State<EditRecordSheet> {
       await recordsProvider.updateRecord(updatedRecord);
 
       for (final tag in addedTags) {
-        await tagsProvider.attachTag(tag.id, updatedRecord.id!);
+        await tagsProvider.attachTag(tag.id!, updatedRecord.id!);
       }
 
       for (final tag in removedTags) {
-        await tagsProvider.removeMapping(tag.id);
+        await tagsProvider.removeMapping(tag.id!);
       }
 
       if (mounted) {

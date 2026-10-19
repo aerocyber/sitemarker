@@ -1,5 +1,6 @@
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sitemarker/core/data_types/sm_tag.dart';
 import 'package:sitemarker/core/db/daos/folder_dao.dart';
 import 'package:sitemarker/core/db/daos/records_dao.dart';
 
@@ -21,7 +22,14 @@ void main() {
 
     // Seed the database with a default folder because bookmarks REQUIRE a valid folder_id
     rootFolderId = await folderDao.createFolder(
-      SmFolder(name: 'Root', parentId: null, isDeleted: false),
+      SmFolder(
+        name: 'Root',
+        parentId: null,
+        isDeleted: false,
+        dateAdded: DateTime.now(),
+        dateModified: DateTime.now(),
+        lastSynced: null,
+      ),
     );
   });
 
@@ -71,7 +79,14 @@ void main() {
 
       // Create a Subfolder and insert one there
       final subFolderId = await folderDao.createFolder(
-        SmFolder(name: 'Sub', parentId: rootFolderId, isDeleted: false),
+        SmFolder(
+          name: 'Sub',
+          parentId: rootFolderId,
+          isDeleted: false,
+          dateAdded: DateTime.now(),
+          dateModified: DateTime.now(),
+          lastSynced: null,
+        ),
       );
       await recordsDao.addRecord(
         SmRecord(
@@ -108,7 +123,11 @@ void main() {
         name: 'Flutter Docs',
         url: 'https://flutter.dev',
         folderId: rootFolderId,
-        tags: ['flutter', 'dart', 'ui'],
+        tags: [
+          SmTag(id: null, name: 'flutter'),
+          SmTag(id: null, name: 'dart'),
+          SmTag(id: null, name: 'ui'),
+        ],
         dateAdded: DateTime.now(),
         dateModified: DateTime.now(),
         isDeleted: false,

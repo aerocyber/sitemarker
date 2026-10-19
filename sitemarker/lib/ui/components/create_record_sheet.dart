@@ -214,7 +214,7 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
       int recordId = recordsProvider.creationId;
       if (recordId != -1) {
         for (final tag in _selectedTags) {
-          await tagsProvider.attachTag(tag.id, recordId);
+          await tagsProvider.attachTag(tag.id!, recordId);
         }
       }
 

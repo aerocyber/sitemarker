@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +18,7 @@ import 'package:toastification/toastification.dart';
 Future<LogLevel> _loadUserLogLevel() async {
   // TODO: Update to read value from settings saved files/shared_preferences
   Future.delayed(Duration(seconds: 10));
-  return LogLevel.info;
+  return LogLevel.debug;
 }
 
 void main() async {

@@ -24,7 +24,14 @@ void main() {
 
   group('FolderDao - Creation & Retrieval', () {
     test('Can create a root folder and retrieve it by ID', () async {
-      final newFolder = SmFolder(name: 'Work', parentId: null, isDeleted: false);
+      final newFolder = SmFolder(
+        name: 'Work',
+        parentId: null,
+        isDeleted: false,
+        dateAdded: DateTime.now(),
+        dateModified: DateTime.now(),
+        lastSynced: null,
+      );
 
       final insertedId = await folderDao.createFolder(newFolder);
       final retrievedFolder = await folderDao.getFolderById(insertedId);
@@ -39,12 +46,26 @@ void main() {
     test('Can create a nested subfolder', () async {
       // 1. Create the parent
       final parentId = await folderDao.createFolder(
-        SmFolder(name: 'Tech', parentId: null, isDeleted: false),
+        SmFolder(
+          name: 'Tech',
+          parentId: null,
+          isDeleted: false,
+          dateAdded: DateTime.now(),
+          dateModified: DateTime.now(),
+          lastSynced: null,
+        ),
       );
 
       // 2. Create the child
       final childId = await folderDao.createFolder(
-        SmFolder(name: 'Flutter', parentId: parentId, isDeleted: false),
+        SmFolder(
+          name: 'Flutter',
+          parentId: parentId,
+          isDeleted: false,
+          dateAdded: DateTime.now(),
+          dateModified: DateTime.now(),
+          lastSynced: null,
+        ),
       );
 
       final childFolder = await folderDao.getFolderById(childId);
@@ -56,7 +77,14 @@ void main() {
   group('FolderDao - Exceptions & Constraints', () {
     test('Throws FolderDoesNotExistException if parentId is invalid', () async {
       // Trying to attach a folder to parentId 999 (which doesn't exist)
-      final ghostFolder = SmFolder(name: 'Ghost', parentId: 999, isDeleted: false);
+      final ghostFolder = SmFolder(
+        name: 'Ghost',
+        parentId: 999,
+        isDeleted: false,
+        dateAdded: DateTime.now(),
+        dateModified: DateTime.now(),
+        lastSynced: null,
+      );
 
       expect(
         () => folderDao.createFolder(ghostFolder),
@@ -68,18 +96,39 @@ void main() {
       'SQLite UNIQUE constraint prevents duplicate folder names in the same parent directory',
       () async {
         final rootId = await folderDao.createFolder(
-          SmFolder(name: 'Root', parentId: null, isDeleted: false),
+          SmFolder(
+            name: 'Root',
+            parentId: null,
+            isDeleted: false,
+            dateAdded: DateTime.now(),
+            dateModified: DateTime.now(),
+            lastSynced: null,
+          ),
         );
 
         // Insert the first valid subfolder
         await folderDao.createFolder(
-          SmFolder(name: 'Duplicate', parentId: rootId, isDeleted: false),
+          SmFolder(
+            name: 'Duplicate',
+            parentId: rootId,
+            isDeleted: false,
+            dateAdded: DateTime.now(),
+            dateModified: DateTime.now(),
+            lastSynced: null,
+          ),
         );
 
         // Attempting to insert the exact same name under the exact same parent should throw a SQLite Exception
         expect(
           () => folderDao.createFolder(
-            SmFolder(name: 'Duplicate', parentId: rootId, isDeleted: false),
+            SmFolder(
+              name: 'Duplicate',
+              parentId: rootId,
+              isDeleted: false,
+              dateAdded: DateTime.now(),
+              dateModified: DateTime.now(),
+              lastSynced: null,
+            ),
           ),
           throwsA(isException),
         );
@@ -90,7 +139,14 @@ void main() {
   group('FolderDao - Updates & Deletions', () {
     test('Can successfully rename a folder', () async {
       final folderId = await folderDao.createFolder(
-        SmFolder(name: 'Old Name', parentId: null, isDeleted: false),
+        SmFolder(
+          name: 'Old Name',
+          parentId: null,
+          isDeleted: false,
+          dateAdded: DateTime.now(),
+          dateModified: DateTime.now(),
+          lastSynced: null,
+        ),
       );
       final folderToUpdate = await folderDao.getFolderById(folderId);
 
@@ -107,7 +163,11 @@ void main() {
     test('Throws IdCannotBeNullException on update if ID is missing', () async {
       final invalidFolder = SmFolder(
         name: 'Missing ID',
-        parentId: null, isDeleted: false
+        parentId: null,
+        isDeleted: false,
+        dateAdded: DateTime.now(),
+        dateModified: DateTime.now(),
+        lastSynced: null,
       ); // ID is null by default
 
       expect(
@@ -121,10 +181,24 @@ void main() {
       () async {
         // Create two folders
         final keepId = await folderDao.createFolder(
-          SmFolder(name: 'Keep', parentId: null, isDeleted: false),
+          SmFolder(
+            name: 'Keep',
+            parentId: null,
+            isDeleted: false,
+            dateAdded: DateTime.now(),
+            dateModified: DateTime.now(),
+            lastSynced: null,
+          ),
         );
         final trashId = await folderDao.createFolder(
-          SmFolder(name: 'Trash', parentId: null, isDeleted: false),
+          SmFolder(
+            name: 'Trash',
+            parentId: null,
+            isDeleted: false,
+            dateAdded: DateTime.now(),
+            dateModified: DateTime.now(),
+            lastSynced: null,
+          ),
         );
 
         final folderToTrash = await folderDao.getFolderById(trashId);
@@ -147,7 +221,14 @@ void main() {
 
     test('Permanent delete entirely removes the record from SQLite', () async {
       final folderId = await folderDao.createFolder(
-        SmFolder(name: 'Temp', parentId: null, isDeleted: false),
+        SmFolder(
+          name: 'Temp',
+          parentId: null,
+          isDeleted: false,
+          dateAdded: DateTime.now(),
+          dateModified: DateTime.now(),
+          lastSynced: null,
+        ),
       );
       final folderToDelete = await folderDao.getFolderById(folderId);
 
