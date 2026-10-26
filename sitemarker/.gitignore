@@ -49,3 +49,5 @@ app.*.map.json
 test/generated_migrations_for_drift/
 # Widget Preview related
 .widget_preview/
+sqlite3.wasm
+drift_worker.js
