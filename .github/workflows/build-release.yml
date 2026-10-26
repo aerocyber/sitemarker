@@ -177,7 +177,7 @@ jobs:
       - name: Create tar.xz file
         run: tar -cJf sitemarker.tar.xz build/linux/x64/release/bundle
 
-      - name: Extract build rpm/srpm via nFPM
+      - name: Extract build rpm/srpm and deb via nFPM
         run: |
           export APP_VERSION=$(grep version pubspec.yaml | awk '{print $2}' | cut -d '+' -f1)
           echo "Building rpm and srpm for $APP_VERSION"
@@ -321,6 +321,6 @@ jobs:
         uses: softprops/action-gh-release@v3
         with:
           name: appimage-binary
-          path: |
+          file: |
             sitemarker-amd64.AppImage
             sitemarker-amd64.AppImage.zsync
