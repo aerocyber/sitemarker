@@ -8,7 +8,7 @@ RUN rm -rf /usr/share/nginx/html/*
 COPY docker/wasm/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy the pre-compiled WASM files from your host into the container
-COPY out/out/web /usr/share/nginx/html
+COPY out/web /usr/share/nginx/html
 
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
