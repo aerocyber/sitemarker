@@ -3,7 +3,7 @@
 name: "sitemarker"
 arch: "amd64"
 platform: "linux"
-version: "${APP_VERSION}"
+version: "${VERSION}"
 version_schema: "semver"
 section: "utils"
 priority: "optional"
@@ -32,13 +32,13 @@ contents:
     src: "packaging/linux/flatpak/flatpak/io.github.aerocyber.sitemarker.desktop"
     file_info:
       mode: 0644
-  
+
   - dst: /usr/share/metainfo/io.github.aerocyber.sitemarker.appdata.xml
     src: "packaging/linux/flatpak/flatpak/io.github.aerocyber.sitemarker.appdata.xml"
     file_info:
       mode: 0644
 
   - dst: /usr/share/icons/hicolor/512x512/apps/sitemarker.png
-    src: "sitemarker/windows/runner/resources/app_icon.png"
+    src: "packaging/windows/sitemarker-1024x1024.png"
     file_info:
       mode: 0644

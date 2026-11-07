@@ -40,6 +40,11 @@ class LogManager {
   Future<void> initialize(LogLevel savedUserSetting) async {
     _currentLogLevel = savedUserSetting;
 
+    if (kIsWasm || kIsWeb) {
+      _logStreamController.stream.listen(_onLogReceived);
+      return;
+    }
+
     final supportDir = await getApplicationSupportDirectory();
     _logsDir = Directory(p.join(supportDir.path, 'sitemarker', 'logs'));
 
@@ -110,6 +115,15 @@ class LogManager {
   }
 
   Future<void> _processBuffer() async {
+    // Dump the logs to console if running the web version of Sitemarker
+    if (kIsWeb || kIsWasm) {
+      for (var msg in _writeBuffer) {
+        debugPrint(msg);
+      }
+      _writeBuffer.clear();
+      return;
+    }
+
     if (_isWriting || _writeBuffer.isEmpty) return;
     _isWriting = true;
 

@@ -7,7 +7,7 @@ Rules-Requires-Root: no
 Homepage: https://github.com/aerocyber/sitemarker
 Vcs-Browser: https://github.com/aerocyber/sitemarker
 Vcs-Git: https://github.com/aerocyber/sitemarker.git
-Build-Depends: debhelper-compat (= 13)
+Build-Depends: debhelper-compat (= 12)
 
 Package: sitemarker
 Architecture: amd64
@@ -16,6 +16,5 @@ Depends: ${misc:Depends},
 	libgtk-3-0,
 	libglib2.0-0,
 	libsqlite3-0
-
 Description: A cross-platform, offline-first bookmark management application.
  Keep your digital references organized, secure, and accessible.
