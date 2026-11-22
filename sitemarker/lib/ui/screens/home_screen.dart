@@ -99,12 +99,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: TextStyle(fontWeight: FontWeight.w600),
               ),
               actions: [
-                IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: () => showAddOptionsDialog(
-                    context,
-                    currentFolderId: activeFolderId,
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 200),
+                  transitionBuilder: (child, animation) => ScaleTransition(
+                    scale: animation,
+                    child: FadeTransition(opacity: animation, child: child),
                   ),
+                  child: isSettings
+                      ? const SizedBox.shrink(key: ValueKey('add_hidden'))
+                      : IconButton(
+                          key: const ValueKey('add_visible'),
+                          icon: const Icon(Icons.add),
+                          onPressed: () => showAddOptionsDialog(
+                            context,
+                            currentFolderId: activeFolderId,
+                          ),
+                        ),
                 ),
                 const SizedBox(width: 15),
               ],
