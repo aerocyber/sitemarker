@@ -1,6 +1,9 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:provider/provider.dart';
 import 'package:sitemarker/core/data_types/sm_tag.dart';
+import 'package:sitemarker/core/logging/logger.dart';
+import 'package:sitemarker/helpers/html_parser.dart';
+import 'package:sitemarker/helpers/sm_external_connection.dart';
 import 'package:validators/validators.dart' as validators;
 
 import 'package:sitemarker/core/data_types/sm_record.dart';
@@ -47,6 +50,8 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
   final _formKey = GlobalKey<FormState>();
 
   final List<SmTag> _selectedTags = [];
+
+  bool _isFetchingTitle = false;
 
   @override
   void dispose() {
@@ -241,6 +246,98 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
     }
   }
 
+  Future<void> _fetchTitleFromUrl() async {
+    final url = _urlController.text.trim();
+
+    if (url.isEmpty) {
+      await _showInfoDialog(
+        title: 'Empty URL Field',
+        message: 'Please fill in the URL field.',
+        icon: Icons.link_off,
+      );
+      return;
+    }
+
+    if (!validators.isURL(url, requireProtocol: true)) {
+      await _showInfoDialog(
+        title: 'Invalid URL',
+        message:
+            'Please provide a valid URL including its scheme (e.g., https://).',
+        icon: Icons.error_outline,
+      );
+      return;
+    }
+
+    setState(() {
+      _isFetchingTitle = true;
+    });
+
+    try {
+      final htmlText = await SMExternalConnection.fetchHtmlPage(url);
+      if (!mounted) return;
+
+      if (htmlText == null) {
+        LogManager.instance.log(LogLevel.warning, 'Connection failed for $url');
+        await _showInfoDialog(
+          title: 'Failed to Connect',
+          message: "Couldn't connect to the URL provided.",
+          icon: Icons.wifi_off,
+        );
+        return;
+      }
+
+      final title = HtmlParser.fetchTitleFromHtml(htmlText);
+      if (title == null || title.trim().isEmpty) {
+        await _showInfoDialog(
+          title: 'No Title Found',
+          message: "Title couldn't be fetched for the URL.",
+          icon: Icons.text_fields_outlined,
+        );
+        return;
+      }
+
+      _nameController.text = title.trim();
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isFetchingTitle = false;
+        });
+      }
+    }
+  }
+
+  Future<void> _showInfoDialog({
+    required String title,
+    required String message,
+    IconData icon = Icons.info_outline,
+  }) async {
+    if (!mounted) return;
+    final theme = Theme.of(context);
+
+    await showDialog<void>(
+      context: context,
+      useRootNavigator: false,
+      builder: (ctx) => Theme(
+        data: theme,
+        child: AlertDialog(
+          icon: Icon(icon, color: theme.colorScheme.primary),
+          title: Text(title, textAlign: TextAlign.center),
+          content: Text(message, textAlign: TextAlign.center),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(24),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            FilledButton.tonal(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final parentTheme = Theme.of(context);
@@ -340,13 +437,39 @@ class _CreateRecordSheetState extends State<CreateRecordSheet> {
                   },
                 ),
                 const SizedBox(height: 8),
+
                 FilledButton.tonalIcon(
-                  icon: const Icon(Icons.auto_awesome, size: 20),
-                  label: const Text('Fetch title from URL'),
-                  onPressed: () {
-                    // TODO: Implement title fetch from URL
-                  },
+                  onPressed: _isFetchingTitle ? null : _fetchTitleFromUrl,
+                  icon: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    transitionBuilder: (child, animation) => ScaleTransition(
+                      scale: animation,
+                      child: FadeTransition(opacity: animation, child: child),
+                    ),
+                    child: _isFetchingTitle
+                        ? const SizedBox(
+                            key: ValueKey('fetching_spinner'),
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Icon(
+                            key: ValueKey('fetch_icon'),
+                            Icons.auto_awesome,
+                            size: 20,
+                          ),
+                  ),
+                  label: AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 200),
+                    child: Text(
+                      _isFetchingTitle
+                          ? 'Fetching title...'
+                          : 'Fetch title from URL',
+                      key: ValueKey(_isFetchingTitle),
+                    ),
+                  ),
                 ),
+
                 const SizedBox(height: 12),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
