@@ -127,7 +127,41 @@ class _RecordContainerState extends State<RecordContainer> {
                             debugPrint(
                               "Failed to launch url: ${widget.record.url}",
                             );
-                            // TODO: Log failed to launch url
+                            if (context.mounted) {
+                              final theme = Theme.of(context);
+
+                              await showDialog<void>(
+                                context: context,
+                                useRootNavigator: false,
+                                builder: (ctx) => Theme(
+                                  data: theme,
+                                  child: AlertDialog(
+                                    icon: Icon(
+                                      Icons.link_off,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    title: Text(
+                                      "Failed to Launch URL",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    content: Text(
+                                      "We couldn't launch that URL now.",
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(24),
+                                    ),
+                                    actionsAlignment: MainAxisAlignment.center,
+                                    actions: [
+                                      FilledButton.tonal(
+                                        onPressed: () => Navigator.pop(ctx),
+                                        child: const Text('OK'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }
                           }
                           if (bottomSheetContext.mounted) {
                             Navigator.pop(bottomSheetContext);
