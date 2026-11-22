@@ -18,9 +18,14 @@ class HtmlParser {
       if (titleElement != null && titleElement.text.trim().isNotEmpty) {
         // The .text property automatically decodes HTML entities (like &amp;)
         // and strips out any nested tags if they somehow exist.
+        LogManager.instance.log(LogLevel.info, "Found non empty html title");
         return titleElement.text.trim();
       }
 
+      LogManager.instance.log(
+        LogLevel.warning,
+        "No title or empty title found in html content passed",
+      );
       return null;
     } catch (e, stack) {
       LogManager.instance.log(
